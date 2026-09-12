@@ -4,25 +4,20 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { startReport } from "@/lib/api";
+import { startReport, type UploadEntry } from "@/lib/api";
 
 interface Entry {
   file: File;
-  label: string;
+  sourceType: UploadEntry["sourceType"];
 }
 
-/** Shown as placeholder rotation so the label field explains itself by example. */
-const LABEL_EXAMPLES = [
-  "2025 Sustainability Report",
-  "Board climate policy",
-  "FY25 Annual Report",
-  "Risk committee charter",
-  "Emissions data pack",
-];
+const CURRENT_YEAR = String(new Date().getFullYear());
 
 export default function UploadPage() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [companyName, setCompanyName] = useState("");
+  const [reportYear, setReportYear] = useState(CURRENT_YEAR);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -37,16 +32,24 @@ export default function UploadPage() {
         ? `${rejected} file${rejected === 1 ? "" : "s"} skipped — only PDFs can be read.`
         : null,
     );
-    setEntries((prev) => [...prev, ...pdfs.map((file) => ({ file, label: "" }))]);
+    setEntries((prev) => [...prev, ...pdfs.map((file) => ({ file, sourceType: "unknown" as const }))]);
   }
 
   async function submit() {
     if (entries.length === 0) return;
+    if (!companyName.trim()) {
+      setError("Enter the company name — both reports are prepared for a specific entity.");
+      return;
+    }
+    if (!/^\d{4}$/.test(reportYear)) {
+      setError("Reporting year must be a four-digit year.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
-      const { jobId } = await startReport(entries);
-      router.push(`/processing/${jobId}`);
+      const { companyId, runId } = await startReport(companyName.trim(), reportYear, entries);
+      router.push(`/processing/${companyId}/${runId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setBusy(false);
@@ -64,10 +67,39 @@ export default function UploadPage() {
         <h1 className="display display-l rise" style={{ ["--i" as string]: 1 }}>
           Add the company&rsquo;s documents
         </h1>
-        <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 16, marginBottom: 32 }}>
-          Any mix of public disclosures and internal material. Nothing is stored — the files are read
-          for evidence and then discarded.
+        <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 16, marginBottom: 28 }}>
+          Any mix of public disclosures and internal material, for one company and one reporting year.
         </p>
+
+        <div className="rise" style={{ ["--i" as string]: 2, display: "flex", gap: 12, marginBottom: 26, flexWrap: "wrap" }}>
+          <div style={{ flex: "2 1 260px" }}>
+            <label className="note" style={{ display: "block", marginBottom: 6 }}>
+              Company name
+            </label>
+            <input
+              className="input"
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="e.g. Quality Holdings Resources"
+              style={{ width: "100%" }}
+            />
+          </div>
+          <div style={{ flex: "1 1 120px" }}>
+            <label className="note" style={{ display: "block", marginBottom: 6 }}>
+              Reporting year
+            </label>
+            <input
+              className="input"
+              type="text"
+              inputMode="numeric"
+              value={reportYear}
+              onChange={(e) => setReportYear(e.target.value)}
+              placeholder={CURRENT_YEAR}
+              style={{ width: "100%" }}
+            />
+          </div>
+        </div>
 
         <div
           className={`dropzone rise${dragging ? " is-dragging" : ""}`}
@@ -94,7 +126,7 @@ export default function UploadPage() {
             )}
           </p>
           <p className="note" style={{ margin: 0 }}>
-            Any number of documents, up to 50&nbsp;MB each
+            Any number of documents, up to 25&nbsp;MB each
           </p>
           <input
             ref={inputRef}
@@ -136,18 +168,22 @@ export default function UploadPage() {
                   </div>
                 </div>
 
-                <input
+                <select
                   className="input"
-                  type="text"
-                  value={entry.label}
-                  placeholder={LABEL_EXAMPLES[i % LABEL_EXAMPLES.length]}
-                  aria-label={`Label for ${entry.file.name}`}
+                  value={entry.sourceType}
+                  aria-label={`Visibility of ${entry.file.name}`}
                   onChange={(e) =>
                     setEntries((prev) =>
-                      prev.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)),
+                      prev.map((x, j) =>
+                        j === i ? { ...x, sourceType: e.target.value as Entry["sourceType"] } : x,
+                      ),
                     )
                   }
-                />
+                >
+                  <option value="unknown">Visibility unknown</option>
+                  <option value="public">Public disclosure</option>
+                  <option value="internal">Internal document</option>
+                </select>
 
                 <button
                   className="iconbtn"
@@ -177,17 +213,15 @@ export default function UploadPage() {
           }}
         >
           <button className="btn btn-primary" onClick={submit} disabled={entries.length === 0 || busy}>
-            {busy ? "Starting…" : "Generate report"}
+            {busy ? "Starting…" : "Generate both reports"}
           </button>
           <span className="note">
             {entries.length === 0
               ? "Add at least one document to begin."
-              : "Roughly a minute per document."}
+              : "Gemini is rate-limited, so this can take a few minutes."}
           </span>
         </div>
 
-        {/* Guidance that used to be missing — fills the dead space with the
-            question every first-time user actually has. */}
         <section className="panel" style={{ marginTop: 48 }}>
           <h2 className="eyebrow" style={{ marginBottom: 16 }}>
             What helps most
@@ -202,20 +236,20 @@ export default function UploadPage() {
             <p className="guide-item">
               <span>
                 <b>Board and committee material</b> — charters, terms of reference, risk committee
-                papers — is where governance evidence hides. It is the pillar most often already
-                satisfied without anyone realising.
+                papers — is where governance evidence hides.
               </span>
             </p>
             <p className="guide-item">
               <span>
                 <b>Anything with numbers in it</b> — emissions inventories, energy data packs, target
-                commitments. Metrics &amp; Targets is the pillar most likely to come back thin.
+                commitments. Metrics &amp; Targets is the section most likely to come back thin.
               </span>
             </p>
             <p className="guide-item">
               <span>
-                <b>Labels are optional.</b> They appear beside citations in the finished report, so a
-                reader can tell a public disclosure from an internal document at a glance.
+                <b>Marking a document public or internal is optional</b> but improves the ESG report:
+                it can only flag a disclosure gap between what&rsquo;s public and what isn&rsquo;t if
+                it knows which is which.
               </span>
             </p>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PILLAR_KEYS, PILLAR_LABELS } from "@climate/contract";
+import { AASB_SECTION_KEYS, AASB_SECTION_LABELS } from "@/lib/assessment-types";
 import { Disclosure, type DisclosureItem } from "@/components/Disclosure";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -17,15 +17,21 @@ import {
 } from "@/components/icons";
 import { PILLAR_META } from "@/lib/pillar-meta";
 
-const PILLAR_SUMMARIES: Record<(typeof PILLAR_KEYS)[number], string> = {
+// TODO(follow-up): still describes the retired 4-pillar/3-status model in
+// places below (RATINGS, STEPS) — content needs a real rewrite for the 5
+// AASB sections (64 criteria, 5-state status) and the separate ESG rubric
+// (3 categories, 3-state status). Tracked as pending work, not done here.
+const PILLAR_SUMMARIES: Record<(typeof AASB_SECTION_KEYS)[number], string> = {
   governance:
     "Which board or committee oversees climate risk, how often it actually considers climate matters, and how management escalates to it.",
   strategy:
     "The physical and transition risks identified, the time horizons used, and whether scenario analysis — including a 1.5°C or well-below-2°C case — was actually run rather than just mentioned.",
-  risk_management:
+  riskManagement:
     "How climate risk is identified and assessed, and whether that process is integrated into the same enterprise risk management used for everything else, rather than run separately.",
-  metrics_targets:
+  metricsAndTargets:
     "Scope 1, 2 and 3 emissions figures, the methodology and boundary used, and whether any target has a base year, a target year and a stated scope.",
+  generalRequirements:
+    "Materiality, fair presentation, comparatives and how consistently metrics are reported over time.",
 };
 
 const RATINGS = [
@@ -130,7 +136,7 @@ export default function AboutPage() {
           </p>
 
           <div className="info-grid rise" style={{ ["--i" as string]: 5 }}>
-            {PILLAR_KEYS.map((key) => {
+            {AASB_SECTION_KEYS.map((key) => {
               const { colorVar, Icon } = PILLAR_META[key];
               return (
                 <div className="info-card" style={{ borderLeftColor: colorVar }} key={key}>
@@ -141,7 +147,7 @@ export default function AboutPage() {
                     >
                       <Icon />
                     </span>
-                    <h3>{PILLAR_LABELS[key]}</h3>
+                    <h3>{AASB_SECTION_LABELS[key]}</h3>
                   </div>
                   <p>{PILLAR_SUMMARIES[key]}</p>
                 </div>
