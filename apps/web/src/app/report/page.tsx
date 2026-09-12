@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Report } from "@climate/contract";
 import { ReportView } from "@/components/ReportView";
-import { TopBar } from "@/components/TopBar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import { getReport } from "@/lib/report-store";
 
 export default function ReportPage() {
@@ -20,19 +21,13 @@ export default function ReportPage() {
 
   return (
     <>
-      <TopBar>
-        <Link href="/report/preview" className="btn btn-ghost">
-          Example report
-        </Link>
-        <Link href="/upload" className="btn btn-ghost">
-          New report
-        </Link>
+      <SiteHeader>
         {report && (
           <button className="btn btn-primary" onClick={() => window.print()}>
             Download PDF
           </button>
         )}
-      </TopBar>
+      </SiteHeader>
 
       <main className="page" style={{ paddingTop: 24 }}>
         {!ready && <p className="note">Loading…</p>}
@@ -81,6 +76,8 @@ export default function ReportPage() {
           </>
         )}
       </main>
+
+      <SiteFooter />
     </>
   );
 }

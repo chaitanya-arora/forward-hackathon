@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ReportSchema } from "@climate/contract";
 import { ReportView } from "@/components/ReportView";
-import { TopBar } from "@/components/TopBar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import mock from "../../../../mock/report.json";
 
 /**
@@ -14,11 +15,11 @@ export default function ReportPreviewPage() {
 
   return (
     <>
-      <TopBar>
+      <SiteHeader>
         <Link href="/upload" className="btn btn-primary">
           Generate a report
         </Link>
-      </TopBar>
+      </SiteHeader>
       <main className="page" style={{ paddingTop: 32 }}>
         <p
           className="no-print note"
@@ -34,6 +35,8 @@ export default function ReportPreviewPage() {
         </p>
         <ReportView report={report} />
       </main>
+
+      <SiteFooter />
     </>
   );
 }

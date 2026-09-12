@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { TopBar } from "@/components/TopBar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 
 /** Mirrors the real report's shape so the hero is an honest preview, not decoration. */
 const PREVIEW_PILLARS = [
@@ -27,14 +28,11 @@ const STEPS = [
 export default function LandingPage() {
   return (
     <div className="surface-dark journey">
-      <TopBar>
-        <Link href="/report/preview" className="btn btn-ghost">
-          Example report
-        </Link>
+      <SiteHeader>
         <Link href="/upload" className="btn btn-primary">
           Generate a report
         </Link>
-      </TopBar>
+      </SiteHeader>
 
       <main className="page page-wide">
         <div className="hero">
@@ -102,6 +100,8 @@ export default function LandingPage() {
           ))}
         </div>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

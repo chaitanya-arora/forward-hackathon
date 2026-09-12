@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { TopBar } from "@/components/TopBar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import { startReport } from "@/lib/api";
 
 interface Entry {
@@ -56,11 +57,7 @@ export default function UploadPage() {
 
   return (
     <div className="surface-dark journey">
-      <TopBar>
-        <a href="/report/preview" className="btn btn-ghost">
-          Example report
-        </a>
-      </TopBar>
+      <SiteHeader />
 
       <main className="page" style={{ paddingTop: 28 }}>
         <p className="eyebrow rise">Step one of two</p>
@@ -224,6 +221,8 @@ export default function UploadPage() {
           </div>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

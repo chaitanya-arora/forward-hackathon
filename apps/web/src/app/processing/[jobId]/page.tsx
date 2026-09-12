@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { JobStage, JobStatus } from "@climate/contract";
-import { TopBar } from "@/components/TopBar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import { WhileYouWait } from "@/components/WhileYouWait";
 import { fetchStatus } from "@/lib/api";
 import { setReport } from "@/lib/report-store";
@@ -62,7 +63,7 @@ export default function ProcessingPage() {
 
   return (
     <div className="surface-dark journey">
-      <TopBar />
+      <SiteHeader />
 
       <main className="page" style={{ paddingTop: 28 }}>
         <p className="eyebrow rise">{error ? "Analysis failed" : "Step two of two"}</p>
@@ -128,6 +129,8 @@ export default function ProcessingPage() {
           </>
         )}
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
