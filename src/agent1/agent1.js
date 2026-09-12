@@ -12,20 +12,25 @@
  *
  * package.json needs: "type": "module"
  *
- * Set your API key in a .env file (same folder):
+ * Set your API key in the project-root .env file:
  *   GEMINI_API_KEY=your_key_here
  *   (get one free at https://aistudio.google.com/apikey)
  *
  * Run:
- *   node agent1.js <pdf_path> "<company_name>" <report_year>
+ *   node src/agent1/agent1.js <pdf_path> "<company_name>" <report_year>
  */
 
-import "dotenv/config";
+import { config } from "dotenv";
 import fs from "fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { GoogleGenAI } from "@google/genai";
 // Use the legacy build — the standard build assumes a browser environment
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { saveClassification } from "../../db.js";
 
+const agentDirectory = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(agentDirectory, "../../.env"), quiet: true });
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const MODEL = "gemini-2.0-flash"; // fast + cheap + generous free tier
 
@@ -281,6 +286,9 @@ async function run(pdfPath, companyName, reportYear, outPath) {
 
   const output = buildOutputSchema(companyName, reportYear, chunks, classifications);
 
+  saveClassification(companyName, reportYear, output.pillars);
+
+  fs.mkdirSync(dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
 
   console.log(`\nDone. Wrote structured output to ${outPath}`);
@@ -297,14 +305,15 @@ async function run(pdfPath, companyName, reportYear, outPath) {
 
 const args = process.argv.slice(2);
 if (args.length !== 3) {
-  console.log('Usage: node agent1.js <pdf_path> "<company_name>" <report_year>');
+  console.log('Usage: node src/agent1/agent1.js <pdf_path> "<company_name>" <report_year>');
   process.exit(1);
 }
 
 const [pdfPath, companyName, reportYear] = args;
-const outPath = `${companyName.toLowerCase().replace(/\s+/g, "_")}_${reportYear}_classified.json`;
+const outPath = resolve(agentDirectory, "output", `${companyName.toLowerCase().replace(/\s+/g, "_")}_${reportYear}_classified.json`);
 
 run(pdfPath, companyName, reportYear, outPath).catch((e) => {
   console.error("Fatal error:", e);
   process.exit(1);
 });
+
