@@ -11,6 +11,7 @@ import { requirementFor } from "./requirements.js";
 import { extractStructuredFacts } from "./extractFacts.js";
 import { reconcileContext } from "./consistency.js";
 import { enrichReadiness } from "./readiness.js";
+import { attachPresentation } from "../reports/presentation.js";
 
 config({ path: fileURLToPath(new URL("../../.env", import.meta.url)), quiet: true });
 const weights = { present: 1, partial: 0.5, missing: 0, requires_human_judgement: 0 };
@@ -26,7 +27,7 @@ function overallStatus(criteria) {
 export function buildAasbS2Report(input, result, rawContext = {}) {
   const facts = extractStructuredFacts(input);
   const metadata = reconcileContext(rawContext, facts);
-  return enrichReadiness(buildLegacyStructure(input, result, metadata.effective), input, result, facts, metadata);
+  return attachPresentation(enrichReadiness(buildLegacyStructure(input, result, metadata.effective), input, result, facts, metadata));
 }
 
 function buildLegacyStructure(input, result, rawContext = {}) {

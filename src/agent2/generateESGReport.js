@@ -8,6 +8,7 @@ import { normalizeEvidence } from "./normalizeEvidence.js";
 import { rubric, responseJsonSchema } from "./rubric.js";
 import { validateCitations } from "./validateCitations.js";
 import { requestGemini } from "../llm/gemini.js";
+import { attachPresentation } from "../reports/presentation.js";
 
 // Resolve configuration and defaults from the project, even when run elsewhere.
 const agentDirectory = dirname(fileURLToPath(import.meta.url));
@@ -62,7 +63,7 @@ export function buildReport(input, result) {
   const environmental = section("environmental"), social = section("social"), governance = section("governance");
   // Scoring and final JSON are owned by JavaScript, never by the model.
   const overallESGScore = Math.round((environmental.score + social.score + governance.score) / 3);
-  return { reportType: "ESG_READINESS", priority: "secondary", company: input.company, reportYear: input.reportYear,
+  return attachPresentation({ reportType: "ESG_READINESS", priority: "secondary", company: input.company, reportYear: input.reportYear,
     executiveSummary: `Supplied evidence readiness: environmental ${environmental.score}/100, social ${social.score}/100, governance ${governance.score}/100. Missing evidence does not establish absent company practices.`,
     overallESGReadinessScore: overallESGScore, overallESGScore, environmental, social, governance,
     priorityActions: criteria.filter((c) => c.gapType).sort((a, b) =>
@@ -72,7 +73,7 @@ export function buildReport(input, result) {
       statusWeights: weights, aggregation: "Equal criterion weights within sections; equal ESG section weights.",
       limitations: "Secondary broader ESG assessment. Not legal, audit or assurance advice. LLM relevance and sufficiency judgments require human review. Absence of evidence is not a proven capability gap." },
     warnings,
-  };
+  });
 }
 
 export async function generateESGReport(evidence, options = {}) {
