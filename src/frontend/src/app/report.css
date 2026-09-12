@@ -181,21 +181,8 @@
 
 .pillar-score span { font-size: 15px; color: var(--ink-faint); font-weight: 400; }
 
-.badge {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 3px;
-  white-space: nowrap;
-}
-
-.badge-strong  { color: var(--strong);  background: var(--strong-bg); }
-.badge-partial { color: var(--partial); background: var(--partial-bg); }
-.badge-missing { color: var(--missing); background: var(--missing-bg); }
-.badge-neutral   { color: var(--neutral);   background: var(--neutral-bg); }
-.badge-judgement { color: var(--judgement); background: var(--judgement-bg); }
+/* Status (present/partial/missing etc.) renders as a coloured small-caps
+   label, never a filled pill — see .status-label further down. */
 
 /* The score bar is a thin rule, not a progress widget. */
 .pillar-bar {
@@ -404,12 +391,14 @@
 
 
 /* ---------------------------------------------------------------------------
-   Two-report view: AASB S2 (primary) + ESG (secondary), a toggle between them,
-   and per-report download. Reuses the existing serif/badge/citation language
-   rather than inventing a second visual system.
+   Two-report view: AASB S2 (primary) + ESG (secondary), a toggle between
+   them, and per-report download. Deliberately restrained — numbered
+   sections, hairline rules, colour used only in status text, never as a
+   filled badge or a coloured card border. This is meant to read as a
+   document someone could hand to an auditor, not as a product screen.
    --------------------------------------------------------------------------- */
 
-/* --- view toggle + download bar ------------------------------------------ */
+/* --- view toggle + download bar (page chrome, not the document itself) --- */
 
 .report-controls {
   display: flex;
@@ -424,29 +413,23 @@
 
 .view-toggle {
   display: inline-flex;
-  background: var(--surface-sunk);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 2px;
+  gap: 18px;
 }
 
 .view-toggle button {
   border: 0;
+  border-bottom: 2px solid transparent;
   background: none;
-  padding: 7px 16px;
-  border-radius: 6px;
+  padding: 4px 0;
   font-family: var(--sans);
   font-size: 13.5px;
   font-weight: 550;
   color: var(--ink-muted);
-  transition: background 0.15s var(--ease), color 0.15s var(--ease);
 }
 
 .view-toggle button.is-active {
-  background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-bottom-color: var(--ink);
 }
 
 .download-menu { position: relative; }
@@ -458,9 +441,7 @@
   z-index: 20;
   background: var(--surface);
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.25);
-  padding: 6px;
+  padding: 4px;
   min-width: 200px;
 }
 
@@ -471,7 +452,6 @@
   border: 0;
   background: none;
   padding: 9px 12px;
-  border-radius: 5px;
   font-family: var(--sans);
   font-size: 13.5px;
   color: var(--ink);
@@ -479,79 +459,106 @@
 
 .download-menu-list button:hover { background: var(--surface-sunk); }
 
-/* --- AASB masthead stats -------------------------------------------------- */
+/* --- explanatory intro (what this report type is, in plain language) ----- */
+
+.report-type-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 56px 0 4px;
+}
+
+.report-type-heading h2 {
+  font-family: var(--serif);
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.report-type-sub {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 10px 0 0;
+  max-width: 74ch;
+}
+
+.report-executive-summary {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-faint);
+  margin: 14px 0 0;
+  max-width: 74ch;
+  font-style: italic;
+}
+
+/* --- key facts line (replaces the earlier rounded stat tiles) ------------ */
 
 .aasb-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 1px;
-  background: var(--rule);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
   margin: 24px 0 8px;
 }
 
 .aasb-stat {
-  background: var(--surface);
-  padding: 16px 18px;
-  text-align: center;
+  padding: 14px 28px 14px 0;
+  margin-right: 28px;
+  border-right: 1px solid var(--rule);
 }
+
+.aasb-stat:last-child { border-right: 0; margin-right: 0; }
 
 .aasb-stat b {
   display: block;
   font-family: var(--serif);
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 .aasb-stat span {
   font-family: var(--sans);
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--ink-faint);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
-/* --- criterion groups (the 5 AASB sections) ------------------------------- */
+/* --- numbered sections (the 5 AASB sections / 3 ESG categories) ---------- */
 
-.criterion-group {
-  border: 1px solid var(--rule);
-  /* Section identity colour, set inline per section — the same left-border
-     idiom used on the report's own pillar sections and the About page's
-     info-cards, so all three read as one system. */
-  border-left: 3px solid var(--rule);
-  border-radius: 10px;
-  margin-bottom: 14px;
-  overflow: hidden;
-}
+.criterion-group { margin-bottom: 36px; }
 
 .criterion-group-head {
   width: 100%;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: var(--surface);
+  align-items: baseline;
+  gap: 12px;
+  padding: 0 0 10px;
+  background: none;
   border: 0;
+  border-bottom: 1px solid var(--rule-strong);
   text-align: left;
+  margin-bottom: 4px;
 }
 
-.criterion-group-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
+.criterion-group-number {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  min-width: 1.4em;
 }
-
-.criterion-group-icon svg { width: 17px; height: 17px; }
 
 .criterion-group-head h3 {
   font-family: var(--serif);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
   margin: 0;
   flex: 1;
@@ -560,54 +567,57 @@
 
 .criterion-group-score {
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--ink);
   white-space: nowrap;
 }
 
-.criterion-group-score span { font-size: 13px; color: var(--ink-faint); font-weight: 400; }
+.criterion-group-score span { font-size: 12px; color: var(--ink-faint); font-weight: 400; }
 
 .criterion-tally {
   display: flex;
-  gap: 6px;
+  gap: 10px;
   font-family: var(--sans);
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--ink-faint);
   flex-wrap: wrap;
+  white-space: nowrap;
 }
 
-.criterion-tally span { white-space: nowrap; }
+/* --- criteria: a numbered list, not bordered cards ------------------------ */
 
-.criterion-list {
-  border-top: 1px solid var(--rule);
+.criterion-list { display: block; }
+
+.criterion-row {
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 0;
 }
 
-.criterion-row { border-bottom: 1px solid var(--rule); }
 .criterion-row:last-child { border-bottom: 0; }
 
 .criterion-row-head {
   width: 100%;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: 2.6em minmax(0, 1fr) auto auto;
   align-items: baseline;
   gap: 12px;
-  padding: 12px 18px;
+  padding: 0;
   background: none;
   border: 0;
   text-align: left;
 }
 
-.criterion-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.criterion-number {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
 }
 
 .criterion-row-head p {
-  font-family: var(--sans);
-  font-size: 14px;
+  font-family: var(--serif);
+  font-size: 14.5px;
   color: var(--ink);
   margin: 0;
 }
@@ -620,97 +630,66 @@
 }
 
 .criterion-detail {
-  padding: 0 18px 16px 39px;
+  padding: 8px 0 4px 2.6em;
 }
 
 .criterion-detail p {
   font-family: var(--sans);
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--ink-muted);
-  margin: 0 0 10px;
+  margin: 0 0 8px;
 }
 
-.criterion-detail .citation { margin-bottom: 10px; }
+.criterion-detail .citation { margin-bottom: 8px; }
 
 .criterion-required {
-  font-size: 13px;
-  color: var(--partial);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  font-style: italic;
   margin: 0;
 }
 
-/* --- ESG category cards ---------------------------------------------------- */
-
-.esg-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  margin: 24px 0;
+/* Status is plain coloured small-caps text — never a filled pill. The colour
+   itself is the entire signal; there is no background chip to read as "UI". */
+.status-label {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.esg-card {
-  border: 1px solid var(--rule);
-  border-radius: 12px;
-  padding: 22px;
-}
+.status-strong,
+.status-present    { color: var(--strong); }
+.status-partial    { color: var(--partial); }
+.status-missing    { color: var(--missing); }
+.status-neutral    { color: var(--neutral); }
+.status-judgement  { color: var(--judgement); }
 
-.esg-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
-}
+/* --- ESG category sections (reuse the same numbered-list treatment) ------ */
 
-.esg-card-head h3 {
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.esg-card-score {
-  font-family: var(--serif);
-  font-size: 26px;
-  font-weight: 600;
-}
-
-.esg-card-score span { font-size: 14px; color: var(--ink-faint); font-weight: 400; }
-
-.esg-card ul {
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink-muted);
-}
-
-.esg-card li { margin-bottom: 6px; padding-left: 16px; text-indent: -16px; }
+.esg-grid { display: block; }
 
 /* --- section dividers ------------------------------------------------------ */
 
-.report-type-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin: 56px 0 4px;
-}
-
-.report-type-heading h2 {
-  font-family: var(--serif);
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-
-.report-type-sub {
+.report-explainer {
   font-family: var(--sans);
-  font-size: 14.5px;
+  font-size: 13.5px;
+  line-height: 1.65;
   color: var(--ink-muted);
-  margin: 8px 0 0;
-  /* Deliberately no max-width: every sibling below (the stat tiles, the
-     section list) runs the full column width, and a measure-limited
-     paragraph here just looked like it stopped short for no reason. */
+  max-width: 74ch;
+  margin: 0 0 10px;
+}
+
+.report-explainer-label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 6px;
 }

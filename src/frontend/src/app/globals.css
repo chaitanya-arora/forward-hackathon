@@ -155,19 +155,22 @@
 
   background: var(--paper);
   color: var(--ink);
-  border-radius: 14px;
-  box-shadow: 0 40px 100px -32px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  /* A sheet of paper, not a UI card: sharp corners, a tight and modest
+     shadow (as if it were resting on a desk under the dark page), rather
+     than the soft diffuse glow a rounded app card would use. */
+  border-radius: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 14px 34px -18px rgba(0, 0, 0, 0.55);
   padding: 56px 64px 72px;
   max-width: 900px;
   margin: 0 auto;
 }
 
 @media (max-width: 760px) {
-  .paper-sheet { padding: 36px 24px 48px; border-radius: 10px; }
+  .paper-sheet { padding: 36px 24px 48px; }
 }
 
 @media print {
-  .paper-sheet { box-shadow: none; border-radius: 0; padding: 0; max-width: none; }
+  .paper-sheet { box-shadow: none; padding: 0; max-width: none; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }

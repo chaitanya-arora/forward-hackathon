@@ -12,22 +12,21 @@ import {
   type EsgReport,
   type EsgStatus,
 } from "@/lib/assessment-types";
-import { PILLAR_META } from "@/lib/pillar-meta";
 
 type View = "both" | "aasb" | "esg";
 
-const AASB_STATUS_META: Record<AasbStatus, { label: string; badge: string; dot: string }> = {
-  present: { label: "Present", badge: "badge-strong", dot: "var(--strong)" },
-  partial: { label: "Partial", badge: "badge-partial", dot: "var(--partial)" },
-  missing: { label: "Missing", badge: "badge-missing", dot: "var(--missing)" },
-  not_applicable: { label: "Not applicable", badge: "badge-neutral", dot: "var(--neutral)" },
-  requires_human_judgement: { label: "Needs review", badge: "badge-judgement", dot: "var(--judgement)" },
+const AASB_STATUS_META: Record<AasbStatus, { label: string; className: string }> = {
+  present: { label: "Present", className: "status-present" },
+  partial: { label: "Partial", className: "status-partial" },
+  missing: { label: "Missing", className: "status-missing" },
+  not_applicable: { label: "Not applicable", className: "status-neutral" },
+  requires_human_judgement: { label: "Needs review", className: "status-judgement" },
 };
 
-const ESG_STATUS_META: Record<EsgStatus, { label: string; badge: string; dot: string }> = {
-  strong: { label: "Strong", badge: "badge-strong", dot: "var(--strong)" },
-  partial: { label: "Partial", badge: "badge-partial", dot: "var(--partial)" },
-  missing: { label: "Missing", badge: "badge-missing", dot: "var(--missing)" },
+const ESG_STATUS_META: Record<EsgStatus, { label: string; className: string }> = {
+  strong: { label: "Strong", className: "status-strong" },
+  partial: { label: "Partial", className: "status-partial" },
+  missing: { label: "Missing", className: "status-missing" },
 };
 
 function tally<T extends string>(items: { status: T }[]): Record<string, number> {
@@ -35,6 +34,12 @@ function tally<T extends string>(items: { status: T }[]): Record<string, number>
   for (const item of items) counts[item.status] = (counts[item.status] ?? 0) + 1;
   return counts;
 }
+
+const AASB_INTRO =
+  "AASB S2 is Australia's mandatory climate-related disclosure standard — legislated, effective for reporting periods from 2025, and based on the international ISSB framework. It requires companies to report across four pillars: Governance, Strategy, Risk Management, and Metrics & Targets. Our Climate Readiness Report scores a company against exactly these four pillars, using its own uploaded documentation as evidence, showing where disclosure is strong and where it falls short of what the standard actually requires.";
+
+const ESG_INTRO =
+  "Before a company can credibly claim anything about its ESG performance, it needs to be able to back that claim with real, traceable evidence — not just a statement of intent. This report is the evidence layer underneath the readiness score: it shows exactly what supporting material exists for each ESG claim, how strong that evidence actually is, and where claims currently rest on nothing verifiable.";
 
 /**
  * The real backend only computes one overall AASB score across all 64
@@ -50,12 +55,11 @@ function sectionScore(criteria: AasbCriterion[], weights: Record<string, number>
 }
 
 /**
- * The actual deliverable is a downloaded PDF, so the document itself (this
- * component) has no expand/collapse anywhere — a PDF cannot have interactive
- * disclosure widgets, and Download just prints whatever is currently
- * visible. Everything here always renders in full. The view toggle and
- * download menu are page chrome around the document, not part of it, and
- * that's the only interactivity in this file.
+ * The document itself (this component) has no interactive disclosure
+ * anywhere — a printed or downloaded report cannot have expand/collapse, so
+ * every criterion renders fully, always. The view toggle and download menu
+ * are page chrome around the document, not part of it, and that's the only
+ * interactivity in this file.
  */
 export function AssessmentReport({
   aasbS2Report,
@@ -140,11 +144,8 @@ function AasbReportSection({ report }: { report: AasbS2Report }) {
       <div className="report-type-heading">
         <h2>AASB S2 Climate Readiness</h2>
       </div>
-      <p className="report-type-sub">
-        A preparation and readiness draft against the AASB S2 Climate-related Disclosures standard —
-        {" "}
-        {report.executiveSummary.totalCriteria} criteria across five sections.
-      </p>
+      <p className="report-type-sub">{AASB_INTRO}</p>
+      <p className="report-executive-summary">{report.executiveSummary.assessment}</p>
 
       <div className="aasb-stats">
         <div className="aasb-stat">
@@ -165,10 +166,10 @@ function AasbReportSection({ report }: { report: AasbS2Report }) {
         </div>
       </div>
 
-      {AASB_SECTION_KEYS.map((key) => (
+      {AASB_SECTION_KEYS.map((key, i) => (
         <CriterionGroup
           key={key}
-          sectionKey={key}
+          number={i + 1}
           label={AASB_SECTION_LABELS[key]}
           block={report[key] as AasbSectionBlock}
           weights={report.methodology.weights}
@@ -179,29 +180,23 @@ function AasbReportSection({ report }: { report: AasbS2Report }) {
 }
 
 function CriterionGroup({
-  sectionKey,
+  number,
   label,
   block,
   weights,
 }: {
-  sectionKey: (typeof AASB_SECTION_KEYS)[number];
+  number: number;
   label: string;
   block: AasbSectionBlock;
   weights: Record<string, number>;
 }) {
   const counts = tally(block.criteria);
   const score = sectionScore(block.criteria, weights);
-  const { colorVar, Icon } = PILLAR_META[sectionKey];
 
   return (
-    <div className="criterion-group" style={{ borderLeftColor: colorVar }}>
+    <div className="criterion-group">
       <div className="criterion-group-head">
-        <span
-          className="criterion-group-icon"
-          style={{ color: colorVar, background: `color-mix(in srgb, ${colorVar} 16%, transparent)` }}
-        >
-          <Icon />
-        </span>
+        <span className="criterion-group-number">{number}</span>
         <h3>{label}</h3>
         {score !== null && (
           <span className="criterion-group-score">
@@ -209,7 +204,7 @@ function CriterionGroup({
             <span>/100</span>
           </span>
         )}
-        <span className={`badge ${AASB_STATUS_META[block.overallStatus].badge}`}>
+        <span className={`status-label ${AASB_STATUS_META[block.overallStatus].className}`}>
           {AASB_STATUS_META[block.overallStatus].label}
         </span>
         <span className="criterion-tally">
@@ -222,24 +217,24 @@ function CriterionGroup({
       </div>
 
       <div className="criterion-list">
-        {block.criteria.map((c) => (
-          <CriterionRow key={c.id} criterion={c} />
+        {block.criteria.map((c, i) => (
+          <CriterionRow key={c.id} number={`${number}.${i + 1}`} criterion={c} />
         ))}
       </div>
     </div>
   );
 }
 
-function CriterionRow({ criterion }: { criterion: AasbCriterion }) {
+function CriterionRow({ number, criterion }: { number: string; criterion: AasbCriterion }) {
   const meta = AASB_STATUS_META[criterion.status];
 
   return (
     <div className="criterion-row">
       <div className="criterion-row-head">
-        <span className="criterion-dot" style={{ background: meta.dot }} />
+        <span className="criterion-number">{number}</span>
         <p>{criterion.description}</p>
-        <span className={`badge ${meta.badge}`}>{meta.label}</span>
-        <span className="criterion-ref">{criterion.reference}</span>
+        <span className={`status-label ${meta.className}`}>{meta.label}</span>
+        <span className="criterion-ref">AASB S2 ¶{criterion.reference}</span>
       </div>
 
       <div className="criterion-detail">
@@ -274,31 +269,33 @@ function EsgReportSection({ report }: { report: EsgReport }) {
       <div className="report-type-heading">
         <h2>ESG Evidence Readiness</h2>
       </div>
-      <p className="report-type-sub">{report.executiveSummary}</p>
+      <p className="report-type-sub">{ESG_INTRO}</p>
+      <p className="report-executive-summary">{report.executiveSummary}</p>
 
-      <div className="aasb-stats" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))" }}>
+      <div className="aasb-stats">
         <div className="aasb-stat">
           <b>{report.overallESGScore}</b>
           <span>Overall ESG score</span>
         </div>
       </div>
 
-      {ESG_SECTIONS.map(({ key, label }) => {
+      {ESG_SECTIONS.map(({ key, label }, i) => {
         const block = report[key];
         const meta = ESG_STATUS_META[block.status];
         return (
-          <div className="criterion-group" key={key} style={{ borderLeftColor: "var(--rule-strong)" }}>
+          <div className="criterion-group" key={key}>
             <div className="criterion-group-head">
+              <span className="criterion-group-number">{i + 1}</span>
               <h3>{label}</h3>
               <span className="criterion-group-score">
                 {block.score}
                 <span>/100</span>
               </span>
-              <span className={`badge ${meta.badge}`}>{meta.label}</span>
+              <span className={`status-label ${meta.className}`}>{meta.label}</span>
             </div>
             <div className="criterion-list">
-              {block.criteria.map((c) => (
-                <EsgCriterionRow key={c.id} criterion={c} />
+              {block.criteria.map((c, j) => (
+                <EsgCriterionRow key={c.id} number={`${i + 1}.${j + 1}`} criterion={c} />
               ))}
             </div>
           </div>
@@ -323,15 +320,16 @@ function EsgReportSection({ report }: { report: EsgReport }) {
   );
 }
 
-function EsgCriterionRow({ criterion }: { criterion: EsgCriterion }) {
+function EsgCriterionRow({ number, criterion }: { number: string; criterion: EsgCriterion }) {
   const meta = ESG_STATUS_META[criterion.status];
 
   return (
     <div className="criterion-row">
       <div className="criterion-row-head">
-        <span className="criterion-dot" style={{ background: meta.dot }} />
+        <span className="criterion-number">{number}</span>
         <p>{criterion.description}</p>
-        <span className={`badge ${meta.badge}`}>{meta.label}</span>
+        <span className={`status-label ${meta.className}`}>{meta.label}</span>
+        <span />
       </div>
 
       {criterion.citations.length > 0 && (

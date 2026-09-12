@@ -49,8 +49,8 @@ export interface AasbSectionBlock {
 }
 
 export interface AasbS2Report {
-  reportType: "AASB_S2_DRAFT";
-  priority: "primary";
+  reportType?: "AASB_S2_DRAFT";
+  priority?: "primary";
   status: string;
   company: string;
   reportingPeriod: { year: string; startDate: string | null; endDate: string | null };
@@ -107,14 +107,22 @@ export interface EsgSectionBlock {
 }
 
 export interface EsgReport {
+  reportType?: "ESG_READINESS";
+  priority?: "secondary";
   company: string;
   reportYear: string | null;
   executiveSummary: string;
+  // The real backend emits both of these with the same value — a redundancy
+  // in the source data (see the field-quality note in the project record),
+  // not something invented here. overallESGScore is the one actually used.
+  overallESGReadinessScore?: number;
   overallESGScore: number;
   environmental: EsgSectionBlock;
   social: EsgSectionBlock;
   governance: EsgSectionBlock;
-  aasbS2: {
+  // Present in some backend versions, absent in others (the real Coles
+  // output has no aasbS2 key at all) — optional rather than assumed.
+  aasbS2?: {
     readinessScore: number;
     gaps: Array<{ criterionId: string; type: string; message: string }>;
     recommendations: string[];
@@ -122,7 +130,7 @@ export interface EsgReport {
     [key: string]: unknown;
   };
   priorityActions: Array<{ criterionId: string; action: string }>;
-  methodology: { version: string; scoreMeaning: string; limitations: string };
+  methodology: { version: string; scoreMeaning: string; limitations: string; statusWeights?: Record<string, number>; aggregation?: string };
   warnings: string[];
 }
 
