@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { InfoIcon } from "@/components/icons";
 import type { AasbS2Report, EsgReport } from "@/lib/assessment-types";
 
 type View = "aasb" | "esg";
@@ -18,12 +19,13 @@ const ESG_INTRO =
   "Before a company can credibly claim anything about its ESG performance, it needs to be able to back that claim with real, traceable evidence — not just a statement of intent. This report is the evidence layer underneath the readiness score: it shows exactly what supporting material exists for each ESG claim, how strong that evidence actually is, and where claims currently rest on nothing verifiable.";
 
 /**
- * The full evidence-level report (every criterion, every citation) is no
- * longer built here — it's a separate, formally-formatted PDF the backend
- * will produce and link to (report.fullReportUrl). This component's job is
- * just the on-screen summary: which framework, who it's for, and three
- * sections the backend will populate (business engagement summary, key
- * findings, priority actions) — placeholders until that JSON lands.
+ * The full evidence-level report (every criterion, every citation) isn't
+ * built here — it's a separate, formally-formatted PDF the backend will
+ * produce and link to (report.fullReportUrl). This component is the
+ * on-screen summary, styled as part of the site rather than a paper
+ * document: which framework, who it's for, and three sections the backend
+ * will populate (business engagement summary, key findings, priority
+ * actions) — placeholders until that JSON lands.
  */
 export function AssessmentReport({
   aasbS2Report,
@@ -38,8 +40,20 @@ export function AssessmentReport({
   const fullReportUrl = view === "aasb" ? aasbS2Report.fullReportUrl : esgReport.fullReportUrl;
 
   return (
-    <>
-      <div className="report-controls no-print">
+    <div className="report-page">
+      <div className="report-hero rise" style={{ ["--i" as string]: 0 }}>
+        <p className="eyebrow">Climate &amp; ESG Readiness Assessment</p>
+        <h1 className="display display-l" style={{ marginTop: 8 }}>
+          {company}
+        </h1>
+        <p className="lede" style={{ marginTop: 10, fontSize: 15.5 }}>
+          {view === "aasb"
+            ? `AASB S2 climate disclosure draft, reporting year ${aasbS2Report.reportingPeriod.year}`
+            : "ESG evidence-readiness assessment"}
+        </p>
+      </div>
+
+      <div className="report-controls rise" style={{ ["--i" as string]: 1 }}>
         <div className="view-toggle" role="tablist" aria-label="Report type">
           <button
             role="tab"
@@ -70,40 +84,26 @@ export function AssessmentReport({
         )}
       </div>
 
-      <div className="paper-sheet">
-        <article className="report">
-          <header className="report-masthead">
-            <p className="report-kicker">Climate &amp; ESG Readiness Assessment</p>
-            <h1 className="report-company">{company}</h1>
-            <p className="report-dateline">
-              {view === "aasb"
-                ? `AASB S2 climate disclosure draft, reporting year ${aasbS2Report.reportingPeriod.year}`
-                : "ESG evidence-readiness assessment"}
-            </p>
-          </header>
-
-          {view === "aasb" ? (
-            <ReportSummary
-              heading="AASB S2 Climate Readiness"
-              audience={AASB_AUDIENCE}
-              intro={AASB_INTRO}
-              businessEngagementSummary={aasbS2Report.businessEngagementSummary}
-              keyFindings={aasbS2Report.keyFindingsSummary}
-              priorityActions={aasbS2Report.priorityActionsSummary}
-            />
-          ) : (
-            <ReportSummary
-              heading="ESG Evidence Readiness"
-              audience={ESG_AUDIENCE}
-              intro={ESG_INTRO}
-              businessEngagementSummary={esgReport.businessEngagementSummary}
-              keyFindings={esgReport.keyFindingsSummary}
-              priorityActions={esgReport.priorityActionsSummary}
-            />
-          )}
-        </article>
-      </div>
-    </>
+      {view === "aasb" ? (
+        <ReportSummary
+          heading="AASB S2 Climate Readiness"
+          audience={AASB_AUDIENCE}
+          intro={AASB_INTRO}
+          businessEngagementSummary={aasbS2Report.businessEngagementSummary}
+          keyFindings={aasbS2Report.keyFindingsSummary}
+          priorityActions={aasbS2Report.priorityActionsSummary}
+        />
+      ) : (
+        <ReportSummary
+          heading="ESG Evidence Readiness"
+          audience={ESG_AUDIENCE}
+          intro={ESG_INTRO}
+          businessEngagementSummary={esgReport.businessEngagementSummary}
+          keyFindings={esgReport.keyFindingsSummary}
+          priorityActions={esgReport.priorityActionsSummary}
+        />
+      )}
+    </div>
   );
 }
 
@@ -123,24 +123,33 @@ function ReportSummary({
   priorityActions?: string[];
 }) {
   return (
-    <section className="report-block">
-      <div className="report-type-heading">
+    <section className="report-summary-section rise" style={{ ["--i" as string]: 2 }}>
+      <div className="section-head">
         <h2>{heading}</h2>
       </div>
-      <p className="report-audience">
-        <span className="report-explainer-label">Who this report is for</span>
-        {audience}
-      </p>
-      <p className="report-type-sub">{intro}</p>
 
-      <h3 className="summary-heading">Executive summary</h3>
+      <div className="callout">
+        <span className="callout-icon">
+          <InfoIcon />
+        </span>
+        <div>
+          <p className="callout-label">Who this report is for</p>
+          <p>{audience}</p>
+        </div>
+      </div>
+
+      <p className="lede" style={{ marginTop: 24, fontSize: 15.5 }}>
+        {intro}
+      </p>
+
+      <h3 className="subhead">Executive summary</h3>
       {businessEngagementSummary ? (
-        <p className="report-executive-summary">{businessEngagementSummary}</p>
+        <p className="summary-text">{businessEngagementSummary}</p>
       ) : (
-        <PlaceholderBlock text="A summary of how this business engages with the framework, generated from its uploaded documentation, will appear here." />
+        <PlaceholderPanel text="A summary of how this business engages with the framework, generated from its uploaded documentation, will appear here." />
       )}
 
-      <h3 className="summary-heading">Key findings</h3>
+      <h3 className="subhead">Key findings</h3>
       {keyFindings && keyFindings.length > 0 ? (
         <ul className="summary-list">
           {keyFindings.map((f, i) => (
@@ -148,10 +157,10 @@ function ReportSummary({
           ))}
         </ul>
       ) : (
-        <PlaceholderBlock text="Key findings from the rubric assessment will appear here." />
+        <PlaceholderPanel text="Key findings from the rubric assessment will appear here." />
       )}
 
-      <h3 className="summary-heading">Priority actions</h3>
+      <h3 className="subhead">Priority actions</h3>
       {priorityActions && priorityActions.length > 0 ? (
         <ol className="summary-list">
           {priorityActions.map((a, i) => (
@@ -159,15 +168,15 @@ function ReportSummary({
           ))}
         </ol>
       ) : (
-        <PlaceholderBlock text="Prioritised action points will appear here." />
+        <PlaceholderPanel text="Prioritised action points will appear here." />
       )}
     </section>
   );
 }
 
-function PlaceholderBlock({ text }: { text: string }) {
+function PlaceholderPanel({ text }: { text: string }) {
   return (
-    <div className="placeholder-block">
+    <div className="placeholder-panel">
       <p>{text}</p>
       <span className="placeholder-tag">Coming soon</span>
     </div>
