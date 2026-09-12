@@ -18,9 +18,10 @@ export function prepareContext(raw = {}) {
   const start = date(raw.reportingPeriodStart, "reportingPeriodStart");
   const end = date(raw.reportingPeriodEnd, "reportingPeriodEnd");
   if (start && end && end < start) throw new TypeError("Reporting period end precedes its start.");
-  const early = boolean(raw.earlyAdoptionOf2025Amendments, "earlyAdoptionOf2025Amendments") ?? false;
+  const early = boolean(raw.earlyAdoptionOf2025Amendments, "earlyAdoptionOf2025Amendments");
   const first = boolean(raw.firstAnnualPeriodApplyingAasbS2, "firstAnnualPeriodApplyingAasbS2");
-  const scope3 = boolean(raw.useScope3FirstYearRelief, "useScope3FirstYearRelief") ?? false;
+  const scope3 = boolean(raw.useScope3FirstYearRelief, "useScope3FirstYearRelief");
+  const comparatives = boolean(raw.useComparativesFirstYearRelief, "useComparativesFirstYearRelief");
   if (scope3 && first === false) throw new TypeError("Scope 3 first-year relief contradicts firstAnnualPeriodApplyingAasbS2=false.");
   const size = raw.companySize ?? {};
   if (!size || typeof size !== "object" || Array.isArray(size)) throw new TypeError("companySize must be an object.");
@@ -28,15 +29,18 @@ export function prepareContext(raw = {}) {
     if (size[key] != null && (!Number.isFinite(size[key]) || size[key] < 0 || (key === "employees" && !Number.isInteger(size[key])))) throw new TypeError(`Invalid companySize.${key}.`);
   }
   const notApplicable = raw.confirmedNotApplicable ?? {};
+  const expectedAssurance = raw.expectedAssurance ?? {};
+  if(!expectedAssurance || typeof expectedAssurance!=="object" || Array.isArray(expectedAssurance))throw new TypeError("expectedAssurance must be an object.");
+  for(const key of ["provider","level","scope"])if(expectedAssurance[key]!=null && (typeof expectedAssurance[key]!=="string" || !expectedAssurance[key].trim()))throw new TypeError(`Invalid expectedAssurance.${key}`);
   if (!notApplicable || typeof notApplicable !== "object" || Array.isArray(notApplicable)) throw new TypeError("confirmedNotApplicable must be an object.");
   for (const [id, value] of Object.entries(notApplicable)) {
     if (!aasbRubric.some(r => r.id === id) || !value || typeof value.reason !== "string" || !value.reason.trim() || typeof value.confirmedBy !== "string" || !value.confirmedBy.trim()) throw new TypeError(`Not-applicable confirmation requires a valid criterion, reason and confirmedBy: ${id}`);
     if (value.reason.length > 1000 || value.confirmedBy.length > 200) throw new TypeError("Human confirmation is too long.");
   }
   return { reportingPeriodStart: start, reportingPeriodEnd: end, earlyAdoptionOf2025Amendments: early,
-    firstAnnualPeriodApplyingAasbS2: first, useScope3FirstYearRelief: scope3,
+    firstAnnualPeriodApplyingAasbS2: first, useScope3FirstYearRelief: scope3, useComparativesFirstYearRelief: comparatives,
     companySize: { revenueAud: size.revenueAud ?? null, assetsAud: size.assetsAud ?? null, employees: size.employees ?? null },
-    confirmedNotApplicable: structuredClone(notApplicable) };
+    confirmedNotApplicable: structuredClone(notApplicable),expectedAssurance:{provider:expectedAssurance.provider??null,level:expectedAssurance.level??null,scope:expectedAssurance.scope??null} };
 }
 
 export function resolveStandard(context) {
@@ -55,8 +59,8 @@ export function transitionReliefs(context, standard) {
   const first = known && context.firstAnnualPeriodApplyingAasbS2 === true;
   return { transitionReliefStatus: !known ? "unknown_requires_confirmation" : first ? "first_application_confirmed_by_user" : "not_first_application_period",
     basis: "User-supplied first-application-period confirmation; not independently verified.",
-    comparatives: { eligible: known ? first : null, applied: first, reference: "C3" },
-    scope3: { eligible: known ? first : null, applied: first && context.useScope3FirstYearRelief, electionConfirmed: context.useScope3FirstYearRelief, reference: "C4(b)" },
+    comparatives: { eligible: known ? first : null, applied: first && context.useComparativesFirstYearRelief === true, electionConfirmed: context.useComparativesFirstYearRelief, reference: "C3" },
+    scope3: { eligible: known ? first : null, applied: first && context.useScope3FirstYearRelief === true, electionConfirmed: context.useScope3FirstYearRelief, reference: "C4(b)" },
     otherReliefs: "Alternative GHG methodology, amendment-specific reliefs and other conditions require human review; not automatically applied.",
   };
 }

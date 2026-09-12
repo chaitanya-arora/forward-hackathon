@@ -32,6 +32,10 @@ export async function processCompany({ companyId, reportYear, documentIds, repor
       });
       // Preserve exact Agent 1 output for audit; enrich the combined input with provenance.
       db.prepare("UPDATE run_documents SET evidence_json=? WHERE run_id=? AND document_id=?").run(JSON.stringify(evidence), runId, id);
+      if(evidence.reporting_context_chunks?.length) {
+        combined.reporting_context_chunks ??= [];
+        combined.reporting_context_chunks.push(...evidence.reporting_context_chunks.map(chunk=>({...chunk,source:document.filename,sourceType:document.source_type,documentId:id})));
+      }
       for (const [key, group] of Object.entries(evidence.pillars)) {
         combined.pillars[key].raw_text_chunks.push(...group.raw_text_chunks.map((chunk) => ({
           ...chunk, source: document.filename, sourceType: document.source_type, documentId: id,

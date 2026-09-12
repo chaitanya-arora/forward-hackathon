@@ -280,7 +280,13 @@ function buildOutputSchema(companyName, reportYear, chunks, classifications) {
     );
   }
 
-  return { company_name: companyName, report_year: reportYear, pillars };
+  // Preserve reporting/assurance context even if the climate-pillar classifier
+  // considered it not relevant. No extra model requests or company-specific rules.
+  const included = new Set(Object.values(pillars).flatMap(p=>p.raw_text_chunks.map(c=>c.text)));
+  const reporting_context_chunks = chunks.filter(c=>!included.has(c.text) &&
+    /(?:year|period|weeks)\s+ended|early[ -]adopt|first (?:annual |reporting )?(?:year|period)|AASB\s*S2|assurance|independent auditor/i.test(c.text))
+    .map(c=>({text:c.text,pages:c.pages,confidence:null,category:"reporting_context"}));
+  return { company_name: companyName, report_year: reportYear, pillars, ...(reporting_context_chunks.length ? {reporting_context_chunks} : {}) };
 }
 
 // ---------------------------------------------------------------------------

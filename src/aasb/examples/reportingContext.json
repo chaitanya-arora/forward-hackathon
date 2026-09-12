@@ -1,9 +1,11 @@
 {
-  "reportingPeriodStart": "2025-01-01",
-  "reportingPeriodEnd": "2025-12-31",
-  "earlyAdoptionOf2025Amendments": false,
+  "reportingPeriodStart": null,
+  "reportingPeriodEnd": null,
+  "earlyAdoptionOf2025Amendments": null,
   "firstAnnualPeriodApplyingAasbS2": null,
-  "useScope3FirstYearRelief": false,
+  "useScope3FirstYearRelief": null,
+  "useComparativesFirstYearRelief": null,
+  "expectedAssurance": { "provider": null, "level": null, "scope": null },
   "companySize": {
     "revenueAud": null,
     "assetsAud": null,

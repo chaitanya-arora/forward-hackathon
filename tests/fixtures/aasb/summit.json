@@ -1,0 +1,12 @@
+{
+  "company": "Summit Manufacturing Cooperative",
+  "report_year": "2027",
+  "evidence": [
+    {"text":"Financial year: 1 October 2026 to 30 September 2027. GHG period: 1 July 2026 to 30 June 2027. This is not the first year applying AASB S2. We did not early-adopt the December 2025 amendments. We did not elect comparative-information relief. We did not use Scope 3 relief.","page":19},
+    {"text":"The Supervisory Council has oversight of climate opportunities and risks. The executive environmental panel receives delegated responsibilities and reports twice yearly.","page":3},
+    {"text":"Scope 1 emissions were 84,250 tCO2-e; Scope 2 location-based emissions were 4.8 ktCO2-e; Scope 2 market-based emissions were 4,000 tCO2-e; Scope 3 emissions were 2.3 MtCO2-e. Organisational boundary: production sites under operational control. Methodology: national inventory measurement methods. Scope 3 categories: upstream transport and use of sold products.","page":31},
+    {"text":"Scenario Rapid Transition: 1.5°C; Scenario Delayed Action: 2.2°C; Scenario High Exposure: 4.1°C. Scenario provider: Boreal Analytics. Scenario sources: SSP1-2.6 and SSP5-8.5. Physical assumptions: flooding and heat stress. Scenario implications: relocate exposed equipment. Short-term: 0 to 2 years. Medium-term: 3 to 7 years. Long-term: 8 to 30 years.","page":7},
+    {"text":"Goal: cut emissions intensity by 22% by 2038 from baseline 2024, metric: tCO2-e per tonne of output. Target value: 0.6 tCO2-e per tonne. Baseline value: 0.77 tCO2-e per tonne. Milestone: 12% by 2031. Progress: 5% improvement. Recalculation: planned after acquisition.","page":25},
+    {"text":"Independent auditor: North Star Audit Partners. Assurance standard: ASAE 3410. Audited areas: Scope 1 and Scope 2 emissions. Reasonable assurance on Scope 1 and Scope 2 emissions. Reviewed disclosures: climate governance. Review conclusion: nothing came to our attention indicating material misstatement.","page":43}
+  ]
+}
