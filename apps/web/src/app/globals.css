@@ -1,0 +1,174 @@
+/* ---------------------------------------------------------------------------
+   Design system. The report is meant to read like a published analyst
+   document, so: editorial serif for report prose, restrained palette, one
+   accent, generous measure. Scores are typographic, not gauges or dials.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --paper: #fbfaf7;
+  --surface: #ffffff;
+  --surface-sunk: #f4f2ed;
+  --ink: #1a1a17;
+  --ink-muted: #5c584f;
+  --ink-faint: #8a857a;
+  --rule: #e2ded4;
+  --rule-strong: #cbc5b7;
+  --accent: #1f4d47;
+  --accent-soft: #e8efed;
+
+  --strong: #2f6b4f;
+  --strong-bg: #e9f1ec;
+  --partial: #8a6218;
+  --partial-bg: #f7f0df;
+  --missing: #8f3a2e;
+  --missing-bg: #f8eae7;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --measure: 68ch;
+  --page: 860px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #14140f;
+    --surface: #1c1c17;
+    --surface-sunk: #232320;
+    --ink: #f0ece2;
+    --ink-muted: #b3ad9f;
+    --ink-faint: #837d70;
+    --rule: #32322b;
+    --rule-strong: #46453c;
+    --accent: #7fb5aa;
+    --accent-soft: #1e2b28;
+
+    --strong: #7bbd93;
+    --strong-bg: #1b2a21;
+    --partial: #d6ac5c;
+    --partial-bg: #2c2618;
+    --missing: #d98c7d;
+    --missing-bg: #2e1f1c;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Author class rules (e.g. `.citations { display: grid }`) outrank the UA
+   [hidden] rule, so state it with !important or `hidden` silently does nothing. */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); }
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* --- shared layout ------------------------------------------------------- */
+
+.page {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+.topbar {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.wordmark strong { color: var(--ink); font-weight: 600; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.btn:hover { border-color: var(--accent); }
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn-primary { color: #10201d; }
+}
+
+.note {
+  font-size: 13.5px;
+  color: var(--ink-faint);
+  line-height: 1.55;
+}
+
+/* --- print: the PDF export path ------------------------------------------ */
+
+@media print {
+  :root {
+    --paper: #fff;
+    --surface: #fff;
+    --surface-sunk: #fff;
+    --ink: #000;
+    --ink-muted: #333;
+    --ink-faint: #555;
+    --rule: #ccc;
+  }
+
+  .no-print { display: none !important; }
+
+  body { font-size: 11pt; }
+
+  .page { max-width: none; padding: 0; }
+
+  .report-pillar,
+  .report-block { break-inside: avoid; page-break-inside: avoid; }
+
+  .report-pillar { break-before: auto; }
+
+  /* Higher specificity than `[hidden]` above, so collapsed citations still
+     appear in the exported PDF. */
+  .citations[hidden], .citations { display: grid !important; }
+
+  @page { margin: 18mm 16mm; }
+}

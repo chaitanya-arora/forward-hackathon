@@ -1,0 +1,63 @@
+{
+  "company_name": "Quality Holdings Resources",
+  "generated_at": "2026-09-12T04:30:00.000Z",
+  "overall_readiness_score": 61,
+  "executive_summary": "Quality Holdings Resources has established credible board-level oversight of climate risk and discloses its operational emissions against a recognised standard, placing it ahead of many ASX-listed peers of comparable size. The disclosure weakens materially on forward-looking content: scenario analysis is referenced but not quantified, and no Scope 3 inventory is presented, leaving the largest component of the group's likely footprint unmeasured. Closing the Scope 3 and transition-planning gaps would move the company from partial to substantive alignment with AASB S2.",
+  "documents": [
+    { "filename": "quality_holdings.pdf", "label": "2025 Sustainability Report" },
+    { "filename": "climate_policy.pdf", "label": "Board climate policy" }
+  ],
+  "pillars": {
+    "governance": {
+      "score": 87,
+      "completeness": "Well-substantiated",
+      "narrative": "The Board Risk and Sustainability Committee holds formal responsibility for climate-related risks and reviews them quarterly under a charter updated in FY2025. Management accountability sits with the Chief Operating Officer, who reports to the Committee at each scheduled meeting, and the Committee in turn reports to the full Board twice yearly. Two directors are identified as holding relevant environmental and resources experience. The disclosure does not establish whether climate performance forms part of executive remuneration, which remains the principal gap in an otherwise complete governance picture.",
+      "evidence_ids": ["ev_001", "ev_004", "ev_009", "ev_012"]
+    },
+    "strategy": {
+      "score": 54,
+      "completeness": "Partial / Vague",
+      "narrative": "The company identifies physical risks to its Queensland operations from flooding and extreme heat, and transition risks arising from carbon pricing and changing customer requirements, assessed across short (to 2027), medium (to 2035) and long-term (to 2050) horizons. It states that scenario analysis has been undertaken but names only a generic 'high emissions' case, with no 1.5°C or well-below-2°C scenario disclosed and no quantified outcome presented. References to a transition plan describe intent rather than committed actions, assumptions or dependencies, and no financial effects are quantified.",
+      "evidence_ids": ["ev_002", "ev_006", "ev_010", "ev_015"]
+    },
+    "risk_management": {
+      "score": 66,
+      "completeness": "Partial / Vague",
+      "narrative": "Climate risks are identified through the group's annual enterprise risk review and recorded in the same risk register as other material risks, which demonstrates genuine integration into existing processes rather than a parallel climate-only exercise. Risks are rated on the group's standard likelihood and consequence matrix. The disclosure does not state the materiality threshold at which a climate risk is escalated to the Board, nor describe the specific mitigation actions attached to the risks identified, leaving the management half of the pillar substantially thinner than the identification half.",
+      "evidence_ids": ["ev_003", "ev_007", "ev_013"]
+    },
+    "metrics_targets": {
+      "score": 38,
+      "completeness": "Missing",
+      "narrative": "The company discloses Scope 1 emissions of 412,000 tCO2-e and market-based Scope 2 emissions of 58,000 tCO2-e for FY2025, prepared under the GHG Protocol using an operational control boundary, and states an intention to reduce operational emissions. No Scope 3 inventory is presented and no category screening is described, which for a resources group is likely to leave the majority of the footprint unreported. The reduction intention carries no base year, no target year and no stated scope coverage, so it does not constitute a disclosed target, and no external assurance is referenced.",
+      "evidence_ids": ["ev_005", "ev_008", "ev_011"]
+    }
+  },
+  "evidence": [
+    { "id": "ev_001", "pillar": "governance", "claim": "The Board Risk and Sustainability Committee reviews climate-related risks quarterly.", "document": "quality_holdings.pdf", "page": 12, "confidence": 0.95, "raw_text_snippet": "The Board Risk and Sustainability Committee meets quarterly and its charter includes oversight of climate-related risks and opportunities." },
+    { "id": "ev_002", "pillar": "strategy", "claim": "Physical risks to Queensland operations from flooding and extreme heat are identified.", "document": "quality_holdings.pdf", "page": 18, "confidence": 0.91, "raw_text_snippet": "Our Queensland operations face increasing exposure to flood events and extreme heat days, which may disrupt production and logistics." },
+    { "id": "ev_003", "pillar": "risk_management", "claim": "Climate risks are captured in the group enterprise risk register alongside other material risks.", "document": "quality_holdings.pdf", "page": 24, "confidence": 0.88, "raw_text_snippet": "Climate-related risks are recorded in the Group Risk Register and assessed using the same likelihood and consequence matrix applied to all material risks." },
+    { "id": "ev_004", "pillar": "governance", "claim": "The Chief Operating Officer holds management accountability for climate risk and reports to the Committee.", "document": "quality_holdings.pdf", "page": 13, "confidence": 0.93, "raw_text_snippet": "Day-to-day accountability for managing climate-related risk rests with the Chief Operating Officer, who reports to the Committee at each scheduled meeting." },
+    { "id": "ev_005", "pillar": "metrics_targets", "claim": "Scope 1 emissions of 412,000 tCO2-e were reported for FY2025 under the GHG Protocol.", "document": "quality_holdings.pdf", "page": 31, "confidence": 0.96, "raw_text_snippet": "Scope 1 emissions for the financial year totalled 412,000 tCO2-e, prepared in accordance with the Greenhouse Gas Protocol on an operational control basis." },
+    { "id": "ev_006", "pillar": "strategy", "claim": "Transition risks from carbon pricing and changing customer requirements are identified.", "document": "quality_holdings.pdf", "page": 19, "confidence": 0.87, "raw_text_snippet": "Transition risks include the introduction of carbon pricing mechanisms in key markets and evolving customer procurement requirements." },
+    { "id": "ev_007", "pillar": "risk_management", "claim": "Climate risks are identified through the annual enterprise risk review.", "document": "quality_holdings.pdf", "page": 25, "confidence": 0.84, "raw_text_snippet": "Climate-related risks are identified as part of the annual enterprise-wide risk review conducted by the Risk function." },
+    { "id": "ev_008", "pillar": "metrics_targets", "claim": "Market-based Scope 2 emissions of 58,000 tCO2-e were reported for FY2025.", "document": "quality_holdings.pdf", "page": 31, "confidence": 0.94, "raw_text_snippet": "Scope 2 emissions calculated on a market basis were 58,000 tCO2-e for the reporting period." },
+    { "id": "ev_009", "pillar": "governance", "claim": "The Committee reports to the full Board on climate matters twice yearly.", "document": "climate_policy.pdf", "page": 3, "confidence": 0.9, "raw_text_snippet": "The Committee shall report to the Board on climate-related matters no less than twice in each financial year." },
+    { "id": "ev_010", "pillar": "strategy", "claim": "Short, medium and long-term horizons are defined as to 2027, 2035 and 2050.", "document": "quality_holdings.pdf", "page": 17, "confidence": 0.89, "raw_text_snippet": "We assess climate-related risks over short (to 2027), medium (to 2035) and long-term (to 2050) horizons." },
+    { "id": "ev_011", "pillar": "metrics_targets", "claim": "The company states an intention to reduce operational emissions without a stated base or target year.", "document": "quality_holdings.pdf", "page": 33, "confidence": 0.72, "raw_text_snippet": "We intend to reduce our operational emissions over time through efficiency improvements and fleet renewal." },
+    { "id": "ev_012", "pillar": "governance", "claim": "Two directors are identified as holding relevant environmental and resources experience.", "document": "climate_policy.pdf", "page": 5, "confidence": 0.82, "raw_text_snippet": "The Board includes two directors with extensive environmental management and resources sector experience." },
+    { "id": "ev_013", "pillar": "risk_management", "claim": "Climate risks are rated on the group's standard likelihood and consequence matrix.", "document": "climate_policy.pdf", "page": 7, "confidence": 0.86, "raw_text_snippet": "Identified climate risks are scored using the Group's standard five-by-five likelihood and consequence matrix." },
+    { "id": "ev_015", "pillar": "strategy", "claim": "Scenario analysis is referenced but only a generic high-emissions case is named.", "document": "quality_holdings.pdf", "page": 21, "confidence": 0.68, "raw_text_snippet": "We have considered the implications of a high emissions scenario for our asset portfolio." }
+  ],
+  "findings": [
+    { "id": "f_001", "pillar": "strategy", "type": "Partial / Vague", "summary": "Strategy disclosure is present but incomplete against the AASB S2 criteria.", "evidence_ids": ["ev_002", "ev_006", "ev_010", "ev_015"] },
+    { "id": "f_002", "pillar": "risk_management", "type": "Partial / Vague", "summary": "Risk Management disclosure is present but incomplete against the AASB S2 criteria.", "evidence_ids": ["ev_003", "ev_007", "ev_013"] },
+    { "id": "f_003", "pillar": "metrics_targets", "type": "Missing", "summary": "No Scope 3 emissions figures were found in any provided document.", "evidence_ids": ["ev_005", "ev_008", "ev_011"] },
+    { "id": "f_004", "pillar": "governance", "type": "Well-substantiated", "summary": "Governance is the strongest pillar, supported by 4 pieces of evidence across the provided documents.", "evidence_ids": ["ev_001", "ev_004", "ev_009", "ev_012"] }
+  ],
+  "recommendations": [
+    { "pillar": "strategy", "text": "Run and disclose a quantified scenario analysis that includes a well-below-2°C pathway alongside the existing high-emissions case, stating the assumptions used and the resulting effect on the Queensland asset portfolio." },
+    { "pillar": "risk_management", "text": "State the materiality threshold at which an identified climate risk is escalated from the Group Risk Register to the Board Risk and Sustainability Committee, and record the mitigation action attached to each climate risk already on the register." },
+    { "pillar": "metrics_targets", "text": "Publish a Scope 3 screening across the GHG Protocol's fifteen categories identifying which are relevant to the group, and disclose estimates for purchased goods and services and downstream transportation even if directional in the first year." }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "forward-hackathon",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build:contract": "npm run build -w @climate/contract",
+    "dev:api": "npm run dev -w @climate/api",
+    "dev:web": "npm run dev -w @climate/web"
+  }
+}
