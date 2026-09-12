@@ -65,7 +65,7 @@ test("stored uploads flow through both agents with ownership, provenance, histor
       assert.equal(evidence[0].sourceType, "public");
       return { text: JSON.stringify({ assessments: rubric.map((r) => ({
         criterionId: r.id, status: r.id === "governance.oversight" ? "partial" : "missing",
-        citations: r.id === "governance.oversight" ? [{ evidenceId: evidence[0].id, quote: "The board reviews climate risks quarterly." }] : [],
+        citations: r.id === "governance.oversight" ? [{ excerptId: evidence[0].excerpts[0].excerptId }] : [],
         potentialInconsistency: false,
       })) }) };
     } } } };
@@ -75,7 +75,7 @@ test("stored uploads flow through both agents with ownership, provenance, histor
       assert.equal(evidence[0].documentId,document.id);
       return {text:JSON.stringify({assessments:aasbRubric.map(r=>({criterionId:r.id,
         status:r.id === "governance.responsibleBody" ? "partial" : "missing",
-        citations:r.id === "governance.responsibleBody" ? [{evidenceId:evidence[0].id,quote:"The board reviews climate risks quarterly."}] : [],
+        citations:r.id === "governance.responsibleBody" ? [{excerptId:evidence[0].excerpts[0].excerptId}] : [],
       }))})};
     } } } };
     const result = await processCompany({ companyId: company.id, reportYear: "2025", documentIds: [document.id], reportingContext:{reportingPeriodStart:"2025-01-01"} }, { agent1, agent2, aasb });

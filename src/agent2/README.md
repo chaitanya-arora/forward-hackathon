@@ -67,5 +67,6 @@ share `src/llm/gemini.js` with Agent 1 and the AASB generator. Injected clients 
 real pacing unless a fake-clock requester is explicitly supplied for tests.
 
 Agent 1 filters for climate relevance, which can limit evidence for the secondary
-social assessment. Inputs above 200,000 normalized evidence characters are rejected.
+social assessment. Inputs above 500,000 normalized evidence characters are rejected
+without truncation. This application guard is separate from provider token limits.
 Run all tests with `.\run-agent2.ps1 -Test` or `npm test`.
