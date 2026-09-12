@@ -4,6 +4,29 @@ Agent 2 converts company evidence JSON into a structured ESG evidence-readiness 
 
 The model decides how well the supplied evidence supports each assessment criterion. JavaScript checks its citations, calculates scores and constructs the report.
 
+## Start here (Windows)
+
+From the project root, run:
+
+```powershell
+.\run-agent2.ps1
+```
+
+The launcher finds Node on PATH or uses the installed Codex runtime. It reads
+`src/agent2/examples/testEvidence.json` and writes `src/agent2/output/esgReport.json`.
+Your private API key belongs in the root `.env` file. `.env.example` is only a
+shareable template; it is not loaded by the application.
+
+Run offline tests with `.\run-agent2.ps1 -Test`. To try the empty Agent 1 sample:
+
+```powershell
+.\run-agent2.ps1 -InputFile src/agent1/output/quality_holdings_resources_2025_classified.json
+```
+
+The empty sample produces missing statuses without calling Gemini. If PowerShell
+blocks scripts under your machine's execution policy, use the direct Node command
+below with the full path to your installed Node executable.
+
 ## 1. Where it fits
 
 ```text
@@ -20,17 +43,17 @@ ESG report JSON
 Future backend endpoint / React frontend / optional storage
 ```
 
-Agent 1 is unchanged. Agent 2 does not read PDFs, search for company information or require a database. The repository currently has no Express server or React application.
+Agent 1 lives in `src/agent1/`; only file-location handling changed during organization. Its extraction and classification logic is preserved. Agent 2 does not read PDFs, search for company information or require a database. The repository currently has no Express server or React application.
 
 ## 2. Files and responsibilities
 
 | File | Responsibility |
 | --- | --- |
-| `generateESGReport.js` | Main function, Gemini request, response checks, scoring, report assembly and CLI |
-| `agent2/normalizeEvidence.js` | Adapts Agent 1 output or a simple evidence array into a common format |
-| `agent2/rubric.js` | Defines the 13 assessment criteria and the requested model response schema |
-| `agent2/testEvidence.json` | Fictional company evidence for a live API demonstration |
-| `agent2/generateESGReport.test.js` | Offline tests using a simulated Gemini client |
+| `src/agent2/generateESGReport.js` | Main function, Gemini request, response checks, scoring, report assembly and CLI |
+| `src/agent2/normalizeEvidence.js` | Adapts Agent 1 output or a simple evidence array into a common format |
+| `src/agent2/rubric.js` | Defines the 13 assessment criteria and the requested model response schema |
+| `src/agent2/examples/testEvidence.json` | Fictional company evidence for a live API demonstration |
+| `src/agent2/tests/generateESGReport.test.js` | Offline tests using a simulated Gemini client |
 | `.env.example` | API key and model configuration template |
 
 ## 3. Accepted inputs
@@ -284,22 +307,22 @@ AGENT2_MODEL=gemini-2.5-flash
 Run the fictional evidence example:
 
 ```sh
-node generateESGReport.js agent2/testEvidence.json esgReport.json
+node src/agent2/generateESGReport.js src/agent2/examples/testEvidence.json src/agent2/output/esgReport.json
 ```
 
 Or use the defaults, which select those same paths:
 
 ```sh
-node generateESGReport.js
+node src/agent2/generateESGReport.js
 ```
 
 Run the existing empty Agent 1 sample without an API call:
 
 ```sh
-node generateESGReport.js quality_holdings_resources_2025_classified.json esgReport.json
+node src/agent2/generateESGReport.js src/agent1/output/quality_holdings_resources_2025_classified.json src/agent2/output/esgReport.json
 ```
 
-The CLI writes formatted JSON after successful generation. Input and output paths must differ. API or validation errors cause a nonzero exit and prevent writing a new report; a pre-existing output file remains unchanged in those cases. A successful run replaces the chosen output file.
+The default report is `src/agent2/output/esgReport.json`. The CLI creates the output directory if needed and writes formatted JSON after successful generation. Input and output paths must differ. API or validation errors cause a nonzero exit and prevent writing a new report; a pre-existing output file remains unchanged in those cases. A successful run replaces the chosen output file.
 
 Non-empty evidence is sent to Gemini. The key belongs in the backend environment and must not be embedded in React.
 
@@ -307,10 +330,10 @@ Non-empty evidence is sent to Gemini. The key belongs in the backend environment
 
 ```js
 import { readFile } from "node:fs/promises";
-import { generateESGReport } from "./generateESGReport.js";
+import { generateESGReport } from "./src/agent2/generateESGReport.js";
 
 const evidence = JSON.parse(
-  await readFile("quality_holdings_resources_2025_classified.json", "utf8")
+  await readFile("src/agent1/output/quality_holdings_resources_2025_classified.json", "utf8")
 );
 
 try {
@@ -322,9 +345,9 @@ try {
 }
 ```
 
-The function returns a JavaScript object and does not write a file. File writing is only part of the CLI. Importing this module does not start the CLI.
+The function returns a JavaScript object and does not write a file. File writing is only part of the CLI. Importing this module does not start the CLI. The root `.env` and default example/output paths are resolved relative to the module, so they work even when launched from another directory. Explicit relative input/output paths are resolved from your terminal directory.
 
-Avoid importing `agent1.js` to obtain its data: that file currently executes its command-line entry point on import. Pass its output JSON instead.
+Avoid importing `src/agent1/agent1.js` to obtain its data: that file currently executes its command-line entry point on import. Pass its output JSON instead.
 
 When a backend is added, `POST /api/esg-report` can accept a size-limited JSON body, await `generateESGReport(req.body)` and return the object. Add error handling there. React can display category cards, criterion evidence, gaps, actions and a separate climate readiness panel. MongoDB storage can be added after generation; it is not required by the function.
 
@@ -339,7 +362,7 @@ npm test
 Or directly:
 
 ```sh
-node --test agent2/generateESGReport.test.js
+node --test src/agent2/tests/generateESGReport.test.js
 ```
 
 The nine tests cover Agent 1 normalization, empty input, deterministic scoring, disclosure gaps, unknown visibility, unsupported/low-confidence findings, invalid citations and schemas, potential inconsistencies, input validation and API failures. They inject a simulated client through `options.client` and do not require a key.
@@ -353,4 +376,6 @@ The main limitations are:
 - The rubric is a small, fixed readiness assessment; source truth and real-world company practices are not independently verified.
 - The AASB S2 section is a simplified readiness view, not a comprehensive compliance assessment or legal, audit or assurance advice.
 
-To extend the assessment, edit the rubric in `agent2/rubric.js` and review the corresponding schema, tests and scoring assumptions. To accept a changed Agent 1 format, update the adapter rather than rewriting either pipeline.
+To extend the assessment, edit the rubric in `src/agent2/rubric.js` and review the corresponding schema, tests and scoring assumptions. To accept a changed Agent 1 format, update the adapter rather than rewriting either pipeline.
+
+

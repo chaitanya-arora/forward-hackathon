@@ -2,10 +2,11 @@
   "name": "forward-hackathon",
   "version": "1.0.0",
   "description": "",
-  "main": "agent1.js",
+  "main": "src/agent1/agent1.js",
   "scripts": {
-    "test": "node --test agent2/*.test.js",
-    "agent2": "node generateESGReport.js"
+    "test": "node --test src/agent2/tests/*.test.js",
+    "agent1": "node src/agent1/agent1.js",
+    "agent2": "node src/agent2/generateESGReport.js"
   },
   "repository": {
     "type": "git",

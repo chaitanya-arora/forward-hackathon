@@ -1,0 +1,8 @@
+{
+  "company": "Example Manufacturing (fictional)",
+  "evidence": [
+    { "category": "environmental", "claim": "In FY2025, Australian operations used 12000 MWh of electricity and reported Scope 1 emissions of 1800 tCO2e and Scope 2 emissions of 2400 tCO2e. Scope 3 has not yet been measured.", "source": "Mock sustainability report", "sourceType": "public", "page": 12, "confidence": 0.95 },
+    { "category": "social", "claim": "The FY2025 safety register records 4 lost-time injuries across 400 employees. The safety committee reviews incidents monthly and assigns corrective action owners.", "source": "Mock safety register", "sourceType": "internal", "page": 3, "confidence": 0.96 },
+    { "category": "governance", "claim": "The board sustainability committee reviews climate risks quarterly. The CFO maintains the climate risk register and reports mitigation progress to the committee.", "source": "Mock board charter", "sourceType": "public", "page": 5, "confidence": 0.94 }
+  ]
+}
