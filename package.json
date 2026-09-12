@@ -1,0 +1,27 @@
+{
+  "name": "forward-hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "agent1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaitanya-arora/forward-hackathon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/chaitanya-arora/forward-hackathon/issues"
+  },
+  "homepage": "https://github.com/chaitanya-arora/forward-hackathon#readme",
+  "dependencies": {
+    "@google/genai": "^2.22.0",
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^17.4.2",
+    "pdfjs-dist": "^6.3.289"
+  }
+}
