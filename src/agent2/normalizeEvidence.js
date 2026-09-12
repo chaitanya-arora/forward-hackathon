@@ -45,6 +45,10 @@ export function normalizeEvidence(input) {
   } else if (Array.isArray(input.evidence)) {
     for (const item of input.evidence) add(item);
   } else throw new TypeError("Expected Agent 1 pillars or an evidence array.");
+  if(input.reporting_context_chunks !== undefined) {
+    if(!Array.isArray(input.reporting_context_chunks)) throw new TypeError("reporting_context_chunks must be an array.");
+    for(const item of input.reporting_context_chunks) add(item);
+  }
   if (evidence.some((e) => e.sourceType === "unknown")) warnings.push("Source visibility is unknown for some evidence; public/internal comparisons are limited.");
   const evidenceCharacters = JSON.stringify(evidence).length;
   if (evidenceCharacters > MAX_EVIDENCE_CHARACTERS) throw new RangeError(`Normalized evidence contains ${evidenceCharacters.toLocaleString("en-US")} characters, exceeding the application limit of ${MAX_EVIDENCE_CHARACTERS.toLocaleString("en-US")}. Select fewer document IDs for this run; no evidence has been truncated.`);

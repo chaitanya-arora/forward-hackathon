@@ -42,10 +42,11 @@ test("exact citations preserve document identity and unsupported positives canno
   assert.equal(report.governance.criteria[0].citations[0].quote, quote);
   const result = supported();
   result.assessments[0].citations = [];
-  assert.equal(buildAasbS2Report(input,result).governance.criteria[0].status,"missing");
+  // Local fact extraction can still find the body, but cannot claim completeness.
+  assert.equal(buildAasbS2Report(input,result).governance.criteria[0].status,"partial");
   result.assessments[0].status = "not_applicable";
   assert.equal(buildAasbS2Report(input,result).governance.criteria[0].status,"requires_human_judgement");
-  assert.equal(buildAasbS2Report(input,result).aasbS2ReadinessScore,0);
+  assert.ok(buildAasbS2Report(input,result).aasbS2ReadinessScore < 2);
 });
 
 test("invalid IDs, quotations, omitted criteria and duplicate criteria fail closed", () => {
@@ -75,11 +76,13 @@ test("transition reliefs require inputs and model cannot silently apply them", (
   const unknown=buildAasbS2Report(input,missing(),base);
   assert.equal(unknown.generalRequirements.comparatives.status,"missing");
   const first=buildAasbS2Report(input,missing(),{...base,firstAnnualPeriodApplyingAasbS2:true});
-  assert.equal(first.generalRequirements.comparatives.status,"not_applicable");
+  assert.equal(first.generalRequirements.comparatives.status,"missing");
+  const comparativeElection=buildAasbS2Report(input,missing(),{...base,firstAnnualPeriodApplyingAasbS2:true,useComparativesFirstYearRelief:true});
+  assert.equal(comparativeElection.generalRequirements.comparatives.status,"not_applicable");
   assert.equal(first.metricsAndTargets.greenhouseGasEmissions.scope3.status,"missing");
   const elected=buildAasbS2Report(input,missing(),{...base,firstAnnualPeriodApplyingAasbS2:true,useScope3FirstYearRelief:true});
   assert.equal(elected.metricsAndTargets.greenhouseGasEmissions.scope3.status,"not_applicable");
-  assert.equal(elected.aasbS2ReadinessScore,0);
+  assert.equal(elected.aasbS2ReadinessScore,2); // Limited credit for supplied metadata and the extracted body only.
   assert.throws(()=>prepareContext({firstAnnualPeriodApplyingAasbS2:false,useScope3FirstYearRelief:true}));
   const manual=buildAasbS2Report(input,missing(),{ confirmedNotApplicable: {"strategy.transitionPlan":{reason:"Reviewed by management",confirmedBy:"Reviewer"}} });
   assert.equal(manual.strategy.transitionPlan.status,"not_applicable");

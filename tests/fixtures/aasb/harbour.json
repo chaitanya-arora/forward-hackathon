@@ -1,0 +1,12 @@
+{
+  "company": "Harbour Mutual",
+  "report_year": "2026",
+  "evidence": [
+    {"text":"Reporting period: 1 April 2025 to 31 March 2026. Emissions period: 1 April 2025 to 31 March 2026. This is our first annual period applying AASB S2. We elected comparative-information relief. We did not elect Scope 3 relief. We early-adopted the December 2025 amendments.","page":4},
+    {"text":"The Trustee Board oversees climate risks. It holds ultimate responsibility for climate oversight and delegates monitoring to the Investment Council, which reports quarterly.","page":17},
+    {"text":"Scope 1 = 12.5 ktCO2-e; Scope 2 location-based = 23 ktCO2-e; Scope 2 market-based = 0 tCO2-e; Scope 3 = 0.4 MtCO2-e. Emissions boundary: all controlled operations. Emissions methodology: GHG Protocol. Emissions factors: national inventory. Scope 3 categories: purchased goods, business travel. Data limitations: supplier estimates. Estimation approach: activity multiplied by factors.","page":22},
+    {"text":"Scenario Managed Change: 1.6°C; Scenario Severe Warming: 3.8°C. Model provider: Atlas Research. Data sources: regional projections. Key assumptions: policy costs and water stress. Scenario results: capital maintenance increases. Short-term: 1 to 3 years. Medium-term: 4 to 9 years. Long-term: 10 to 25 years.","page":11},
+    {"text":"Target: reduce absolute gross emissions by 37% by 2034 from baseline 2021, metric: tonnes CO2-e. Boundary: operations. Milestones: 18% by 2029. Progress: 9% reduction. Carbon credits: not used.","page":26},
+    {"text":"Assurance provider: Meridian Verification LLP. Assurance framework: ASAE 3000. Reviewed areas: governance and scenario methods. Limited assurance over governance and scenario methods. Assurance conclusion: no material exceptions identified.","page":6}
+  ]
+}

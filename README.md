@@ -3,6 +3,14 @@
 The primary MVP is an **AI-assisted AASB S2 climate-disclosure draft/readiness tool**.
 A broader ESG evidence-readiness assessment is a separate secondary output.
 
+The AASB generator now evaluates **required information elements**, rather than
+giving full credit whenever relevant text is cited. It extracts structured source
+facts, checks reporting metadata against evidence, separates disclosure gaps from
+human completion steps, and calculates completeness-based readiness. See
+[the readiness model, schema examples, compatibility notes and test coverage](docs/aasb-readiness-model.md).
+The example reporting context now leaves unknown dates and elections `null`;
+enter authoritative dates only when known. No calendar year is inferred from a report year.
+
 Every successful processing run produces two independently stored reports:
 
 1. `aasbS2Report.json` — primary AASB S2 preparation/readiness draft.
@@ -134,11 +142,12 @@ Edit `src/aasb/examples/reportingContext.json` or create a separate context JSON
 
 ```json
 {
-  "reportingPeriodStart": "2025-01-01",
-  "reportingPeriodEnd": "2025-12-31",
-  "earlyAdoptionOf2025Amendments": false,
+  "reportingPeriodStart": null,
+  "reportingPeriodEnd": null,
+  "earlyAdoptionOf2025Amendments": null,
   "firstAnnualPeriodApplyingAasbS2": null,
-  "useScope3FirstYearRelief": false,
+  "useScope3FirstYearRelief": null,
+  "useComparativesFirstYearRelief": null,
   "companySize": { "revenueAud": null, "assetsAud": null, "employees": null },
   "confirmedNotApplicable": {}
 }
@@ -241,14 +250,18 @@ The primary rubric covers granular criteria within:
   entity consistency, connected/financial-statement information, period, judgements,
   uncertainty, comparatives, transition reliefs and metric consistency/sources.
 
-The model returns criterion statuses and exact supporting quotes, not invented
-emissions values, financial effects or scenario results. Targets are presented as
-target-disclosure checks with quotations, not synthesized target records.
+The model selects source excerpt IDs for each criterion and its information
+elements. Code inserts source wording and locally extracts structured emissions,
+targets, scenario, period, adoption and assurance facts. Unrecognized or ambiguous
+values remain null with source candidates; no generated quotation is trusted.
 
 Statuses are `present`, `partial`, `missing`, `not_applicable`, and
-`requires_human_judgement`. JavaScript gives them weights 1, 0.5, 0, excluded, and 0
-respectively. `aasbS2ReadinessScore` is the rounded average over included criteria;
-it is null if all are explicitly excluded. It is never a compliance score.
+`requires_human_judgement` are retained for compatibility. Scoring now uses
+`completenessStatus`: complete=1, evidence_found_requires_judgement=0.75,
+partial=0.5, requires_human_confirmation=0.25, missing=0, not_applicable=excluded.
+The rounded mean is capped at 75 for major metadata conflicts, 90 for unresolved
+standard selection, and 95 for unresolved requirement judgements. It is null if
+all criteria are excluded. See the detailed model documentation linked above.
 
 A model-requested `not_applicable` becomes `requires_human_judgement`; exclusion
 requires explicit human confirmation or established transition-relief metadata.
@@ -273,8 +286,8 @@ unknown. The version registry can be extended. Amended GHG/jurisdictional/financ
 emissions relief details still require human review; the checklist is not a full
 amendment or legal-rule engine.
 
-**Transition relief:** confirmed first application plus a supported period can
-exclude comparatives under C3. Scope 3 and its categories are only excluded when
+**Transition relief:** confirmed first application plus a supported period and an
+explicit comparative-relief election can exclude comparatives under C3. Scope 3 and its categories are only excluded when
 first application is confirmed and `useScope3FirstYearRelief` is explicitly true.
 Missing first-year/period inputs remain `unknown_requires_confirmation` and do not
 reduce the denominator. Other relief conditions require human review.
