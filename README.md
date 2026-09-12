@@ -27,8 +27,7 @@ npm run build -w @climate/contract      # the contract must be built before eith
 cp apps/api/.env.example apps/api/.env  # add your ANTHROPIC_API_KEY
 ```
 
-`ANTHROPIC_API_KEY` is required. Without `MONGODB_URI`, reports are stored in
-`apps/api/.data/latest.json` and everything works locally.
+`ANTHROPIC_API_KEY` is required. Nothing else is — there is no database, because nothing is stored.
 
 ## Run
 
@@ -90,10 +89,12 @@ evidence count and mean confidence — so that improvement is reproducible rathe
 |---|---|
 | `POST /api/generate-report` | multipart: `files` (any number) + optional `labels`. Returns `{ jobId }`. |
 | `GET /api/report/status/:jobId` | `{ stage, detail, done, result? }`. Stages are real, written by the pipeline. |
-| `GET /api/report/latest` | The most recently generated report. |
 | `GET /api/ping` | Health check. |
 
-Uploaded files are processed and discarded — only extracted evidence persists.
+**Nothing is persisted.** Uploaded files are held in memory, read for evidence, and dropped; they
+are never written to disk. The finished report is returned once on the job status and lives only in
+the browser tab that requested it — reload and it is gone. There are no accounts and no history, so
+a report has to be downloaded to be kept.
 
 ## Deploying (Railway)
 
@@ -101,7 +102,7 @@ Two services from this repo:
 
 | | Root directory | Start | Env |
 |---|---|---|---|
-| API | `apps/api` | `npm start` | `ANTHROPIC_API_KEY`, optional `MONGODB_URI`, `CORS_ORIGIN` |
+| API | `apps/api` | `npm start` | `ANTHROPIC_API_KEY`, optional `CORS_ORIGIN` |
 | Web | `apps/web` | `npm start` | `NEXT_PUBLIC_API_URL` |
 
 ## Swapping the model

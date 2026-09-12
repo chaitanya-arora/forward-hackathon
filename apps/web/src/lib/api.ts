@@ -1,4 +1,4 @@
-import type { JobStatus, Report } from "@climate/contract";
+import type { JobStatus } from "@climate/contract";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -19,12 +19,5 @@ export async function startReport(
 export async function fetchStatus(jobId: string): Promise<JobStatus> {
   const res = await fetch(`${API_URL}/api/report/status/${jobId}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Could not read job status.");
-  return res.json();
-}
-
-export async function fetchLatest(): Promise<Report | null> {
-  const res = await fetch(`${API_URL}/api/report/latest`, { cache: "no-store" });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error("Could not load the latest report.");
   return res.json();
 }

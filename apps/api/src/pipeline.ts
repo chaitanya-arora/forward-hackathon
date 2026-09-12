@@ -1,16 +1,17 @@
 import { runExtraction, type UploadedDocument } from "./agent1/extract.js";
 import { generateReport } from "./agent2/report.js";
 import { completeJob, failJob, setDetail, setProgress, setStage } from "./jobs.js";
-import type { ReportStore } from "./store.js";
 
 /**
  * Agent 1 -> Agent 2. Stages are written at each real transition so the
  * processing screen shows actual progress, not a faked timer (spec §5).
+ *
+ * Nothing is persisted. The finished report is held only on the in-memory job
+ * so the browser can collect it once, and is evicted with that job.
  */
 export async function runPipeline(
   jobId: string,
   documents: UploadedDocument[],
-  store: ReportStore,
 ): Promise<void> {
   try {
     setStage(jobId, "reading documents");
@@ -41,8 +42,6 @@ export async function runPipeline(
     const report = await generateReport(extraction, (detail) => setDetail(jobId, detail));
 
     setStage(jobId, "generating report");
-    await store.save(report);
-
     completeJob(jobId, report);
     console.log(`[pipeline] ${jobId}: done — overall ${report.overall_readiness_score}/100`);
   } catch (err) {

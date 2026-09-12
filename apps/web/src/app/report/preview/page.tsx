@@ -15,8 +15,8 @@ export default function ReportPreviewPage() {
   return (
     <>
       <TopBar>
-        <Link href="/report" className="btn">
-          Live report
+        <Link href="/upload" className="btn btn-primary">
+          Generate a report
         </Link>
       </TopBar>
       <main className="page" style={{ paddingTop: 32 }}>

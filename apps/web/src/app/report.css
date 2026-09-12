@@ -360,3 +360,26 @@
   color: var(--ink-faint);
   line-height: 1.6;
 }
+
+/* --- ephemerality notice -------------------------------------------------- */
+
+/* The report is held in tab memory only, so the reader has to be told before
+   they navigate away. Sits above the masthead and never prints. */
+.keepsafe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: var(--partial-bg);
+  border: 1px solid color-mix(in srgb, var(--partial) 35%, transparent);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 32px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.keepsafe b { color: var(--partial); font-weight: 600; }

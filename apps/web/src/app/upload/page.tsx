@@ -57,8 +57,8 @@ export default function UploadPage() {
   return (
     <div className="surface-dark journey">
       <TopBar>
-        <a href="/report" className="btn btn-ghost">
-          Latest report
+        <a href="/report/preview" className="btn btn-ghost">
+          Example report
         </a>
       </TopBar>
 

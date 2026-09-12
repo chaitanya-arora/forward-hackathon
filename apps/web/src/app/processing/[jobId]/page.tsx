@@ -7,6 +7,7 @@ import type { JobStage, JobStatus } from "@climate/contract";
 import { TopBar } from "@/components/TopBar";
 import { WhileYouWait } from "@/components/WhileYouWait";
 import { fetchStatus } from "@/lib/api";
+import { setReport } from "@/lib/report-store";
 
 /** The stages the user sees, in order. `queued` and `error` are handled separately. */
 const VISIBLE_STAGES: Array<{ stage: JobStage; label: string }> = [
@@ -33,8 +34,13 @@ export default function ProcessingPage() {
         const next = await fetchStatus(jobId);
         if (cancelled) return;
         setStatus(next);
-        if (next.stage === "error") setError(next.error ?? "The analysis failed.");
-        else if (next.done) router.push("/report");
+        if (next.stage === "error") {
+          setError(next.error ?? "The analysis failed.");
+        } else if (next.done && next.result) {
+          // Hand the report to tab memory and go. It is never written anywhere.
+          setReport(next.result);
+          router.push("/report");
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : "Lost contact with the server.");

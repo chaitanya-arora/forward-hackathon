@@ -5,68 +5,81 @@ import { useEffect, useState } from "react";
 import type { Report } from "@climate/contract";
 import { ReportView } from "@/components/ReportView";
 import { TopBar } from "@/components/TopBar";
-import { fetchLatest } from "@/lib/api";
+import { getReport } from "@/lib/report-store";
 
 export default function ReportPage() {
   const [report, setReport] = useState<Report | null>(null);
-  const [state, setState] = useState<"loading" | "empty" | "ready" | "error">("loading");
-  const [error, setError] = useState<string>("");
+  const [ready, setReady] = useState(false);
 
+  // Read on mount rather than during render: the report lives in module memory,
+  // which the server has no view of, so the first paint must be client-side.
   useEffect(() => {
-    let cancelled = false;
-    fetchLatest()
-      .then((r) => {
-        if (cancelled) return;
-        setReport(r);
-        setState(r ? "ready" : "empty");
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Could not load the report.");
-        setState("error");
-      });
-    return () => {
-      cancelled = true;
-    };
+    setReport(getReport());
+    setReady(true);
   }, []);
 
   return (
     <>
       <TopBar>
-        <Link href="/upload" className="btn">
+        <Link href="/report/preview" className="btn btn-ghost">
+          Example report
+        </Link>
+        <Link href="/upload" className="btn btn-ghost">
           New report
         </Link>
-        {state === "ready" && (
+        {report && (
           <button className="btn btn-primary" onClick={() => window.print()}>
-            Export PDF
+            Download PDF
           </button>
         )}
       </TopBar>
 
-      <main className="page" style={{ paddingTop: 32 }}>
-        {state === "loading" && <p className="note">Loading the latest report…</p>}
+      <main className="page" style={{ paddingTop: 24 }}>
+        {!ready && <p className="note">Loading…</p>}
 
-        {state === "empty" && (
-          <div style={{ paddingTop: 40 }}>
-            <h1 style={{ fontFamily: "var(--serif)", fontSize: 28, fontWeight: 600, margin: "0 0 10px" }}>
-              No report yet
+        {ready && !report && (
+          <div style={{ paddingTop: 48, maxWidth: "54ch" }}>
+            <h1
+              style={{
+                fontFamily: "var(--serif)",
+                fontSize: 30,
+                fontWeight: 600,
+                margin: "0 0 12px",
+              }}
+            >
+              No report in this session
             </h1>
-            <p className="note" style={{ marginBottom: 20 }}>
-              Upload a company&rsquo;s climate documentation to generate one.
+            <p className="note" style={{ fontSize: 15, marginBottom: 24 }}>
+              GreenScreen does not keep reports. A report exists only in the tab that generated it,
+              so reloading or reopening this page starts from nothing. Generate a new one, or look at
+              the example to see what comes back.
             </p>
-            <Link href="/upload" className="btn btn-primary">
-              Get started
-            </Link>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <Link href="/upload" className="btn btn-primary">
+                Generate a report
+              </Link>
+              <Link href="/report/preview" className="btn">
+                See an example report
+              </Link>
+            </div>
           </div>
         )}
 
-        {state === "error" && (
-          <p className="note" style={{ color: "var(--missing)", paddingTop: 40 }}>
-            {error}
-          </p>
+        {ready && report && (
+          <>
+            {/* The one thing a reader must know before they navigate away. */}
+            <div className="keepsafe no-print">
+              <div>
+                <b>This report is not saved.</b> It exists only in this browser tab — reloading or
+                closing it will lose the report for good.
+              </div>
+              <button className="btn btn-primary" onClick={() => window.print()}>
+                Download PDF
+              </button>
+            </div>
+            <ReportView report={report} />
+          </>
         )}
-
-        {state === "ready" && report && <ReportView report={report} />}
       </main>
     </>
   );
