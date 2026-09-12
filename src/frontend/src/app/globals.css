@@ -116,6 +116,60 @@
   color: var(--ink);
 }
 
+/* A literal sheet of paper, usable inside a dark page. The report is a
+   document meant to become a downloaded PDF, so it always renders in paper
+   tokens regardless of the surrounding surface — re-declaring every token
+   `.surface-dark` overrides, back to its light value, rather than trying to
+   make the report component theme-aware. Sits on the dark canvas with a
+   drop shadow, the same idiom the landing page's proof-card already uses. */
+.paper-sheet {
+  --paper: #fbfaf7;
+  --surface: #ffffff;
+  --surface-sunk: #f4f2ed;
+  --surface-raised: #ffffff;
+  --ink: #1a1a17;
+  --ink-muted: #5c584f;
+  --ink-faint: #8a857a;
+  --rule: #e2ded4;
+  --rule-strong: #cbc5b7;
+  --accent: #004a2c;
+  --accent-deep: #00270d;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcece4;
+  --glow: transparent;
+  --strong: #005e3e;
+  --strong-bg: #ddf1e7;
+  --partial: #8a6218;
+  --partial-bg: #f7f0df;
+  --missing: #8f3a2e;
+  --missing-bg: #f8eae7;
+  --neutral: #6b6a63;
+  --neutral-bg: #efeee9;
+  --judgement: #4a5a9e;
+  --judgement-bg: #eaecf6;
+  --pillar-governance: #2a5db0;
+  --pillar-strategy: #6b4fcc;
+  --pillar-risk: #b24a2c;
+  --pillar-metrics: #0f7a78;
+  --pillar-general: #8a6e14;
+
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  box-shadow: 0 40px 100px -32px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  padding: 56px 64px 72px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (max-width: 760px) {
+  .paper-sheet { padding: 36px 24px 48px; border-radius: 10px; }
+}
+
+@media print {
+  .paper-sheet { box-shadow: none; border-radius: 0; padding: 0; max-width: none; }
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 /* Author class rules (e.g. `.citations { display: grid }`) outrank the UA

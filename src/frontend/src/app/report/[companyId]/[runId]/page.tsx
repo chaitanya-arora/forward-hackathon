@@ -55,7 +55,7 @@ export default function ReportPage() {
   }, [companyId, runId]);
 
   return (
-    <>
+    <div className="surface-dark journey">
       <SiteHeader>
         <Link href="/report/preview" className="btn btn-ghost">
           Example report
@@ -65,7 +65,7 @@ export default function ReportPage() {
         </Link>
       </SiteHeader>
 
-      <main className="page" style={{ paddingTop: 24 }}>
+      <main className="page page-wide" style={{ paddingTop: 24 }}>
         {state === "loading" && <p className="note">Loading…</p>}
 
         {state === "empty" && (
@@ -100,6 +100,6 @@ export default function ReportPage() {
       </main>
 
       <SiteFooter />
-    </>
+    </div>
   );
 }
