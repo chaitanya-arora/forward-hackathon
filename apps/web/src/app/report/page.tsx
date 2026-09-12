@@ -45,7 +45,7 @@ export default function ReportPage() {
               No report in this session
             </h1>
             <p className="note" style={{ fontSize: 15, marginBottom: 24 }}>
-              GreenScreen does not keep reports. A report exists only in the tab that generated it,
+              GreenScreened does not keep reports. A report exists only in the tab that generated it,
               so reloading or reopening this page starts from nothing. Generate a new one, or look at
               the example to see what comes back.
             </p>

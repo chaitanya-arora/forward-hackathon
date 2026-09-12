@@ -36,6 +36,14 @@
   --missing: #8f3a2e;
   --missing-bg: #f8eae7;
 
+  /* Pillar identity colours — distinct from the strong/partial/missing rating
+     scale above, which means completeness, not which pillar this is. Each is
+     contrast-checked at 4.5:1+ against paper. */
+  --pillar-governance: #2a5db0;
+  --pillar-strategy: #6b4fcc;
+  --pillar-risk: #b24a2c;
+  --pillar-metrics: #0f7a78;
+
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
@@ -75,6 +83,13 @@
   --missing: #e08f7e;
   --missing-bg: #241715;
 
+  /* Same identity colours, lightened for the dark surface. Contrast-checked
+     at 8:1+ against every dark background token. */
+  --pillar-governance: #8fb4ff;
+  --pillar-strategy: #bba3ff;
+  --pillar-risk: #ee9b7c;
+  --pillar-metrics: #68dad3;
+
   background: var(--paper);
   color: var(--ink);
 }
@@ -111,17 +126,16 @@ button { font: inherit; cursor: pointer; }
 
 .page-wide { max-width: var(--wide); }
 
-/* Sticky: pinned to the top of the viewport on every page. The outer element
-   is full-bleed and carries the translucent, blurred background so wide
-   viewports never show a seam at the edges; the inner row stays centered to
-   the same width as the page content beneath it. */
+/* Sticky: pinned to the top of the viewport on every page. Solid, exact
+   match to the page's own background token — no tint, no blur — so it reads
+   as part of the page rather than a distinct floating bar. The outer element
+   is full-bleed so wide viewports never show a seam at the edges; the inner
+   row stays centered to the same width as the page content beneath it. */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: color-mix(in srgb, var(--paper) 80%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: var(--paper);
 }
 
 .topbar-row {

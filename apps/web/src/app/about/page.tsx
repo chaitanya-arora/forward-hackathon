@@ -1,7 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { PILLAR_KEYS, PILLAR_LABELS } from "@climate/contract";
+import { Disclosure, type DisclosureItem } from "@/components/Disclosure";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import {
+  AlertTriangleIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  EyeOffIcon,
+  InfoIcon,
+  LockIcon,
+  SendIcon,
+  XCircleIcon,
+} from "@/components/icons";
+import { PILLAR_META } from "@/lib/pillar-meta";
 
 const PILLAR_SUMMARIES: Record<(typeof PILLAR_KEYS)[number], string> = {
   governance:
@@ -18,16 +32,19 @@ const RATINGS = [
   {
     label: "Well-substantiated",
     tone: "strong" as const,
+    Icon: CheckCircleIcon,
     body: "The evidence addresses most of the pillar's disclosure criteria with real specifics — names, figures, dates — not general statements of intent.",
   },
   {
     label: "Partial / Vague",
     tone: "partial" as const,
+    Icon: AlertTriangleIcon,
     body: "Some criteria are addressed, or addressed only in general terms. Common when a company discloses that it does something without saying how.",
   },
   {
     label: "Missing",
     tone: "missing" as const,
+    Icon: XCircleIcon,
     body: "Little or no evidence was found against the pillar's criteria in the documents provided.",
   },
 ];
@@ -51,26 +68,30 @@ const STEPS = [
   },
 ];
 
-const PRIVACY_POINTS = [
+const PRIVACY_ITEMS: DisclosureItem[] = [
   {
-    h: "Nothing is stored",
-    p: "A file is held in memory only while it is being read, and discarded once evidence has been pulled from it — it is never written to disk.",
+    title: "Nothing is stored",
+    teaser: "Held in memory only, then it's gone — even the report itself.",
+    body: "A file is held in memory only while it is being read, and discarded once evidence has been pulled from it — it is never written to disk. The report that comes back works the same way: it lives only in the browser tab that generated it. Reload the page or close the tab and it is gone. There is no database, no history and no account — download the report first if you want to keep it.",
+    Icon: LockIcon,
   },
   {
-    h: "The report lives only in your tab",
-    p: "There is no database, no history and no account. Reload the page or close the tab and it is gone — download it first if you want to keep it.",
+    title: "Document text reaches Anthropic's API",
+    teaser: "Claude reads your documents to produce the assessment.",
+    body: "Your documents are read, classified against the four pillars, and turned into the written assessment by Claude, Anthropic's model. That's the material fact about how this works: your content leaves this application to be processed by a third-party model.",
+    Icon: SendIcon,
   },
   {
-    h: "Document text reaches Anthropic's API",
-    p: "Your documents are read, classified against the four pillars, and turned into the written assessment by Claude. Your content leaves this application to be processed by a third-party model.",
+    title: "A short-lived job, not a database",
+    teaser: "Progress sits in memory just long enough to finish the report.",
+    body: "While a report is generating, its progress sits in the server's memory under a temporary id so your browser can poll for it. This holds at most the 20 most recent jobs across every visitor, oldest evicted first, and all of it is lost on a server restart — it exists to make the upload-and-poll flow work, not to keep anything.",
+    Icon: ClockIcon,
   },
   {
-    h: "A short-lived job, not a database",
-    p: "While a report is generating, its progress sits in server memory under a temporary id so your browser can poll for it — at most the 20 most recent jobs across every visitor, oldest evicted first, all lost on a restart.",
-  },
-  {
-    h: "No sign-in, no analytics, no cookies",
-    p: "Nothing about you or your visit is recorded beyond the ordinary logs any running server produces.",
+    title: "No sign-in, no analytics, no cookies",
+    teaser: "Nothing about you or your visit is recorded.",
+    body: "There is no account to create and nothing to opt out of — nothing about you or your visit is recorded beyond the ordinary logs any running server produces.",
+    Icon: EyeOffIcon,
   },
 ];
 
@@ -83,23 +104,22 @@ export default function AboutPage() {
         </Link>
       </SiteHeader>
 
-      <main className="page page-wide">
-        <div style={{ maxWidth: "62ch" }}>
+      <main className="page page-wide about-intro">
+        <div style={{ maxWidth: "56ch" }}>
           <p className="eyebrow rise" style={{ ["--i" as string]: 0 }}>
-            About GreenScreen
+            About GreenScreened
           </p>
-          <h1 className="display display-l rise" style={{ ["--i" as string]: 1, fontSize: "clamp(32px, 5vw, 46px)" }}>
-            How the report is built, and what happens to your documents
+          <h1 className="display display-l rise" style={{ ["--i" as string]: 1 }}>
+            From your documents to your score
           </h1>
-          <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 18 }}>
-            Two plain explanations, not a legal notice and not a black box: how a score gets to the
-            number it lands on, and what actually happens to a file between the moment you drop it in
-            and the moment the report comes back.
+          <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 18, fontSize: 16.5 }}>
+            Here&rsquo;s exactly how a report gets its score, and exactly what happens to the
+            documents you upload. No fine print, no black box.
           </p>
         </div>
 
         {/* --- how scores are calculated ----------------------------------- */}
-        <section style={{ marginTop: 68 }}>
+        <section className="about-section" style={{ marginTop: 72 }}>
           <div className="section-head rise" style={{ ["--i" as string]: 3 }}>
             <span className="strip-num">01</span>
             <h2>How scores are calculated</h2>
@@ -110,51 +130,47 @@ export default function AboutPage() {
           </p>
 
           <div className="info-grid rise" style={{ ["--i" as string]: 5 }}>
-            {PILLAR_KEYS.map((key) => (
-              <div className="info-card" key={key}>
-                <h3>{PILLAR_LABELS[key]}</h3>
-                <p>{PILLAR_SUMMARIES[key]}</p>
-              </div>
-            ))}
+            {PILLAR_KEYS.map((key) => {
+              const { colorVar, Icon } = PILLAR_META[key];
+              return (
+                <div className="info-card" style={{ borderLeftColor: colorVar }} key={key}>
+                  <div className="info-card-head">
+                    <span
+                      className="info-card-icon"
+                      style={{ color: colorVar, background: `color-mix(in srgb, ${colorVar} 16%, transparent)` }}
+                    >
+                      <Icon />
+                    </span>
+                    <h3>{PILLAR_LABELS[key]}</h3>
+                  </div>
+                  <p>{PILLAR_SUMMARIES[key]}</p>
+                </div>
+              );
+            })}
           </div>
 
-          <h3
-            className="rise"
-            style={{
-              ["--i" as string]: 6,
-              fontFamily: "var(--serif)",
-              fontSize: 20,
-              fontWeight: 600,
-              margin: "44px 0 16px",
-            }}
-          >
+          <h3 className="subhead rise" style={{ ["--i" as string]: 6 }}>
             What the ratings mean
           </h3>
           <div className="rating-grid rise" style={{ ["--i" as string]: 7 }}>
             {RATINGS.map((r) => (
               <div className={`rating-card rating-card--${r.tone}`} key={r.label}>
-                <h3>{r.label}</h3>
+                <div className="rating-card-head">
+                  <r.Icon />
+                  <h3>{r.label}</h3>
+                </div>
                 <p>{r.body}</p>
               </div>
             ))}
           </div>
 
-          <h3
-            className="rise"
-            style={{
-              ["--i" as string]: 8,
-              fontFamily: "var(--serif)",
-              fontSize: 20,
-              fontWeight: 600,
-              margin: "44px 0 16px",
-            }}
-          >
+          <h3 className="subhead rise" style={{ ["--i" as string]: 8 }}>
             From rating to number
           </h3>
           <div className="step-grid rise" style={{ ["--i" as string]: 9 }}>
             {STEPS.map((step, i) => (
               <div className="step-card" key={step.h}>
-                <span className="step-index">{String(i + 1).padStart(2, "0")}</span>
+                <span className="step-tag">Step {String(i + 1).padStart(2, "0")}</span>
                 <h4>{step.h}</h4>
                 <p>{step.p}</p>
               </div>
@@ -163,47 +179,54 @@ export default function AboutPage() {
 
           <p className="note rise" style={{ ["--i" as string]: 10, marginTop: 24, maxWidth: "62ch" }}>
             The calculation is deterministic throughout — nothing here is asked of the model, so the
-            same evidence always produces the same score. That's why adding a second document and
-            re-running moves the number for a reason you can point to.
+            same evidence always produces the same score. That&rsquo;s why adding a second document
+            and re-running moves the number for a reason you can point to.
           </p>
 
           <div className="callout rise" style={{ ["--i" as string]: 11, marginTop: 28, maxWidth: "62ch" }}>
-            <p className="callout-label">Worth stating plainly</p>
-            <p>
-              A Missing rating means no supporting evidence was found in the documents provided — it
-              is not proof that the underlying practice does not exist, only that it was not
-              disclosed anywhere we could read it.
-            </p>
+            <span className="callout-icon">
+              <InfoIcon />
+            </span>
+            <div>
+              <p className="callout-label">Worth stating plainly</p>
+              <p>
+                A Missing rating means no supporting evidence was found in the documents provided —
+                it is not proof that the underlying practice does not exist, only that it was not
+                disclosed anywhere we could read it.
+              </p>
+            </div>
           </div>
         </section>
 
         {/* --- privacy & data ------------------------------------------------ */}
-        <section style={{ marginTop: 76, paddingBottom: 40 }}>
+        <section className="about-section" style={{ paddingBottom: 48 }}>
           <div className="section-head rise" style={{ ["--i" as string]: 12 }}>
             <span className="strip-num">02</span>
             <h2>Privacy &amp; your documents</h2>
           </div>
           <p className="lede rise" style={{ ["--i" as string]: 13, marginBottom: 28, fontSize: 15.5 }}>
-            What actually happens between an upload and a report, stated plainly rather than left
-            implicit.
+            What actually happens between an upload and a report. Tap any of these for the full
+            explanation.
           </p>
 
-          <div className="info-grid info-grid--2 rise" style={{ ["--i" as string]: 14 }}>
-            {PRIVACY_POINTS.map((point) => (
-              <div className="info-card" key={point.h}>
-                <h3>{point.h}</h3>
-                <p>{point.p}</p>
-              </div>
+          <div className="disclosure-grid rise" style={{ ["--i" as string]: 14 }}>
+            {PRIVACY_ITEMS.map((item) => (
+              <Disclosure item={item} key={item.title} />
             ))}
           </div>
 
           <div className="callout rise" style={{ ["--i" as string]: 15, marginTop: 20, maxWidth: "72ch" }}>
-            <p className="callout-label">One limitation, stated rather than glossed over</p>
-            <p>
-              The backend has no authentication, so anyone who could reach it while a report is
-              generating could, in principle, read that job&rsquo;s status. Nothing is retained
-              afterward and each job is short-lived, so the exposure is narrow — but it is real.
-            </p>
+            <span className="callout-icon">
+              <AlertTriangleIcon />
+            </span>
+            <div>
+              <p className="callout-label">One limitation, stated rather than glossed over</p>
+              <p>
+                The backend has no authentication, so anyone who could reach it while a report is
+                generating could, in principle, read that job&rsquo;s status. Nothing is retained
+                afterward and each job is short-lived, so the exposure is narrow — but it is real.
+              </p>
+            </div>
           </div>
         </section>
       </main>

@@ -4,9 +4,9 @@ import "./journey.css";
 import "./report.css";
 
 export const metadata: Metadata = {
-  title: "GreenScreen",
+  title: "GreenScreened",
   description:
-    "GreenScreen turns a company's scattered climate documentation into a cited AASB S2 / TCFD readiness report.",
+    "GreenScreened turns a company's scattered climate documentation into a cited AASB S2 / TCFD readiness report.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -16,7 +16,7 @@ export function SiteHeader({ children }: { children?: React.ReactNode }) {
       <div className="topbar-row">
         <Link href="/" className="wordmark">
           <span>
-            <strong>GreenScreen</strong>
+            <strong>GreenScreened</strong>
           </span>
         </Link>
 
