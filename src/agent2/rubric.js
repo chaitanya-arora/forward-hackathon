@@ -9,10 +9,6 @@ export const rubric = [
   ["governance", "oversight", "Board and executive ESG responsibilities and review processes"],
   ["governance", "ethics", "Ethics, compliance and reporting mechanisms"],
   ["governance", "risk", "Risk identification, management and accountability"],
-  ["aasbS2", "governance", "Climate oversight roles, controls and review processes"],
-  ["aasbS2", "strategy", "Climate risks and opportunities, financial effects, transition plans and resilience analysis"],
-  ["aasbS2", "riskManagement", "Climate risk identification, assessment, monitoring and integration into risk management"],
-  ["aasbS2", "metricsAndTargets", "Scope 1, 2 and 3 emissions, measurement boundaries, climate targets and progress"],
 ].map(([section, key, description]) => ({ id: `${section}.${key}`, section, key, description }));
 
 export const responseJsonSchema = {

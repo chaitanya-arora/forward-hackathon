@@ -16,7 +16,8 @@ if ($nodeCommand) {
 }
 
 if ($Test) {
-    & $nodeExecutable --test (Join-Path $PSScriptRoot 'src/agent2/tests/generateESGReport.test.js')
+    $testFiles = @(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'tests') -Filter '*.test.js' | ForEach-Object FullName)
+    & $nodeExecutable --test (Join-Path $PSScriptRoot 'src/agent2/tests/generateESGReport.test.js') @testFiles
 } else {
     if (!$InputFile) { $InputFile = Join-Path $PSScriptRoot 'src/agent2/examples/testEvidence.json' }
     if (!$OutputFile) { $OutputFile = Join-Path $PSScriptRoot 'src/agent2/output/esgReport.json' }

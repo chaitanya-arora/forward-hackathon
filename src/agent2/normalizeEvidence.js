@@ -1,8 +1,10 @@
 const object = (value) => value && typeof value === "object" && !Array.isArray(value);
+// Application memory/request-size guard, not a provider token or quota limit.
+export const MAX_EVIDENCE_CHARACTERS = 500000;
 const pages = (value) => Array.isArray(value)
   ? [...new Set(value.filter((p) => Number.isInteger(p) && p > 0))] : [];
 
-// Agent 1 enters here. Do not import its CLI: importing it runs PDF extraction.
+// Agent 1 enters here; both generators share the exact normalized snapshot per run.
 export function normalizeEvidence(input) {
   if (!object(input)) throw new TypeError("Evidence input must be an object.");
   const company = input.company_name ?? input.company;
@@ -20,13 +22,14 @@ export function normalizeEvidence(input) {
     const markedPages = [...text.matchAll(/\[Page (\d+)\]/g)].map((m) => Number(m[1]));
     evidence.push({
       id: `e${evidence.length + 1}`, text: text.trim(), confidence,
+      documentId: Number.isInteger(item.documentId) && item.documentId > 0 ? item.documentId : null,
       category: typeof item.category === "string" ? item.category : null,
       pillar: context.pillar ?? null,
       source: typeof item.source === "string" ? item.source : null,
       sourceType: ["public", "internal"].includes(item.sourceType) ? item.sourceType : "unknown",
       pages: pages(item.pages ?? (item.page != null ? [item.page] : markedPages)),
       // Agent 1 pools pages per pillar; these are NOT precise chunk citations.
-      pillarSourcePages: pages(context.sourcePages),
+      pillarSourcePages: pages(item.pillarSourcePages ?? context.sourcePages),
     });
   }
   if (input.pillars !== undefined) {
@@ -43,6 +46,7 @@ export function normalizeEvidence(input) {
     for (const item of input.evidence) add(item);
   } else throw new TypeError("Expected Agent 1 pillars or an evidence array.");
   if (evidence.some((e) => e.sourceType === "unknown")) warnings.push("Source visibility is unknown for some evidence; public/internal comparisons are limited.");
-  if (JSON.stringify(evidence).length > 200000) throw new RangeError("Evidence exceeds the MVP 200,000-character limit; split the input explicitly.");
+  const evidenceCharacters = JSON.stringify(evidence).length;
+  if (evidenceCharacters > MAX_EVIDENCE_CHARACTERS) throw new RangeError(`Normalized evidence contains ${evidenceCharacters.toLocaleString("en-US")} characters, exceeding the application limit of ${MAX_EVIDENCE_CHARACTERS.toLocaleString("en-US")}. Select fewer document IDs for this run; no evidence has been truncated.`);
   return { company: company.trim(), reportYear: input.report_year ?? null, evidence, warnings };
 }

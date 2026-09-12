@@ -29,16 +29,18 @@ test("existing empty Agent 1 sample works offline", async () => {
   const sample = JSON.parse(await readFile(new URL("../../agent1/output/quality_holdings_resources_2025_classified.json", import.meta.url)));
   const report = await generateESGReport(sample, { client: { models: { generateContent() { throw Error("must not call"); } } } });
   assert.equal(report.overallESGScore, 0);
-  assert.equal(report.aasbS2.readinessScore, 0);
+  assert.equal(report.aasbS2, undefined);
   assert.equal(report.social.status, "missing");
-  assert.equal(report.priorityActions.length, 13);
+  assert.equal(report.priorityActions.length, 9);
 });
 
 test("calculates scores, retains original evidence, flags disclosure gaps", () => {
   const report = buildReport(normalizeEvidence(input), classified());
   assert.equal(report.social.score, 33);
   assert.equal(report.overallESGScore, 11);
-  assert.equal(report.aasbS2.readinessScore, 0);
+  assert.equal(report.aasbS2, undefined);
+  assert.equal(report.priority, "secondary");
+  assert.equal(report.overallESGReadinessScore, 11);
   assert.equal(report.social.criteria[1].gapType, "disclosure_gap");
   assert.equal(report.social.evidence[0].text, quote);
 });
@@ -84,13 +86,22 @@ test("validates malformed and oversized inputs", () => {
   for (const value of [null, {}, { company: "X" }, { company: "X", evidence: [{}] },
     { company: "X", pillars: { governance: {} } },
     { company: "X", evidence: [{ claim: quote, confidence: 2 }] },
-    { company: "X", evidence: [{ claim: "a".repeat(200001) }] },
+    { company: "X", evidence: [{ claim: "a".repeat(500001) }] },
   ]) assert.throws(() => normalizeEvidence(value));
+});
+
+test("annual-report evidence above the old cap retains complete text and provenance", () => {
+  const text = "[Page 12] " + "Climate evidence. ".repeat(13000);
+  const result = normalizeEvidence({ company: "Example", evidence: [{ text, documentId: 2, source: "annual.pdf", sourceType: "public" }] });
+  assert.ok(JSON.stringify(result.evidence).length > 200000);
+  assert.equal(result.evidence[0].text, text.trim());
+  assert.equal(result.evidence[0].documentId, 2);
+  assert.deepEqual(result.evidence[0].pages, [12]);
 });
 
 test("LLM request uses structured JSON and propagates failures", async () => {
   let request;
-  const client = { models: { async generateContent(value) { request = value; return { text: JSON.stringify(classified()) }; } } };
+  const client = { models: { async generateContent(value) { request = value; const result = classified(); result.assessments.find(a=>a.criterionId === "social.safety").citations = [{excerptId:"e1_1"}]; return { text: JSON.stringify(result) }; } } };
   assert.equal((await generateESGReport(input, { client })).social.score, 33);
   assert.equal(request.config.responseMimeType, "application/json");
   assert.ok(request.config.responseJsonSchema);
