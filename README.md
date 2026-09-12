@@ -179,12 +179,17 @@ The command blocks while processing and returns:
   "runId": 1,
   "status": "completed",
   "reportIds": { "aasbS2": 1, "esg": 2 },
-  "outputs": { "aasbS2Report": {}, "esgReport": {} }
+  "files": {
+    "aasbS2Report": "<absolute export directory>/aasbS2Report.json",
+    "esgReport": "<absolute export directory>/esgReport.json"
+  }
 }
 ```
 
-The output objects above are abbreviated. Actual results contain criteria, citations,
-gaps, actions, methodology and warnings. SQLite stores the full JSON independently.
+The CLI prints file paths rather than full report bodies. The JavaScript
+`processCompany` function still returns an `outputs` object containing both full
+reports. SQLite stores their criteria, citations, gaps, actions, methodology,
+warnings and presentation independently of these convenience exports.
 
 ### Retrieve and export each report
 
@@ -349,6 +354,92 @@ Older root database files can still be copied to the new location on first start
 using SQLite backup. On this checkout the previously committed legacy database was
 recovered, with its one classification retained and a local backup in
 `storage/backups/legacy-esg_reports.db`. No original upload records are fabricated.
+
+## Frontend report contract (schema version 2.0)
+
+New reports contain an additive `presentation` object assembled by
+`src/reports/presentation.js` before persistence. The separately developed frontend
+can consume the same contract for either report:
+
+```javascript
+const p = report.presentation;
+p.executiveSummary.readinessScore; // number or null
+p.executiveSummary.readinessLabel; // "Readiness"
+p.executiveSummary.scoreDisclaimer;
+p.executiveSummary.headline;
+p.executiveSummary.summary;
+p.executiveSummary.requiresHumanReview;
+p.keyFindings;
+p.priorityActions;
+```
+
+The Executive Summary copies the existing numeric readiness score, identifies up
+to two areas with the largest proportions of supported assessments, highlights
+unresolved findings (including metadata conflicts), and states the remaining human
+review boundary. It uses deterministic templates and validated report state.
+AASB counts complete and judgement-dependent assessments for this relative-area
+comparison; ESG counts strong assessments without a recorded gap. This comparison
+does not recalculate the readiness score or change any scoring weights or caps.
+Both reports continue to require human review.
+
+Numeric readiness is an **internal evidence-readiness measure**: the AASB score is
+not percentage compliance, and the ESG score is not company ESG performance.
+The frontend determines readiness colour from the numeric score. The backend
+presentation contract does **not** return Green/Amber/Red, colour mappings, visual
+status, icons or styling. Existing detailed assessment statuses remain unchanged.
+
+**Key Findings are observations:** the most important conclusions from the
+uploaded evidence. Each has `id`, `importance` (`high` or `medium`), `title`,
+`summary`, `section`, `references` and `evidenceIds`. Selection groups related
+criteria by section and prioritises gaps, unresolved decisions, integrity conflicts,
+strengths, then structured quantitative facts. Ties use affected-assessment count
+and a stable lexical key. At most six findings are returned; an integrity conflict
+is reserved a place even when many section gaps exist. There is no padding when
+fewer findings are supported. Evidence IDs are filtered against the report's
+evidence register. Findings contain no colour/status field and do not expose all
+64 AASB checks as dashboard items.
+
+**Priority Actions are tasks:** what the company should do next. Each has `id`,
+`priority` (`critical`, `high`, `medium`, `low`), `title`, `description`, `section`,
+`reference` (nullable), `actionType` and `evidenceIds`. Action types are
+`provide_evidence`, `human_confirmation`, `professional_judgement`,
+`resolve_conflict`, `external_assurance` and `director_action`.
+AASB actions come from missing information, unresolved criteria, consistency
+issues and existing completion actions. High-severity metadata conflicts become
+critical; other conflicts, missing criteria and confirmation needs are high;
+partial/judgement criteria are medium. Completion tasks retain their recorded
+severity, defaulting to medium. ESG uses its existing criterion-linked actions:
+potential inconsistencies are critical, missing evidence is high, and other gaps
+are medium. Actions are deduplicated and ordered critical → high → medium → low,
+then by a stable lexical key. Empty action lists are permitted; tasks are never
+invented to fill the interface. Findings describe a problem, while actions describe
+the next step, using different wording. Actions contain no colour/status field.
+`kf-*` and `pa-*` IDs are local to a report, not cross-run identifiers.
+
+`schemaVersion: "2.0"` identifies the additive contract. The existing `company`
+string and detailed fields remain intact. A new `reporting` object exposes `year`,
+`periodStart`, `periodEnd`, `standard` and `standardVersion`; unknown values are
+null and dates are never inferred from a year. ESG standard fields are null.
+The original metadata, evidence, criteria, scores, structured facts, integrity,
+assurance and completion details remain available in the same full JSON.
+
+SQLite remains the canonical source of truth. Each successful pipeline run exports
+**exactly two report JSON files**, `aasbS2Report.json` and `esgReport.json`, each
+containing its own presentation layer and full detail. JSON files are convenience
+exports; there is no separate summary or presentation file. Historical stored
+reports are not rewritten or migrated to add this field. Consumers should check
+for `presentation` when displaying older reports.
+
+Presentation assembly makes **zero Gemini requests**. The existing extraction
+requests plus one AASB generation request and one ESG generation request remain
+unchanged, including the shared retry budget. No frontend, server or PDF dependency
+is added. PDF rendering is deferred to a later backend task:
+stored report JSON → backend PDF renderer → downloadable PDF. Those PDFs will be
+derived artifacts, using the stored detail without a new Gemini call.
+
+Contract tests cover deterministic assembly, negative findings, valid evidence IDs,
+real actions, priority ordering, absent visual fields, preserved scores/detail,
+SQLite round trips and exactly two JSON exports, using mocked model clients.
 
 ## Future frontend integration (not implemented)
 

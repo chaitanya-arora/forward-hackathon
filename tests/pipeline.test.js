@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, readFile, readdir } from "node:fs/promises";
+import { dirname } from "node:path";
+import { exportCompletedReports } from "../src/pipeline/exportReports.js";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import Database from "better-sqlite3";
@@ -87,6 +89,15 @@ test("stored uploads flow through both agents with ownership, provenance, histor
     assert.equal(repo.getRun(company.id, result.runId).documents[0].evidence.pillars.governance.raw_text_chunks.length, 1);
     assert.deepEqual(repo.getEsgReport(company.id, result.reportIds.esg).report, result.outputs.esgReport);
     assert.deepEqual(repo.getAasbS2Report(company.id, result.reportIds.aasbS2).report, result.outputs.aasbS2Report);
+    assert.ok(repo.getAasbS2Report(company.id,result.reportIds.aasbS2).report.presentation.executiveSummary);
+    assert.ok(repo.getEsgReport(company.id,result.reportIds.esg).report.presentation.executiveSummary);
+    const exported=await exportCompletedReports(result,join(directory,"exports"));
+    assert.deepEqual((await readdir(dirname(exported.files.aasbS2Report))).sort(),["aasbS2Report.json","esgReport.json"]);
+    for(const [key,path] of Object.entries(exported.files)) {
+      const saved=JSON.parse(await readFile(path,"utf8"));
+      assert.deepEqual(saved,result.outputs[key]);
+      assert.ok(saved.presentation);assert.equal(saved.schemaVersion,"2.0");
+    }
     assert.throws(() => repo.getEsgReport(other.id, result.reportIds.esg), /not found/);
     assert.throws(() => repo.getEsgReport(company.id, result.reportIds.aasbS2), /not found/);
     const snapshot=repo.getRun(company.id,result.runId).evidenceSnapshot;
