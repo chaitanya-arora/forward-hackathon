@@ -73,8 +73,29 @@ forward-hackathon/
 
 [Agent 1 guide](src/agent1/README.md) · [Agent 2 guide](src/agent2/README.md)
 
-Both agents share the root `.env` and dependencies. Agent 1's extraction and
-classification logic is preserved; only paths, environment loading and output
-location were adjusted. Original PDFs and the classified sample are preserved.
+Both agents share the root `.env` and dependencies. Both now default to
+`gemini-3.6-flash`; `AGENT1_MODEL` and `AGENT2_MODEL` can override this.
+Agent 1's extraction/classification prompt and original data are preserved.
+Its paths, model configuration and error handling were repaired during the audit.
 Agent 2 scores evidence readiness and adds a simplified AASB S2 readiness section.
-There is no Express server, React application or mandatory database yet.
+There is no Express server or React application yet. Agent 1 saves classifications
+through the shared `db.js`; Agent 2 runs independently of SQLite.
+
+## Database and repository hygiene
+
+`esg_reports.db` stays in the project root regardless of the launch directory.
+It is private local runtime data and is ignored by Git, along with its journal
+files. The existing database is preserved. `ESG_DB_PATH` can select an isolated
+database through the process environment for tests.
+
+`node_modules/` is installed locally and no longer tracked. Keep `package.json`
+and `package-lock.json`; a fresh clone needs `npm ci` to install the correct
+dependencies for its operating system. Windows and macOS native binaries differ.
+
+`saveMemo()` in `db.js` is the teammate's earlier climate-memo interface; it does
+not accept Agent 2's broader ESG report schema and is not currently called by
+Agent 2. Saving full ESG report JSON is a future integration step.
+
+Verification includes 10 offline tests, a live mock-evidence report, and a live
+one-page PDF → Agent 1 → Agent 2 check using an isolated test database. This is a
+smoke test, not validation of a full annual report or assessment accuracy.

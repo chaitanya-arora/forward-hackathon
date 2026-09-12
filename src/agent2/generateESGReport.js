@@ -92,7 +92,7 @@ export async function generateESGReport(evidence, options = {}) {
   const ai = options.client ?? new GoogleGenAI({ apiKey });
   // Single bounded LLM request, using the same SDK/key convention as Agent 1.
   const response = await ai.models.generateContent({
-    model: options.model ?? process.env.AGENT2_MODEL ?? "gemini-2.5-flash",
+    model: options.model ?? process.env.AGENT2_MODEL ?? "gemini-3.6-flash",
     contents: JSON.stringify({ rubric, evidence: input.evidence }),
     config: { responseMimeType: "application/json", responseJsonSchema, temperature: 0,
       maxOutputTokens: 12000, httpOptions: { timeout: 90000 },

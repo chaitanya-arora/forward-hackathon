@@ -43,7 +43,7 @@ ESG report JSON
 Future backend endpoint / React frontend / optional storage
 ```
 
-Agent 1 lives in `src/agent1/`; only file-location handling changed during organization. Its extraction and classification logic is preserved. Agent 2 does not read PDFs, search for company information or require a database. The repository currently has no Express server or React application.
+Agent 1 lives in `src/agent1/`; its original extraction/classification prompt is preserved, with path, model and failure-handling fixes. Agent 2 does not read PDFs, search for company information or require a database. The repository currently has no Express server or React application.
 
 ## 2. Files and responsibilities
 
@@ -149,7 +149,7 @@ Configuration:
 | Setting | Value |
 | --- | --- |
 | API key | `GEMINI_API_KEY`, loaded through dotenv |
-| Model | `options.model`, then `AGENT2_MODEL`, then `gemini-2.5-flash` |
+| Model | `options.model`, then `AGENT2_MODEL`, then `gemini-3.6-flash` |
 | Temperature | `0` |
 | Response format | JSON with a supplied schema |
 | Maximum output tokens | `12000` |
@@ -301,7 +301,7 @@ Copy `.env.example` to `.env` if you do not already have one, then set:
 
 ```dotenv
 GEMINI_API_KEY=your_actual_key
-AGENT2_MODEL=gemini-2.5-flash
+AGENT2_MODEL=gemini-3.6-flash
 ```
 
 Run the fictional evidence example:
@@ -367,7 +367,7 @@ node --test src/agent2/tests/generateESGReport.test.js
 
 The nine tests cover Agent 1 normalization, empty input, deterministic scoring, disclosure gaps, unknown visibility, unsupported/low-confidence findings, invalid citations and schemas, potential inconsistencies, input validation and API failures. They inject a simulated client through `options.client` and do not require a key.
 
-All nine passed during implementation. The empty-input CLI was also verified. Live Gemini assessment accuracy has not been tested.
+All nine Agent 2 tests pass; the project test command also runs an isolated SQLite test. Live smoke checks now cover the fictional evidence example and a one-page PDF through Agent 1 and Agent 2. These verify execution and citation validation, not comprehensive assessment accuracy.
 
 The main limitations are:
 

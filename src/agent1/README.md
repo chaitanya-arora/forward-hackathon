@@ -2,7 +2,8 @@
 
 This folder contains the existing teammate's PDF extraction and climate pillar
 classification pipeline. Reorganization preserved that logic and the original
-PDFs/sample JSON. Only path handling changed to support the new location.
+PDFs/sample JSON. The later audit also repaired model configuration, standard
+font loading and error handling; extraction and classification prompts remain.
 
 ## Files
 
@@ -27,9 +28,11 @@ The `.env` path and output directory are resolved relative to the script.
 Output is written to `src/agent1/output/<company>_<year>_classified.json`.
 Running again with the same company/year replaces that file.
 
-The model remains the existing `gemini-2.0-flash`; this reorganization does not
-change its configuration or verify its live availability. API calls require a
-working key and model access.
+The model defaults to `gemini-3.6-flash` and can be configured with `AGENT1_MODEL`
+in the root `.env`. The prior model configuration is no longer suitable for the
+current account. API calls require a working key and model access. Invalid model
+responses and exhausted API retries now fail instead of writing a misleading
+empty report. The extraction and classification prompt remain unchanged.
 
 ## Connect to Agent 2
 

@@ -16,7 +16,7 @@ if ($nodeCommand) {
 }
 
 if ($Test) {
-    & $nodeExecutable --test (Join-Path $PSScriptRoot 'src/agent2/tests/generateESGReport.test.js')
+    & $nodeExecutable --test (Join-Path $PSScriptRoot 'src/agent2/tests/generateESGReport.test.js') (Join-Path $PSScriptRoot 'tests/db.test.js')
 } else {
     if (!$InputFile) { $InputFile = Join-Path $PSScriptRoot 'src/agent2/examples/testEvidence.json' }
     if (!$OutputFile) { $OutputFile = Join-Path $PSScriptRoot 'src/agent2/output/esgReport.json' }

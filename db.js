@@ -12,8 +12,11 @@
  */
 
 import Database from "better-sqlite3";
+import { fileURLToPath } from "node:url";
 
-export const db = new Database("esg_reports.db");
+// Keep one project database regardless of the terminal's working directory.
+// Tests may select an isolated database without touching saved company data.
+export const db = new Database(process.env.ESG_DB_PATH || fileURLToPath(new URL("./esg_reports.db", import.meta.url)));
 
 // Improves reliability for concurrent-ish access (two agents writing at
 // different times) and is generally recommended for better-sqlite3.

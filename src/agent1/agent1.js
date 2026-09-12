@@ -32,7 +32,7 @@ import { saveClassification } from "../../db.js";
 const agentDirectory = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(agentDirectory, "../../.env"), quiet: true });
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const MODEL = "gemini-2.0-flash"; // fast + cheap + generous free tier
+const MODEL = process.env.AGENT1_MODEL || "gemini-3.6-flash";
 
 // Free tier is ~15 requests/minute for Flash -> space calls out proactively
 // rather than hitting 429s and relying on retries. Tune down on a paid tier.
@@ -47,7 +47,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function extractPages(pdfPath) {
   const data = new Uint8Array(fs.readFileSync(pdfPath));
-  const loadingTask = pdfjsLib.getDocument({ data });
+  const loadingTask = pdfjsLib.getDocument({
+    data,
+    standardFontDataUrl: resolve(agentDirectory, "../../node_modules/pdfjs-dist/standard_fonts") + "/",
+  });
   const pdf = await loadingTask.promise;
 
   const pages = [];
@@ -198,31 +201,27 @@ async function classifyChunk(chunkText, retries = 3) {
         config: {
           systemInstruction: SYSTEM_PROMPT,
           responseMimeType: "application/json", // forces valid JSON output
-          maxOutputTokens: 300,
+          maxOutputTokens: 2048,
           temperature: 0.1, // low temp — classification, not creative writing
         },
       });
       raw = response.text.trim();
-      return JSON.parse(raw);
-    } catch (e) {
-      if (e instanceof SyntaxError) {
-        return {
-          pillar: "not_relevant",
-          confidence: 0.0,
-          justification: `Failed to parse model output: ${raw.slice(0, 200)}`,
-        };
+      const result = JSON.parse(raw);
+      if (!result || !["governance", "strategy", "risk_management", "metrics_targets", "not_relevant"].includes(result.pillar)
+          || !Number.isFinite(result.confidence) || result.confidence < 0 || result.confidence > 1
+          || typeof result.justification !== "string") {
+        throw new Error("Invalid classification response fields.");
       }
+      return result;
+    } catch (e) {
       // Free-tier rate limits are common — back off and retry
       if (attempt < retries - 1) {
         const wait = 2 ** attempt * 1000;
         console.log(`    (retrying after error: ${e.message}, waiting ${wait / 1000}s)`);
         await sleep(wait);
       } else {
-        return {
-          pillar: "not_relevant",
-          confidence: 0.0,
-          justification: `API call failed after ${retries} attempts: ${e.message}`,
-        };
+        // An unavailable API must not masquerade as a successful empty report.
+        throw new Error(`Classification failed after ${retries} attempts: ${e.message}`);
       }
     }
   }

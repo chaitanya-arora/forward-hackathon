@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/agent1/agent1.js",
   "scripts": {
-    "test": "node --test src/agent2/tests/*.test.js",
+    "test": "node --test src/agent2/tests/*.test.js tests/*.test.js",
     "agent1": "node src/agent1/agent1.js",
     "agent2": "node src/agent2/generateESGReport.js"
   },
