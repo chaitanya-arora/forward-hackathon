@@ -1,1 +1,1 @@
-# DEMO REPOSITORY: forward-hackathon
+# REPOSITORY: forward-hackathon
