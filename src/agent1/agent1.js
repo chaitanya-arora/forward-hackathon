@@ -23,15 +23,14 @@
 import { config } from "dotenv";
 import fs from "fs";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { GoogleGenAI } from "@google/genai";
 // Use the legacy build — the standard build assumes a browser environment
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-import { saveClassification } from "../../db.js";
 
 const agentDirectory = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(agentDirectory, "../../.env"), quiet: true });
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
 const MODEL = process.env.AGENT1_MODEL || "gemini-3.6-flash";
 
 // Free tier is ~15 requests/minute for Flash -> space calls out proactively
@@ -46,11 +45,12 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // ---------------------------------------------------------------------------
 
 async function extractPages(pdfPath) {
-  const data = new Uint8Array(fs.readFileSync(pdfPath));
+  const data = new Uint8Array(Buffer.isBuffer(pdfPath) ? pdfPath : fs.readFileSync(pdfPath));
   const loadingTask = pdfjsLib.getDocument({
     data,
     standardFontDataUrl: resolve(agentDirectory, "../../node_modules/pdfjs-dist/standard_fonts") + "/",
   });
+  try {
   const pdf = await loadingTask.promise;
 
   const pages = [];
@@ -63,6 +63,7 @@ async function extractPages(pdfPath) {
     }
   }
   return pages;
+  } finally { await loadingTask.destroy(); }
 }
 
 // ---------------------------------------------------------------------------
@@ -185,7 +186,7 @@ async function waitForRateLimit() {
   lastCallTime = Date.now();
 }
 
-async function classifyChunk(chunkText, retries = 3) {
+async function classifyChunk(chunkText, ai, model, retries = 3) {
   const contents = [
     ...FEW_SHOT_EXAMPLES,
     { role: "user", parts: [{ text: chunkText }] },
@@ -196,7 +197,7 @@ async function classifyChunk(chunkText, retries = 3) {
     let raw = "";
     try {
       const response = await ai.models.generateContent({
-        model: MODEL,
+        model,
         contents,
         config: {
           systemInstruction: SYSTEM_PROMPT,
@@ -265,54 +266,40 @@ function buildOutputSchema(companyName, reportYear, chunks, classifications) {
 // 5. Run end-to-end
 // ---------------------------------------------------------------------------
 
-async function run(pdfPath, companyName, reportYear, outPath) {
-  console.log(`Extracting pages from ${pdfPath}...`);
-  const pages = await extractPages(pdfPath);
-  console.log(`  ${pages.length} pages with text`);
-
+// Reusable entry point for stored upload bytes; no CLI, database or file-write side effects.
+export async function extractEvidence(pdf, companyName, reportYear, options = {}) {
+  if (!options.client && !process.env.GEMINI_API_KEY?.trim()) throw new Error("Set GEMINI_API_KEY in the root .env.");
+  const ai = options.client ?? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const pages = await extractPages(pdf);
+  if (!pages.length) throw new Error("PDF contains no extractable text; scanned PDFs require OCR, which is not implemented.");
   const chunks = chunkPages(pages);
-  console.log(`Classifying ${chunks.length} chunks...`);
-
   const classifications = [];
   for (let i = 0; i < chunks.length; i++) {
-    const c = chunks[i];
-    const result = await classifyChunk(c.text);
-    classifications.push(result);
-    console.log(
-      `  [${i + 1}/${chunks.length}] pages ${c.pages[0]}-${c.pages[c.pages.length - 1]} -> ${result.pillar} (${result.confidence.toFixed(2)})`
-    );
+    classifications.push(await classifyChunk(chunks[i].text, ai, options.model ?? MODEL));
+    options.onProgress?.({ completed: i + 1, total: chunks.length });
   }
-
-  const output = buildOutputSchema(companyName, reportYear, chunks, classifications);
-
-  saveClassification(companyName, reportYear, output.pillars);
-
-  fs.mkdirSync(dirname(outPath), { recursive: true });
-  fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
-
-  console.log(`\nDone. Wrote structured output to ${outPath}`);
-  for (const [pillar, data] of Object.entries(output.pillars)) {
-    console.log(
-      `  ${pillar}: ${data.raw_text_chunks.length} chunks, pages ${JSON.stringify(data.source_pages)}`
-    );
-  }
+  return buildOutputSchema(companyName, reportYear, chunks, classifications);
 }
 
-// ---------------------------------------------------------------------------
-// CLI entry point
-// ---------------------------------------------------------------------------
-
-const args = process.argv.slice(2);
-if (args.length !== 3) {
-  console.log('Usage: node src/agent1/agent1.js <pdf_path> "<company_name>" <report_year>');
-  process.exit(1);
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  const args = process.argv.slice(2);
+  if (args.length !== 3) {
+    console.error('Usage: node src/agent1/agent1.js <pdf_path> "<company_name>" <report_year>');
+    process.exitCode = 1;
+  } else {
+    const [pdfPath, companyName, reportYear] = args;
+    try {
+      const output = await extractEvidence(pdfPath, companyName, reportYear, {
+        onProgress: ({ completed, total }) => console.log(`Classified ${completed}/${total} chunks`),
+      });
+      const { db, saveClassification } = await import("../database/db.js");
+      try { saveClassification(companyName, reportYear, output.pillars); } finally { db.close(); }
+      const safeCompany = companyName.toLowerCase().replace(/[^a-z0-9_-]+/g, "_") || "company";
+      const safeYear = reportYear.replace(/[^a-z0-9_-]/gi, "_");
+      const outPath = resolve(agentDirectory, "output", `${safeCompany}_${safeYear}_classified.json`);
+      fs.mkdirSync(dirname(outPath), { recursive: true });
+      fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
+      console.log(`Wrote evidence to ${outPath}`);
+    } catch (error) { console.error(`Agent 1: ${error.message}`); process.exitCode = 1; }
+  }
 }
-
-const [pdfPath, companyName, reportYear] = args;
-const outPath = resolve(agentDirectory, "output", `${companyName.toLowerCase().replace(/\s+/g, "_")}_${reportYear}_classified.json`);
-
-run(pdfPath, companyName, reportYear, outPath).catch((e) => {
-  console.error("Fatal error:", e);
-  process.exit(1);
-});
-

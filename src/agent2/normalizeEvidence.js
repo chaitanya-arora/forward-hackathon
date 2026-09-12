@@ -20,13 +20,14 @@ export function normalizeEvidence(input) {
     const markedPages = [...text.matchAll(/\[Page (\d+)\]/g)].map((m) => Number(m[1]));
     evidence.push({
       id: `e${evidence.length + 1}`, text: text.trim(), confidence,
+      documentId: Number.isInteger(item.documentId) && item.documentId > 0 ? item.documentId : null,
       category: typeof item.category === "string" ? item.category : null,
       pillar: context.pillar ?? null,
       source: typeof item.source === "string" ? item.source : null,
       sourceType: ["public", "internal"].includes(item.sourceType) ? item.sourceType : "unknown",
       pages: pages(item.pages ?? (item.page != null ? [item.page] : markedPages)),
       // Agent 1 pools pages per pillar; these are NOT precise chunk citations.
-      pillarSourcePages: pages(context.sourcePages),
+      pillarSourcePages: pages(item.pillarSourcePages ?? context.sourcePages),
     });
   }
   if (input.pillars !== undefined) {

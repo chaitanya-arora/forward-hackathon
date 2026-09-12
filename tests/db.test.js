@@ -10,7 +10,7 @@ test("SQLite stores and updates classifications without touching company data", 
   process.env.ESG_DB_PATH = join(directory, "test.db");
   let storage;
   try {
-    storage = await import("../db.js");
+    storage = await import("../src/database/db.js");
     assert.equal(storage.getClassification("Fixture", "2025"), null);
     storage.saveClassification("Fixture", "2025", { governance: { raw_text_chunks: [] } });
     const updated = { governance: { raw_text_chunks: [{ text: "Board oversight" }] } };

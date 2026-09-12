@@ -13,10 +13,30 @@
 
 import Database from "better-sqlite3";
 import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+import { mkdirSync, existsSync } from "node:fs";
+import { config } from "dotenv";
+
+const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
+config({ path: resolve(projectRoot, ".env"), quiet: true });
+const databasePath = process.env.ESG_DB_PATH
+  ? resolve(projectRoot, process.env.ESG_DB_PATH)
+  : resolve(projectRoot, "storage/database/esg_reports.db");
+mkdirSync(dirname(databasePath), { recursive: true });
+
+// Upgrade older checkouts using SQLite's backup API, which includes WAL data.
+// Preserve the old file as a recovery copy; never silently overwrite a new DB.
+const legacyPath = resolve(projectRoot, "esg_reports.db");
+if (!process.env.ESG_DB_PATH && !existsSync(databasePath) && existsSync(legacyPath)) {
+  const legacy = new Database(legacyPath, { readonly: true });
+  try { await legacy.backup(databasePath); } finally { legacy.close(); }
+}
 
 // Keep one project database regardless of the terminal's working directory.
 // Tests may select an isolated database without touching saved company data.
-export const db = new Database(process.env.ESG_DB_PATH || fileURLToPath(new URL("./esg_reports.db", import.meta.url)));
+export const db = new Database(databasePath);
+db.pragma("foreign_keys = ON");
+db.pragma("busy_timeout = 5000");
 
 // Improves reliability for concurrent-ish access (two agents writing at
 // different times) and is generally recommended for better-sqlite3.
@@ -31,6 +51,51 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(company_name, report_year)
   )
+`);
+
+// Additive schema: keep the teammate's classifications/memos tables intact.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS companies (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS documents (
+    id INTEGER PRIMARY KEY,
+    company_id INTEGER NOT NULL REFERENCES companies(id),
+    report_year TEXT NOT NULL,
+    filename TEXT NOT NULL,
+    source_type TEXT NOT NULL CHECK(source_type IN ('public','internal','unknown')),
+    mime_type TEXT NOT NULL,
+    sha256 TEXT NOT NULL,
+    byte_length INTEGER NOT NULL,
+    content BLOB NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(company_id, report_year, sha256, filename, source_type)
+  );
+  CREATE TABLE IF NOT EXISTS pipeline_runs (
+    id INTEGER PRIMARY KEY,
+    company_id INTEGER NOT NULL REFERENCES companies(id),
+    report_year TEXT NOT NULL,
+    status TEXT NOT NULL CHECK(status IN ('extracting','analysing','completed','failed')),
+    error TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    finished_at TEXT
+  );
+  CREATE TABLE IF NOT EXISTS run_documents (
+    run_id INTEGER NOT NULL REFERENCES pipeline_runs(id),
+    document_id INTEGER NOT NULL REFERENCES documents(id),
+    evidence_json TEXT,
+    PRIMARY KEY(run_id, document_id)
+  );
+  CREATE TABLE IF NOT EXISTS reports (
+    id INTEGER PRIMARY KEY,
+    run_id INTEGER NOT NULL UNIQUE REFERENCES pipeline_runs(id),
+    report_json TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE INDEX IF NOT EXISTS documents_company_year ON documents(company_id, report_year);
+  CREATE INDEX IF NOT EXISTS runs_company_year ON pipeline_runs(company_id, report_year);
 `);
 
 db.exec(`
