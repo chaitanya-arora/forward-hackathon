@@ -15,6 +15,7 @@ const supported = () => {
   return result;
 };
 
+
 test("AASB draft has granular sections, explicit human processes and no invented evidence", async () => {
   const report = await generateAasbS2Report({ company: "Empty", evidence: [] });
   assert.equal(report.reportType, "AASB_S2_DRAFT");
@@ -102,7 +103,8 @@ test("AASB generator validates model JSON and uses the complete rubric", async (
   const client={models:{async generateContent(request){
     assert.equal(JSON.parse(request.contents).rubric.length,aasbRubric.length);
     assert.equal(request.config.responseMimeType,"application/json");
-    return {text:JSON.stringify(supported())};
+    const result = supported(); result.assessments[0].citations = [{excerptId:"e1_1"}];
+    return {text:JSON.stringify(result)};
   }}};
   const report=await generateAasbS2Report(raw,{reportingPeriodStart:"2025-01-01"},{client});
   assert.equal(report.standard.version,"2024-09");

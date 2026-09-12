@@ -373,13 +373,37 @@ immutable reports, ownership and failure retention. SQLite tests use isolated te
 databases. Mock model results verify behavior; they are not legal/assessment accuracy
 tests. Full annual reports and human assurance processes are not validated by these tests.
 
-Limits: 25 MiB/file, 20 distinct documents/run, text PDFs only, and 200,000 normalized
-evidence characters. Other formats can be stored but extraction fails clearly. No
+Limits: 25 MiB/file, 20 distinct documents/run, text PDFs only, and 500,000 normalized
+evidence characters. The evidence cap is a local size guard, not a provider token
+limit; model context and token quotas still apply. Evidence is never truncated to fit.
+If normalization fails, extraction checkpoints remain available for the next run.
+Other formats can be stored but extraction fails clearly. No
 paid service, vector database, OCR, authentication, UI, distributed queue, cancellation
 or automatic recovery after a killed process is included. SQLite remains the source
 of truth. This task does not commit or push changes.
 
 ## Gemini pacing and retry policy
+
+Successful `process` commands automatically export both report JSON files to
+`storage/reports/company-<companyId>/run-<runId>/`. The terminal prints only a
+compact completion summary with report IDs and absolute file paths, alongside
+progress messages. Report bodies remain in SQLite and the exported files.
+Separate export commands are for retrieving older reports or retrying file writes;
+they are not required after a successful process command. If file export fails,
+the completed reports remain in SQLite and can be exported without new API calls.
+
+Report generators now select numbered source excerpts instead of writing quotations.
+The application inserts exact text from the normalized evidence into the existing
+`{evidenceId, quote}` report citations. Excerpts preserve all source characters;
+unknown IDs fail validation. Exact matching does not establish relevance: model
+assessments and selected excerpts still require human review. There is no automatic
+full-report citation-correction call. Each report uses one generation request.
+
+The shared live requester stops at 20 physical API attempts per process, including
+transport retries across extraction and both reports. It does not know usage from
+earlier processes, other applications or other keys on the project, so this is not
+a guarantee of remaining daily quota. Daily quota errors still stop immediately.
+Existing extraction checkpoints are unchanged and remain reusable.
 
 Agent 1 now groups up to eight independent chunks into each request, with a
 48,000-character grouping limit (a single oversized page remains intact).

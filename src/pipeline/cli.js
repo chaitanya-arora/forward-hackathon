@@ -3,6 +3,7 @@ import { basename, dirname, resolve } from "node:path";
 import { db } from "../database/db.js";
 import { createCompany, storeDocument, getReport, getRun, getAasbS2Report, getEsgReport, listCompanies, listDocuments, listRuns, MAX_DOCUMENT_BYTES } from "../database/repository.js";
 import { processCompany } from "./processCompany.js";
+import { exportCompletedReports } from "./exportReports.js";
 import { prepareExtraction, extractionBatches } from "../agent1/agent1.js";
 import { extractionCheckpoint } from "../database/extractionCheckpoint.js";
 import { getCompany, getDocument } from "../database/repository.js";
@@ -67,10 +68,11 @@ try {
       reportingContext = JSON.parse(await readFile(args[contextIndex + 1], "utf8"));
       args.splice(contextIndex, 2);
     }
-    print(await processCompany({ companyId: id(args[0]), reportYear: args[1], reportingContext, documentIds: args.length > 2 ? args.slice(2).map(id) : undefined }, {
+    const result = await processCompany({ companyId: id(args[0]), reportYear: args[1], reportingContext, documentIds: args.length > 2 ? args.slice(2).map(id) : undefined }, {
       onRunCreated: (runId) => console.error(`Processing run ${runId}...`),
       agent1: { onProgress: ({ completed, total, reused }) => console.error(`Extraction ${completed}/${total}: ${reused ? "reused saved classification" : "classified and saved"}`) },
-    }));
+    });
+    print(await exportCompletedReports(result));
   } else if (command === "runs" && args.length === 1) print(listRuns(id(args[0])));
   else if (command === "run" && args.length === 2) print(getRun(id(args[0]), id(args[1])));
   else if (command === "report" && args.length === 2) print(getReport(id(args[0]), id(args[1])));

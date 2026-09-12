@@ -72,16 +72,19 @@ export function createGeminiRequester({
   let tail = Promise.resolve();
   let nextStart = -Infinity;
   let terminalQuotaError = null;
+  let physicalCalls = 0;
   async function execute(call) {
     if (terminalQuotaError) throw terminalQuotaError;
     let retryAt = -Infinity;
     for (let attempt = 0; ; attempt++) {
+      if (physicalCalls >= 20) throw new Error("Gemini process budget reached: 20 API attempts including retries. Saved extraction remains available. Check your project daily usage before restarting.");
       let wait = Math.max(nextStart, retryAt) - now();
       while (wait > 0) {
         await sleep(Math.min(wait, 60000));
         wait = Math.max(nextStart, retryAt) - now();
       }
       nextStart = now() + minIntervalMs;
+      physicalCalls++;
       try { return await call(); }
       catch (error) {
         if (!isTransient(error)) throw error;

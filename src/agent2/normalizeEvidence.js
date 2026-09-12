@@ -1,4 +1,6 @@
 const object = (value) => value && typeof value === "object" && !Array.isArray(value);
+// Application memory/request-size guard, not a provider token or quota limit.
+export const MAX_EVIDENCE_CHARACTERS = 500000;
 const pages = (value) => Array.isArray(value)
   ? [...new Set(value.filter((p) => Number.isInteger(p) && p > 0))] : [];
 
@@ -44,6 +46,7 @@ export function normalizeEvidence(input) {
     for (const item of input.evidence) add(item);
   } else throw new TypeError("Expected Agent 1 pillars or an evidence array.");
   if (evidence.some((e) => e.sourceType === "unknown")) warnings.push("Source visibility is unknown for some evidence; public/internal comparisons are limited.");
-  if (JSON.stringify(evidence).length > 200000) throw new RangeError("Evidence exceeds the MVP 200,000-character limit; split the input explicitly.");
+  const evidenceCharacters = JSON.stringify(evidence).length;
+  if (evidenceCharacters > MAX_EVIDENCE_CHARACTERS) throw new RangeError(`Normalized evidence contains ${evidenceCharacters.toLocaleString("en-US")} characters, exceeding the application limit of ${MAX_EVIDENCE_CHARACTERS.toLocaleString("en-US")}. Select fewer document IDs for this run; no evidence has been truncated.`);
   return { company: company.trim(), reportYear: input.report_year ?? null, evidence, warnings };
 }

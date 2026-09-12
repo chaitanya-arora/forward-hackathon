@@ -41,7 +41,9 @@ test("partial document checkpoints survive restart and resume only pending chunk
       resumedCalls++;
       const chunks = JSON.parse(request.contents).chunks;
       assert.deepEqual(chunks.map(c=>c.chunkId), [1,2]);
-      return {text:JSON.stringify({classifications:chunks.toReversed().map(c=>({...classification,chunkId:c.chunkId}))})};
+      assert.deepEqual(request.config.responseJsonSchema.required, ["chunk_1", "chunk_2"]);
+      assert.equal(request.config.responseJsonSchema.additionalProperties, false);
+      return {text:JSON.stringify(Object.fromEntries(chunks.toReversed().map(c=>[`chunk_${c.chunkId}`,classification])))};
     } } };
     const output = await extractEvidence(bytes, "Test", "2026", {client:resumed, checkpoint:extractionCheckpoint(db,1)});
     assert.equal(resumedCalls, 1);
