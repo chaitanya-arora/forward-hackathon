@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import type { JobStage, JobStatus, Report } from "@climate/contract";
 
+type Progress = NonNullable<JobStatus["progress"]>;
+
 /**
  * In-memory job state. Single process, no history required — a database
  * round-trip on every 2s poll would buy nothing. Only the finished report
@@ -12,6 +14,7 @@ interface Job {
   detail?: string;
   error?: string;
   result?: Report;
+  progress?: Progress;
   createdAt: number;
 }
 
@@ -44,6 +47,12 @@ export function setDetail(jobId: string, detail: string): void {
   job.detail = detail;
 }
 
+export function setProgress(jobId: string, progress: Progress): void {
+  const job = jobs.get(jobId);
+  if (!job) return;
+  job.progress = progress;
+}
+
 export function completeJob(jobId: string, result: Report): void {
   const job = jobs.get(jobId);
   if (!job) return;
@@ -69,5 +78,6 @@ export function getJob(jobId: string): JobStatus | null {
     done: job.stage === "done" || job.stage === "error",
     error: job.error,
     result: job.result,
+    progress: job.progress,
   };
 }

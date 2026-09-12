@@ -40,6 +40,24 @@ npm run dev:web    # http://localhost:3000
 `http://localhost:3000/report/preview` renders the locked mock report and needs **no API key** —
 useful for working on the report view.
 
+To work on the processing screen without spending model calls, start a synthetic in-flight job
+(dev only — the route does not exist when `NODE_ENV=production`):
+
+```bash
+curl -X POST localhost:4000/api/dev/mock-job    # → { "jobId": "..." }
+# then open http://localhost:3000/processing/<jobId>
+```
+
+## Design
+
+Two surfaces, deliberately. The journey — landing, upload, processing — is a dark, focused
+workspace; the report is paper, in every theme, because it is a document and prints as one. The
+report arriving bright at the end of a dark flow is the payoff.
+
+Numbers are never animated at the cost of being wrong: the report's scores are in the
+server-rendered HTML, so a failed bundle shows the true score rather than `0/100`, and the live
+evidence tally on the processing screen renders the pipeline's exact count with no easing.
+
 ## Validating the pipeline
 
 Run each agent on its own before trusting the whole chain.

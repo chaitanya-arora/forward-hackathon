@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { JobStage } from "@climate/contract";
+import type { JobStage, JobStatus } from "@climate/contract";
 import { TopBar } from "@/components/TopBar";
+import { WhileYouWait } from "@/components/WhileYouWait";
 import { fetchStatus } from "@/lib/api";
 
 /** The stages the user sees, in order. `queued` and `error` are handled separately. */
@@ -17,26 +19,26 @@ const VISIBLE_STAGES: Array<{ stage: JobStage; label: string }> = [
 export default function ProcessingPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const router = useRouter();
-  const [stage, setStage] = useState<JobStage>("queued");
-  const [detail, setDetail] = useState<string>("");
+  const [status, setStatus] = useState<JobStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!jobId) return;
     let cancelled = false;
 
-    // Poll every 2s; the backend reports its real current stage, so this
-    // progress text is never faked.
+    // Poll every 2s. Every number shown below comes from the running pipeline,
+    // so this screen never reports progress that hasn't happened.
     const tick = async () => {
       try {
-        const status = await fetchStatus(jobId);
+        const next = await fetchStatus(jobId);
         if (cancelled) return;
-        setStage(status.stage);
-        setDetail(status.detail ?? "");
-        if (status.stage === "error") setError(status.error ?? "The analysis failed.");
-        else if (status.done) router.push("/report");
+        setStatus(next);
+        if (next.stage === "error") setError(next.error ?? "The analysis failed.");
+        else if (next.done) router.push("/report");
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Lost contact with the server.");
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Lost contact with the server.");
+        }
       }
     };
 
@@ -48,73 +50,78 @@ export default function ProcessingPage() {
     };
   }, [jobId, router]);
 
+  const stage = status?.stage ?? "queued";
   const activeIndex = VISIBLE_STAGES.findIndex((s) => s.stage === stage);
+  const progress = status?.progress;
 
   return (
-    <>
+    <div className="surface-dark journey">
       <TopBar />
-      <main className="page" style={{ paddingTop: 72, maxWidth: 620 }}>
-        <p className="report-kicker">{error ? "Analysis failed" : "Analysing"}</p>
-        <h1 style={{ fontFamily: "var(--serif)", fontSize: 32, fontWeight: 600, margin: "0 0 32px" }}>
+
+      <main className="page" style={{ paddingTop: 28 }}>
+        <p className="eyebrow rise">{error ? "Analysis failed" : "Step two of two"}</p>
+        <h1 className="display display-l rise" style={{ ["--i" as string]: 1 }}>
           {error ? "Something went wrong" : "Building the report"}
         </h1>
 
         {error ? (
           <>
-            <p style={{ color: "var(--missing)", fontSize: 15, lineHeight: 1.6 }}>{error}</p>
-            <a href="/upload" className="btn" style={{ marginTop: 20 }}>
+            <div className="alert" style={{ marginTop: 22, maxWidth: "60ch" }}>
+              {error}
+            </div>
+            <Link href="/upload" className="btn" style={{ marginTop: 20 }}>
               Try again
-            </a>
+            </Link>
           </>
         ) : (
-          <div style={{ display: "grid", gap: 2 }}>
-            {VISIBLE_STAGES.map((s, i) => {
-              const state = activeIndex < 0 ? "pending" : i < activeIndex ? "done" : i === activeIndex ? "active" : "pending";
-              return (
-                <div
-                  key={s.stage}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "22px minmax(0,1fr)",
-                    gap: 14,
-                    alignItems: "baseline",
-                    padding: "14px 0",
-                    borderBottom: "1px solid var(--rule)",
-                    opacity: state === "pending" ? 0.4 : 1,
-                    transition: "opacity .3s",
-                  }}
-                >
-                  <span
-                    style={{
-                      color: state === "done" ? "var(--strong)" : "var(--accent)",
-                      fontSize: 14,
-                    }}
-                  >
-                    {state === "done" ? "✓" : state === "active" ? "●" : "○"}
-                  </span>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: state === "active" ? 600 : 400 }}>
-                      {s.label}
-                    </div>
-                    {state === "active" && detail && (
-                      <div className="note" style={{ marginTop: 3 }}>
-                        {detail}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+          <>
+            {/* The live tally. Counts real evidence kept, as each section returns. */}
+            <div className="tally rise" style={{ ["--i" as string]: 2, marginTop: 24 }}>
+              {/* Rendered raw, not eased: this number must always equal what the
+                  pipeline has actually found. The climbing itself is the motion. */}
+              <b>{progress?.evidence_found ?? 0}</b>
+              <span>
+                {progress
+                  ? `pieces of evidence found across ${progress.chunks_done} of ${progress.chunks_total} sections`
+                  : "reading your documents…"}
+              </span>
+            </div>
 
-        {!error && (
-          <p className="note" style={{ marginTop: 28 }}>
-            One model call runs per section of each document, so longer documents take longer. You
-            can leave this page open — the report is saved when it finishes.
-          </p>
+            <div className="stages rise" style={{ ["--i" as string]: 3 }}>
+              {VISIBLE_STAGES.map((s, i) => {
+                const state =
+                  activeIndex < 0
+                    ? "pending"
+                    : i < activeIndex
+                      ? "done"
+                      : i === activeIndex
+                        ? "active"
+                        : "pending";
+                return (
+                  <div className={`stage stage-${state}`} key={s.stage}>
+                    <span className="stage-mark">
+                      {state === "done" ? "✓" : state === "active" ? "●" : "○"}
+                    </span>
+                    <div>
+                      <div className="stage-label">{s.label}</div>
+                      {state === "active" && status?.detail && (
+                        <div className="stage-detail">{status.detail}</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <p className="note" style={{ marginTop: 22 }}>
+              One model call runs per section of each document, so longer documents take longer. You
+              can leave this page open — the report is saved when it finishes.
+            </p>
+
+            <WhileYouWait />
+          </>
         )}
       </main>
-    </>
+    </div>
   );
 }

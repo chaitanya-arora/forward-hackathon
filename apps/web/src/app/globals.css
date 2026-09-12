@@ -1,20 +1,32 @@
 /* ---------------------------------------------------------------------------
-   Design system. The report is meant to read like a published analyst
-   document, so: editorial serif for report prose, restrained palette, one
-   accent, generous measure. Scores are typographic, not gauges or dials.
+   Design system.
+
+   Two surfaces, deliberately:
+   - PAPER is the default (`:root`). The report is a document, so it stays
+     paper-white in every theme and prints that way.
+   - DARK is opted into by the journey screens via `.surface-dark`. Landing,
+     upload and processing are a focused, low-light workspace; the report then
+     arrives as bright paper — the payoff at the end of the flow.
+
+   Restraint is the brief: no illustration, no whimsy. The polish comes from
+   type, spacing, contrast and motion.
    --------------------------------------------------------------------------- */
 
 :root {
+  /* paper */
   --paper: #fbfaf7;
   --surface: #ffffff;
   --surface-sunk: #f4f2ed;
+  --surface-raised: #ffffff;
   --ink: #1a1a17;
   --ink-muted: #5c584f;
   --ink-faint: #8a857a;
   --rule: #e2ded4;
   --rule-strong: #cbc5b7;
   --accent: #1f4d47;
+  --accent-ink: #ffffff;
   --accent-soft: #e8efed;
+  --glow: transparent;
 
   --strong: #2f6b4f;
   --strong-bg: #e9f1ec;
@@ -29,28 +41,36 @@
 
   --measure: 68ch;
   --page: 860px;
+  --wide: 1120px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #14140f;
-    --surface: #1c1c17;
-    --surface-sunk: #232320;
-    --ink: #f0ece2;
-    --ink-muted: #b3ad9f;
-    --ink-faint: #837d70;
-    --rule: #32322b;
-    --rule-strong: #46453c;
-    --accent: #7fb5aa;
-    --accent-soft: #1e2b28;
+/* The journey's low-light workspace. */
+.surface-dark {
+  --paper: #0a0c0b;
+  --surface: #111513;
+  --surface-sunk: #0d100f;
+  --surface-raised: #171d1a;
+  --ink: #f1efe8;
+  --ink-muted: #9aa8a1;
+  --ink-faint: #6a7873;
+  --rule: #1f2724;
+  --rule-strong: #2c3733;
+  --accent: #77e0b4;
+  --accent-ink: #06211a;
+  --accent-soft: #12241e;
+  --glow: rgba(119, 224, 180, 0.18);
 
-    --strong: #7bbd93;
-    --strong-bg: #1b2a21;
-    --partial: #d6ac5c;
-    --partial-bg: #2c2618;
-    --missing: #d98c7d;
-    --missing-bg: #2e1f1c;
-  }
+  --strong: #77e0b4;
+  --strong-bg: #12241e;
+  --partial: #e3b765;
+  --partial-bg: #241e12;
+  --missing: #e08f7e;
+  --missing-bg: #241715;
+
+  background: var(--paper);
+  color: var(--ink);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -73,12 +93,9 @@ body {
 
 a { color: var(--accent); }
 
-button {
-  font: inherit;
-  cursor: pointer;
-}
+button { font: inherit; cursor: pointer; }
 
-/* --- shared layout ------------------------------------------------------- */
+/* --- layout -------------------------------------------------------------- */
 
 .page {
   max-width: var(--page);
@@ -86,10 +103,12 @@ button {
   padding: 0 24px 96px;
 }
 
+.page-wide { max-width: var(--wide); }
+
 .topbar {
-  max-width: var(--page);
+  max-width: var(--wide);
   margin: 0 auto;
-  padding: 20px 24px;
+  padding: 22px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -103,9 +122,23 @@ button {
   letter-spacing: 0.02em;
   color: var(--ink-muted);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
 }
 
 .wordmark strong { color: var(--ink); font-weight: 600; }
+
+.wordmark::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--glow);
+}
+
+/* --- buttons ------------------------------------------------------------- */
 
 .btn {
   display: inline-flex;
@@ -114,32 +147,91 @@ button {
   border: 1px solid var(--rule-strong);
   background: var(--surface);
   color: var(--ink);
-  padding: 9px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 7px;
   font-size: 14px;
   text-decoration: none;
-  transition: border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease),
+    transform 0.18s var(--ease);
 }
 
-.btn:hover { border-color: var(--accent); }
+.btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
 
 .btn-primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
+  font-weight: 550;
 }
 
-.btn-primary:hover { opacity: 0.9; }
-.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary:hover { box-shadow: 0 6px 24px -8px var(--glow); }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .btn-primary { color: #10201d; }
+.btn-primary:disabled,
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
+
+.btn-ghost { background: transparent; border-color: var(--rule); }
+
+/* --- small type ---------------------------------------------------------- */
 
 .note {
   font-size: 13.5px;
   color: var(--ink-faint);
   line-height: 1.55;
+}
+
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 14px;
+}
+
+/* --- motion -------------------------------------------------------------- */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 var(--glow); }
+  70%  { box-shadow: 0 0 0 10px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Staggered entrance. Set --i on children to order them. */
+.rise {
+  animation: rise 0.6s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.fade {
+  animation: fade 0.5s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .btn:hover { transform: none; }
 }
 
 /* --- print: the PDF export path ------------------------------------------ */
@@ -164,11 +256,11 @@ button {
   .report-pillar,
   .report-block { break-inside: avoid; page-break-inside: avoid; }
 
-  .report-pillar { break-before: auto; }
-
   /* Higher specificity than `[hidden]` above, so collapsed citations still
      appear in the exported PDF. */
   .citations[hidden], .citations { display: grid !important; }
+
+  .rise, .fade { animation: none !important; opacity: 1 !important; transform: none !important; }
 
   @page { margin: 18mm 16mm; }
 }

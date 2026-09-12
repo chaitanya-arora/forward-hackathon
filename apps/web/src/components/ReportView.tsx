@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CountUp } from "./CountUp";
 import {
   PILLAR_KEYS,
   PILLAR_LABELS,
@@ -28,7 +29,7 @@ export function ReportView({ report }: { report: Report }) {
 
   return (
     <article className="report">
-      <header className="report-masthead">
+      <header className="report-masthead rise">
         <p className="report-kicker">Climate Disclosure Readiness Assessment · AASB S2 / TCFD</p>
         <h1 className="report-company">{report.company_name}</h1>
         <p className="report-dateline">
@@ -37,11 +38,11 @@ export function ReportView({ report }: { report: Report }) {
         </p>
       </header>
 
-      <div className="report-lede report-block">
+      <div className="report-lede report-block rise" style={{ ["--i" as string]: 1 }}>
         <p className="report-summary">{report.executive_summary}</p>
         <div className="score-block">
           <span className="score-value">
-            {report.overall_readiness_score}
+            <CountUp value={report.overall_readiness_score} duration={1100} />
             <span className="score-denom">/100</span>
           </span>
           <div className="score-caption">Overall readiness</div>
@@ -49,13 +50,14 @@ export function ReportView({ report }: { report: Report }) {
       </div>
 
       <h2 className="section-rule">Assessment by pillar</h2>
-      {PILLAR_KEYS.map((key) => {
+      {PILLAR_KEYS.map((key, i) => {
         const pillar = report.pillars[key];
         if (!pillar) return null;
         return (
           <PillarSection
             key={key}
             pillarKey={key}
+            index={i}
             score={pillar.score}
             completeness={pillar.completeness}
             narrative={pillar.narrative}
@@ -130,6 +132,7 @@ export function ReportView({ report }: { report: Report }) {
 
 function PillarSection({
   pillarKey,
+  index,
   score,
   completeness,
   narrative,
@@ -137,6 +140,7 @@ function PillarSection({
   labelFor,
 }: {
   pillarKey: PillarKey;
+  index: number;
   score: number;
   completeness: Completeness;
   narrative: string;
@@ -146,13 +150,13 @@ function PillarSection({
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="report-pillar">
+    <section className="report-pillar rise" style={{ ["--i" as string]: index }}>
       <div className="pillar-head">
         <h3 className="pillar-name">{PILLAR_LABELS[pillarKey]}</h3>
         <div className="pillar-metrics">
           <span className={BADGE_CLASS[completeness]}>{completeness}</span>
           <span className="pillar-score">
-            {score}
+            <CountUp value={score} duration={850} />
             <span>/100</span>
           </span>
         </div>

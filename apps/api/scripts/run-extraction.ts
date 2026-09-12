@@ -31,7 +31,9 @@ for (let i = 0; i < args.length; i++) {
 console.log(`Extracting from ${documents.length} document(s)...\n`);
 const started = Date.now();
 
-const result = await runExtraction(documents, (detail) => process.stdout.write(`\r${detail.padEnd(60)}`));
+const result = await runExtraction(documents, (p) =>
+  process.stdout.write(`\r${p.detail.padEnd(44)}${p.evidenceFound} kept`.padEnd(60)),
+);
 
 const elapsed = ((Date.now() - started) / 1000).toFixed(1);
 console.log(`\n\nCompany: ${result.company_name}`);

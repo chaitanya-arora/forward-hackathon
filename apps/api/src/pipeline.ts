@@ -1,6 +1,6 @@
 import { runExtraction, type UploadedDocument } from "./agent1/extract.js";
 import { generateReport } from "./agent2/report.js";
-import { completeJob, failJob, setDetail, setStage } from "./jobs.js";
+import { completeJob, failJob, setDetail, setProgress, setStage } from "./jobs.js";
 import type { ReportStore } from "./store.js";
 
 /**
@@ -15,11 +15,19 @@ export async function runPipeline(
   try {
     setStage(jobId, "reading documents");
 
-    const extraction = await runExtraction(documents, (detail) => {
+    const extraction = await runExtraction(documents, (p) => {
       // The first progress messages are reads; once chunks start coming back
       // we're genuinely in extraction.
-      if (detail.startsWith("Reading")) setStage(jobId, "reading documents", detail);
-      else setStage(jobId, "extracting", detail);
+      if (p.chunksTotal === 0) {
+        setStage(jobId, "reading documents", p.detail);
+        return;
+      }
+      setStage(jobId, "extracting", p.detail);
+      setProgress(jobId, {
+        chunks_done: p.chunksDone,
+        chunks_total: p.chunksTotal,
+        evidence_found: p.evidenceFound,
+      });
     });
 
     console.log(

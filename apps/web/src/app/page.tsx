@@ -1,80 +1,107 @@
 import Link from "next/link";
 import { TopBar } from "@/components/TopBar";
 
+/** Mirrors the real report's shape so the hero is an honest preview, not decoration. */
+const PREVIEW_PILLARS = [
+  { name: "Governance", score: 87 },
+  { name: "Strategy", score: 54 },
+  { name: "Risk Management", score: 66 },
+  { name: "Metrics & Targets", score: 38 },
+];
+
+const STEPS = [
+  {
+    h: "Upload what you already have",
+    p: "Annual reports, board policies, internal memos — any mix, in any order. There is nothing to fill in and no questionnaire to work through.",
+  },
+  {
+    h: "Every document strengthens one assessment",
+    p: "Evidence is pooled across everything you provide rather than compared between sources. More material means a more complete report, never a contradiction to resolve.",
+  },
+  {
+    h: "Nothing in the report is unsourced",
+    p: "Each pillar cites the exact claims behind it, with document name and page number, so anyone reading it can check the work against your own files.",
+  },
+];
+
 export default function LandingPage() {
   return (
-    <>
+    <div className="surface-dark journey">
       <TopBar>
-        <Link href="/report" className="btn">
+        <Link href="/report" className="btn btn-ghost">
           Latest report
+        </Link>
+        <Link href="/upload" className="btn btn-primary">
+          Generate a report
         </Link>
       </TopBar>
 
-      <main className="page" style={{ paddingTop: 64 }}>
-        <p className="report-kicker">Climate disclosure readiness</p>
-        <h1
-          className="report-company"
-          style={{ fontFamily: "var(--serif)", maxWidth: "16ch", marginBottom: 24 }}
-        >
-          Your documents in. A cited report out.
-        </h1>
+      <main className="page page-wide">
+        <div className="hero">
+          <div>
+            <p className="eyebrow rise" style={{ ["--i" as string]: 0 }}>
+              Climate disclosure readiness
+            </p>
+            <h1 className="display display-xl rise" style={{ ["--i" as string]: 1 }}>
+              Your documents in.
+              <br />
+              A cited report out.
+            </h1>
+            <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 22 }}>
+              Most companies without a sustainability team already hold the evidence an AASB S2 or
+              TCFD assessment needs. It is just scattered across files nobody has read together.
+              Upload whatever you have — every claim that comes back is traced to the document and
+              page it came from.
+            </p>
+            <div className="hero-actions rise" style={{ ["--i" as string]: 3 }}>
+              <Link href="/upload" className="btn btn-primary">
+                Generate a report
+              </Link>
+              <Link href="/report/preview" className="btn">
+                See an example report
+              </Link>
+            </div>
+          </div>
 
-        <p style={{ fontSize: 19, lineHeight: 1.65, maxWidth: "58ch", color: "var(--ink-muted)" }}>
-          Most companies without a dedicated sustainability team already hold the evidence an AASB S2
-          or TCFD assessment needs — it is just scattered across annual reports, board policies and
-          internal memos. Upload whatever you have. Every claim in the report that comes back is
-          traced to the document and page it came from.
-        </p>
+          <div className="fade" style={{ ["--i" as string]: 4 }}>
+            <div className="proof" aria-hidden="true">
+              <p className="proof-kicker">Climate disclosure readiness · AASB S2 / TCFD</p>
+              <p className="proof-company">Quality Holdings Resources</p>
+              <p className="proof-meta">Prepared from 2 documents provided by the company</p>
 
-        <div style={{ display: "flex", gap: 12, marginTop: 36, flexWrap: "wrap" }}>
-          <Link href="/upload" className="btn btn-primary">
-            Generate a report
-          </Link>
-          <Link href="/report" className="btn">
-            View the latest report
-          </Link>
+              <div className="proof-score">
+                <b>61</b>
+                <span>Overall readiness</span>
+              </div>
+
+              {PREVIEW_PILLARS.map((p) => (
+                <div className="proof-row" key={p.name}>
+                  <em>{p.name}</em>
+                  <b>{p.score}</b>
+                  <div className="proof-bar">
+                    <i style={{ width: `${p.score}%` }} />
+                  </div>
+                </div>
+              ))}
+
+              <p className="proof-cite">
+                <code>ev_001</code> quality_holdings.pdf · page 12 — “The Board Risk and
+                Sustainability Committee meets quarterly…”
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div
-          style={{
-            marginTop: 72,
-            paddingTop: 28,
-            borderTop: "1px solid var(--rule)",
-            display: "grid",
-            gap: 28,
-            gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-          }}
-        >
-          {[
-            {
-              h: "Four pillars",
-              p: "Governance, Strategy, Risk Management, and Metrics & Targets, each assessed against the disclosure criteria the standards actually specify.",
-            },
-            {
-              h: "Evidence pooled, not compared",
-              p: "Every document you provide strengthens the same assessment. More material means a more complete report, never a contradiction to resolve.",
-            },
-            {
-              h: "Nothing unsourced",
-              p: "Each pillar cites the specific claims behind it, with document name and page number, so a reader can check the work.",
-            },
-          ].map((col) => (
-            <div key={col.h}>
-              <h2
-                style={{
-                  fontFamily: "var(--serif)",
-                  fontSize: 18,
-                  fontWeight: 600,
-                  margin: "0 0 8px",
-                }}
-              >
-                {col.h}
-              </h2>
-              <p className="note">{col.p}</p>
+        <div className="strip">
+          {STEPS.map((s, i) => (
+            <div key={s.h} className="rise" style={{ ["--i" as string]: 5 + i }}>
+              <span className="strip-num">{String(i + 1).padStart(2, "0")}</span>
+              <h2>{s.h}</h2>
+              <p className="note">{s.p}</p>
             </div>
           ))}
         </div>
       </main>
-    </>
+    </div>
   );
 }

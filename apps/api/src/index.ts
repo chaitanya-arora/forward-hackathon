@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import multer from "multer";
-import { getJob, createJob } from "./jobs.js";
+import { getJob, createJob, setStage, setProgress } from "./jobs.js";
 import { runPipeline } from "./pipeline.js";
 import { createStore } from "./store.js";
 import type { UploadedDocument } from "./agent1/extract.js";
@@ -58,6 +58,40 @@ app.post("/api/generate-report", upload.array("files"), (req, res) => {
   // Kick the pipeline off without awaiting — the client polls for progress.
   void runPipeline(jobId, documents, store);
 });
+
+/**
+ * Dev-only: a synthetic in-flight job for working on the processing screen
+ * without spending real model calls. Never available in production.
+ */
+if (process.env.NODE_ENV !== "production") {
+  app.post("/api/dev/mock-job", (_req, res) => {
+    const jobId = createJob();
+    const total = 16;
+    let done = 0;
+
+    setStage(jobId, "reading documents", "Reading quality_holdings.pdf");
+
+    const id = setInterval(() => {
+      done++;
+      if (done <= total) {
+        setStage(jobId, "extracting", `Analysed ${done} of ${total} sections`);
+        setProgress(jobId, {
+          chunks_done: done,
+          chunks_total: total,
+          // roughly two keepers per section, the shape a real run produces
+          evidence_found: Math.round(done * 2.1),
+        });
+      } else if (done <= total + 4) {
+        setStage(jobId, "analyzing pillars", "Assessing Governance");
+      } else {
+        setStage(jobId, "generating report", "Writing executive summary");
+        clearInterval(id);
+      }
+    }, 1500);
+
+    res.json({ jobId });
+  });
+}
 
 app.get("/api/report/status/:jobId", (req, res) => {
   const job = getJob(req.params.jobId);

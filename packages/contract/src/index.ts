@@ -128,5 +128,16 @@ export const JobStatusSchema = z.object({
   done: z.boolean(),
   error: z.string().optional(),
   result: ReportSchema.optional(),
+  /**
+   * Real counts from the running pipeline, so the processing screen can show
+   * actual progress. Absent until extraction starts producing them.
+   */
+  progress: z
+    .object({
+      chunks_done: z.number().int(),
+      chunks_total: z.number().int(),
+      evidence_found: z.number().int(),
+    })
+    .optional(),
 });
 export type JobStatus = z.infer<typeof JobStatusSchema>;

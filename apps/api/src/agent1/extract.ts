@@ -42,9 +42,17 @@ export interface ExtractionOutcome extends ExtractionResult {
   stats: ExtractionStats;
 }
 
+export interface ExtractionProgress {
+  detail: string;
+  chunksDone: number;
+  chunksTotal: number;
+  /** Evidence kept so far, counted as chunks return — not an estimate. */
+  evidenceFound: number;
+}
+
 export async function runExtraction(
   documents: UploadedDocument[],
-  onProgress?: (detail: string) => void,
+  onProgress?: (p: ExtractionProgress) => void,
 ): Promise<ExtractionOutcome> {
   const sources: SourceDocument[] = documents.map((d) => ({
     filename: d.filename,
@@ -54,7 +62,12 @@ export async function runExtraction(
   // Read every document into page-tagged chunks first, so the progress count is real.
   const allChunks: Array<{ document: string; text: string; pages: number[] }> = [];
   for (const doc of documents) {
-    onProgress?.(`Reading ${doc.filename}`);
+    onProgress?.({
+      detail: `Reading ${doc.filename}`,
+      chunksDone: 0,
+      chunksTotal: 0,
+      evidenceFound: 0,
+    });
     const pages = await extractPages(doc.buffer);
     for (const chunk of chunkPages(pages)) {
       allChunks.push({ document: doc.filename, text: chunk.text, pages: chunk.pages });
@@ -69,6 +82,7 @@ export async function runExtraction(
   };
 
   let completed = 0;
+  let keptSoFar = 0;
   const perChunk = await mapWithConcurrency(allChunks, CHUNK_CONCURRENCY, async (chunk) => {
     const result = await callModel({
       system: EXTRACTION_SYSTEM_PROMPT,
@@ -78,7 +92,17 @@ export async function runExtraction(
       effort: "low",
     });
     completed++;
-    onProgress?.(`Analysed ${completed} of ${allChunks.length} sections`);
+    // Count what this chunk contributes using the same filter applied below,
+    // so the number the user watches climb is the number they end up with.
+    keptSoFar += result.items.filter(
+      (i) => i.pillar !== "not_relevant" && i.confidence >= MIN_CONFIDENCE,
+    ).length;
+    onProgress?.({
+      detail: `Analysed ${completed} of ${allChunks.length} sections`,
+      chunksDone: completed,
+      chunksTotal: allChunks.length,
+      evidenceFound: keptSoFar,
+    });
     return { chunk, items: result.items };
   });
 
