@@ -1,25 +1,31 @@
-import type { Report } from "@climate/contract";
+import type { AasbS2Report, EsgReport } from "@/lib/assessment-types";
 
-/**
- * The generated report lives here — in the browser tab's memory, and nowhere
- * else. Module state survives client-side navigation (processing -> report)
- * but is gone on reload or on closing the tab, which is exactly the intended
- * lifetime: generate it, read it, download it, and it is not kept.
- *
- * Deliberately not localStorage or sessionStorage. Those would outlive the
- * visit and turn a report about a company's climate position into something
- * left behind on a shared machine.
- */
-let current: Report | null = null;
-
-export function setReport(report: Report): void {
-  current = report;
+export interface ReportPair {
+  aasbS2Report: AasbS2Report;
+  esgReport: EsgReport;
 }
 
-export function getReport(): Report | null {
+/**
+ * The two generated reports live here — in the browser tab's memory, and
+ * nowhere else on the client. Module state survives client-side navigation
+ * (processing -> report) but is gone on reload or on closing the tab.
+ *
+ * The backend does persist everything in SQLite (companies, documents, both
+ * reports, retrievable by ID) — that decision was made explicitly to use the
+ * real pipeline as-is for now. This module only controls what the *frontend*
+ * caches client-side; it deliberately never uses localStorage/sessionStorage,
+ * so nothing about the run is left behind in the browser itself.
+ */
+let current: ReportPair | null = null;
+
+export function setReports(reports: ReportPair): void {
+  current = reports;
+}
+
+export function getReports(): ReportPair | null {
   return current;
 }
 
-export function clearReport(): void {
+export function clearReports(): void {
   current = null;
 }

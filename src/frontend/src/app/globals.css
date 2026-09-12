@@ -23,14 +23,19 @@
   --ink-faint: #8a857a;
   --rule: #e2ded4;
   --rule-strong: #cbc5b7;
-  --accent: #1f4d47;
-  --accent-deep: #143430;
+  /* One hue (160°) for every green in the app — the brand accent, its deep
+     companion, and the "good status" semantic colour all share it, varying
+     only in lightness/saturation. They previously drifted independently
+     (accent sat at 172°, strong at 152°) which is what made the report and
+     the rest of the app read as two different products. */
+  --accent: #1f5140;
+  --accent-deep: #133429;
   --accent-ink: #ffffff;
-  --accent-soft: #e8efed;
+  --accent-soft: #e6efec;
   --glow: transparent;
 
-  --strong: #2f6b4f;
-  --strong-bg: #e9f1ec;
+  --strong: #2e6b57;
+  --strong-bg: #e8f2ef;
   --partial: #8a6218;
   --partial-bg: #f7f0df;
   --missing: #8f3a2e;
@@ -50,6 +55,7 @@
   --pillar-strategy: #6b4fcc;
   --pillar-risk: #b24a2c;
   --pillar-metrics: #0f7a78;
+  --pillar-general: #8a6e14;
 
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
@@ -76,15 +82,16 @@
   --ink-faint: #758c82;
   --rule: #1b2a22;
   --rule-strong: #294034;
-  --accent: #6ee7b0;
-  /* Forest companion to the mint, so greens have range instead of one flat note. */
-  --accent-deep: #1d7d5c;
+  /* Same 160° hue as the light surface — brighter and more saturated here
+     since it has to read against near-black, but it's the same green. */
+  --accent: #6de3bc;
+  --accent-deep: #218362;
   --accent-ink: #052018;
-  --accent-soft: #0f2a20;
-  --glow: rgba(110, 231, 176, 0.22);
+  --accent-soft: #162721;
+  --glow: rgba(109, 227, 188, 0.22);
 
-  --strong: #77e0b4;
-  --strong-bg: #12241e;
+  --strong: #76e0bd;
+  --strong-bg: #172b24;
   --partial: #e3b765;
   --partial-bg: #241e12;
   --missing: #e08f7e;
@@ -100,6 +107,7 @@
   --pillar-strategy: #bba3ff;
   --pillar-risk: #ee9b7c;
   --pillar-metrics: #68dad3;
+  --pillar-general: #e0c377;
 
   background: var(--paper);
   color: var(--ink);

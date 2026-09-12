@@ -1,5 +1,5 @@
 {
-  "name": "@climate/web",
+  "name": "forward-frontend",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@climate/contract": "*",
     "next": "^15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

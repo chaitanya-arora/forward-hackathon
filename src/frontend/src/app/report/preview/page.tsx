@@ -1,17 +1,18 @@
 import Link from "next/link";
-import { ReportSchema } from "@climate/contract";
-import { ReportView } from "@/components/ReportView";
+import { AssessmentReport } from "@/components/AssessmentReport";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import mock from "../../../../mock/report.json";
+import type { AasbS2Report, EsgReport } from "@/lib/assessment-types";
+import run from "../../../../mock/run.json";
 
 /**
- * Renders the locked mock report (spec §2 / plan step 1). This is what the
- * report view is designed against while the agents are being built, and it
- * needs no API key or backend to open.
+ * Renders a real saved run — src/frontend/mock/run.json is genuine output
+ * from the actual pipeline (main's Agent 1 + AASB + ESG generators), not a
+ * hand-authored fixture. This needs no API key or backend to open.
  */
 export default function ReportPreviewPage() {
-  const report = ReportSchema.parse(mock);
+  const aasbS2Report = run.aasbS2Report as unknown as AasbS2Report;
+  const esgReport = run.esgReport as unknown as EsgReport;
 
   return (
     <>
@@ -31,9 +32,9 @@ export default function ReportPreviewPage() {
             display: "inline-block",
           }}
         >
-          Preview — rendered from <code>mock/report.json</code>, not from a real run.
+          Preview — a real saved run, not a live one.
         </p>
-        <ReportView report={report} />
+        <AssessmentReport aasbS2Report={aasbS2Report} esgReport={esgReport} />
       </main>
 
       <SiteFooter />

@@ -350,7 +350,7 @@
   margin: 0 0 5px;
 }
 
-.rec-text { font-size: 16.5px; line-height: 1.6; margin: 0; max-width: var(--measure); }
+.rec-text { font-size: 16.5px; line-height: 1.6; margin: 0; }
 
 /* --- sources footer ------------------------------------------------------ */
 
@@ -518,6 +518,10 @@
 
 .criterion-group {
   border: 1px solid var(--rule);
+  /* Section identity colour, set inline per section — the same left-border
+     idiom used on the report's own pillar sections and the About page's
+     info-cards, so all three read as one system. */
+  border-left: 3px solid var(--rule);
   border-radius: 10px;
   margin-bottom: 14px;
   overflow: hidden;
@@ -534,6 +538,17 @@
   text-align: left;
 }
 
+.criterion-group-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.criterion-group-icon svg { width: 17px; height: 17px; }
+
 .criterion-group-head h3 {
   font-family: var(--serif);
   font-size: 18px;
@@ -542,6 +557,16 @@
   flex: 1;
   min-width: 0;
 }
+
+.criterion-group-score {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.criterion-group-score span { font-size: 13px; color: var(--ink-faint); font-weight: 400; }
 
 .criterion-tally {
   display: flex;
@@ -664,13 +689,14 @@
 
 .esg-card ul {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 0;
+  list-style: none;
   font-size: 13.5px;
   line-height: 1.6;
   color: var(--ink-muted);
 }
 
-.esg-card li { margin-bottom: 6px; }
+.esg-card li { margin-bottom: 6px; padding-left: 16px; text-indent: -16px; }
 
 /* --- section dividers ------------------------------------------------------ */
 
@@ -689,40 +715,12 @@
   margin: 0;
 }
 
-.report-type-tag {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 4px;
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
 .report-type-sub {
   font-family: var(--sans);
   font-size: 14.5px;
   color: var(--ink-muted);
   margin: 8px 0 0;
-  max-width: 68ch;
+  /* Deliberately no max-width: every sibling below (the stat tiles, the
+     section list) runs the full column width, and a measure-limited
+     paragraph here just looked like it stopped short for no reason. */
 }
-
-.warning-callout {
-  background: var(--surface-sunk);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  padding: 18px 20px;
-  margin: 32px 0;
-}
-
-.warning-callout p {
-  font-family: var(--sans);
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--ink-muted);
-  margin: 0 0 6px;
-}
-
-.warning-callout p:last-child { margin-bottom: 0; }
