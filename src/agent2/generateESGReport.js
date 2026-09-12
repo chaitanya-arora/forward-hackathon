@@ -5,6 +5,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { normalizeEvidence } from "./normalizeEvidence.js";
 import { rubric, responseJsonSchema } from "./rubric.js";
+import { validateCitations } from "./validateCitations.js";
+import { requestGemini } from "../llm/gemini.js";
 
 // Resolve configuration and defaults from the project, even when run elsewhere.
 const agentDirectory = dirname(fileURLToPath(import.meta.url));
@@ -28,13 +30,7 @@ export function buildReport(input, result) {
   const criteria = rubric.map((rule) => {
     const item = byId.get(rule.id);
     // Never accept model-written evidence or invented source references.
-    const citations = item.citations.map((citation) => {
-      const source = input.evidence.find((e) => e.id === citation?.evidenceId);
-      if (!source || typeof citation.quote !== "string" || citation.quote.trim().length < 12 || !source.text.includes(citation.quote)) {
-        throw new Error(`Unverifiable citation for ${rule.id}.`);
-      }
-      return { evidenceId: source.id, quote: citation.quote };
-    });
+    const citations = validateCitations(item.citations, input, rule.id);
     const sources = [...new Set(citations.map((c) => c.evidenceId))].map((id) => input.evidence.find((e) => e.id === id));
     let status = item.status;
     if (!sources.length) status = "missing";
@@ -63,27 +59,26 @@ export function buildReport(input, result) {
       evidence: input.evidence.filter((e) => ids.has(e.id)), criteria: items };
   }
   const environmental = section("environmental"), social = section("social"), governance = section("governance");
-  const climate = section("aasbS2");
   // Scoring and final JSON are owned by JavaScript, never by the model.
   const overallESGScore = Math.round((environmental.score + social.score + governance.score) / 3);
-  return { company: input.company, reportYear: input.reportYear,
+  return { reportType: "ESG_READINESS", priority: "secondary", company: input.company, reportYear: input.reportYear,
     executiveSummary: `Supplied evidence readiness: environmental ${environmental.score}/100, social ${social.score}/100, governance ${governance.score}/100. Missing evidence does not establish absent company practices.`,
-    overallESGScore, environmental, social, governance,
-    aasbS2: { readinessScore: climate.score,
-      ...Object.fromEntries(climate.criteria.map((c) => [c.key, { status: c.status, findings: c.citations, gapType: c.gapType }])),
-      gaps: climate.gaps, recommendations: climate.recommendations, evidence: climate.evidence },
+    overallESGReadinessScore: overallESGScore, overallESGScore, environmental, social, governance,
     priorityActions: criteria.filter((c) => c.gapType).sort((a, b) =>
       (a.gapType === "potential_inconsistency" ? -1 : weights[a.status]) - (b.gapType === "potential_inconsistency" ? -1 : weights[b.status]))
       .map((c) => ({ criterionId: c.id, action: c.recommendation })),
-    methodology: { version: "mvp-1", scoreMeaning: "Evidence readiness, not ESG performance or compliance",
-      statusWeights: weights, aggregation: "Equal criterion weights within sections; equal ESG section weights; climate scored separately.",
-      limitations: "Simplified AASB S2 readiness only; not legal, audit or assurance advice. LLM relevance and sufficiency judgments require human review. Absence of evidence is not a proven capability gap." },
+    methodology: { version: "esg-readiness-2", scoreMeaning: "Evidence readiness, not ESG performance or compliance",
+      statusWeights: weights, aggregation: "Equal criterion weights within sections; equal ESG section weights.",
+      limitations: "Secondary broader ESG assessment. Not legal, audit or assurance advice. LLM relevance and sufficiency judgments require human review. Absence of evidence is not a proven capability gap." },
     warnings,
   };
 }
 
 export async function generateESGReport(evidence, options = {}) {
-  const input = normalizeEvidence(evidence);
+  return generateESGFromNormalized(normalizeEvidence(evidence), options);
+}
+
+export async function generateESGFromNormalized(input, options = {}) {
   if (!input.evidence.length) {
     return buildReport(input, { assessments: rubric.map((r) => ({ criterionId: r.id, status: "missing", citations: [], potentialInconsistency: false })) });
   }
@@ -91,7 +86,7 @@ export async function generateESGReport(evidence, options = {}) {
   if (!options.client && !apiKey) throw new Error("Set GEMINI_API_KEY in .env to analyse non-empty evidence.");
   const ai = options.client ?? new GoogleGenAI({ apiKey });
   // Single bounded LLM request, using the same SDK/key convention as Agent 1.
-  const response = await ai.models.generateContent({
+  const response = await requestGemini(ai, {
     model: options.model ?? process.env.AGENT2_MODEL ?? "gemini-3.6-flash",
     contents: JSON.stringify({ rubric, evidence: input.evidence }),
     config: { responseMimeType: "application/json", responseJsonSchema, temperature: 0,
@@ -102,7 +97,6 @@ Labels and Agent 1 classification confidence do not establish facts or performan
 Strong means concrete, relevant evidence addresses the criterion's substantive elements;
 partial means relevant but generic, incomplete, negative or uncertain evidence;
 missing means no relevant evidence. One alternative is sufficient where the rubric says 'or'.
-Climate criteria require climate-specific text, not generic governance or general safety.
 Return only the requested JSON. Cite exact contiguous quotations (at least 12 characters)
 and supplied evidence IDs for every non-missing finding. Include context and negations.
 Do not invent or paraphrase quotations. Missing criteria must have empty citations.
@@ -110,7 +104,7 @@ Mark potentialInconsistency only for directly conflicting public and internal ev
 on the same subject, period, units and boundary; cite both sides. Differences in scope
 or year are not contradictions. Do not assert legal compliance or assign numeric scores.`,
     },
-  });
+  }, options);
   let result;
   try { result = JSON.parse(response.text); } catch { throw new Error("Gemini returned invalid or incomplete JSON; no report generated."); }
   return buildReport(input, result);
@@ -124,5 +118,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     await mkdir(dirname(resolve(outputPath)), { recursive: true });
     await writeFile(outputPath, JSON.stringify(report, null, 2) + "\n");
     console.log(`Wrote ESG report to ${outputPath}`);
-  } catch (error) { console.error(`Agent 2: ${error.message}`); process.exitCode = 1; }
+  } catch (error) { console.error(`Agent 2: ${error.message}${error.geminiHint ? " " + error.geminiHint : ""}`); process.exitCode = 1; }
 }

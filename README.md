@@ -1,420 +1,502 @@
-# Forward — ESG reporting pipeline
+# Forward — AASB S2 preparation and readiness
 
-A hackathon backend that stores company documents, extracts source evidence, and
-produces an ESG evidence-readiness report with a separate AASB S2 climate section.
+The primary MVP is an **AI-assisted AASB S2 climate-disclosure draft/readiness tool**.
+A broader ESG evidence-readiness assessment is a separate secondary output.
 
-**Start here:** use the full pipeline below when you want uploads and reports saved
-in SQLite. The standalone Agent 2 command is still available for a quick JSON demo.
+Every successful processing run produces two independently stored reports:
 
-## What works now
+1. `aasbS2Report.json` — primary AASB S2 preparation/readiness draft.
+2. `esgReport.json` — secondary Environmental, Social and Governance assessment.
 
-- Create company records and store original uploaded file bytes in SQLite.
-- Associate documents with a company, reporting year and public/internal visibility.
-- Extract text from PDFs and classify it through Agent 1 using Gemini.
-- Combine evidence from selected documents while retaining document IDs and citations.
-- Generate Environmental, Social and Governance assessments through Agent 2.
-- Save full report JSON, extraction snapshots, run status and failure history.
-- Retrieve documents, runs and reports through JavaScript functions or the CLI.
+SQLite is the source of truth. These filenames are export names, not required source
+files. Uploaded PDFs are extracted once per run, and both generators reuse the same
+persisted evidence snapshot. There is no Express server or React application yet.
 
-There is **no HTTP upload endpoint, Express server, React UI, authentication, or
-background worker yet**. The service functions are ready for those integrations.
-Other file types can be stored, but only text-bearing PDFs can currently be processed.
+## What the AASB output means
 
-## Architecture
+AASB S2 is **AASB S2 Climate-related Disclosures**. Every generated AASB report has:
 
-```text
-Future React upload screen
-        │  Future authenticated HTTP API
-        ▼
-Company + document metadata + original bytes
-        │  src/database/repository.js
-        ▼
-SQLite documents (BLOB storage)
-        │  src/pipeline/processCompany.js
-        ▼
-Agent 1: PDF bytes → page text → classified evidence JSON
-        │  extraction snapshot saved per document and run
-        ▼
-Agent 2: combined evidence → Gemini assessment → citation checks → JS scoring
-        │
-        ▼
-SQLite reports (complete JSON) + completed pipeline run
-        │
-        ▼
-Future React report screen / document citations / report history
+```json
+{
+  "reportType": "AASB_S2_DRAFT",
+  "status": "draft_for_management_director_and_assurance_review"
+}
 ```
 
-The CLI exercises the same database and service functions that a future API will
-call. There is no separate CLI-only implementation of the business pipeline.
+This software assists evidence preparation, gap analysis and review. It does not
+make an unconditional compliance determination, audit or assure a report, approve
+it for directors, sign a directors' declaration, or make it ready to lodge with ASIC.
+Statutory climate statements, notes, directors' processes, applicable external
+review/audit and lodgement remain separate human/external processes.
+
+References used for metadata and the rubric:
+
+- [AASB S2 September 2024](https://standards.aasb.gov.au/aasb-s2-sep-2024)
+- [AASB S2 December 2025 compilation](https://standards.aasb.gov.au/aasb-s2-dec-2025)
+- [AASB amendment FAQs](https://aasb.gov.au/research-resources/knowledge-hub/aasb-s2-knowledge-hub/aasb-s2-frequently-asked-questions/aasb-s2-amendments-faqs/)
+- [ASIC reporting applicability](https://www.asic.gov.au/regulatory-resources/sustainability-reporting/for-preparers-of-sustainability-reports/who-must-prepare-a-sustainability-report)
+- [ASIC report contents and directors' declaration](https://www.asic.gov.au/regulatory-resources/sustainability-reporting/for-preparers-of-sustainability-reports/what-should-your-sustainability-report-contain)
 
 ## Folder structure
 
 ```text
 forward-hackathon/
-├── README.md                        Project setup and integration contract
-├── .env                             Local secrets/settings; ignored by Git
-├── .env.example                     Shareable template with no real key
-├── package.json                     Shared dependencies and npm commands
-├── package-lock.json                Reproducible dependency versions
-├── run-pipeline.ps1                  Windows launcher for the stored-document flow
-├── run-agent2.ps1                    Standalone Agent 2 demo and test launcher
+├── README.md
+├── .env                           Local key/settings, ignored by Git
+├── .env.example                   No real key
+├── package.json / package-lock.json
+├── run-pipeline.ps1               Full stored-document workflow
+├── run-agent2.ps1                 Standalone secondary ESG demo / all tests
 ├── src/
-│   ├── agent1/
-│   │   ├── agent1.js                Importable PDF extractor + standalone CLI
-│   │   ├── sanitycheck.py           Optional Python PDF helper
-│   │   ├── README.md
-│   │   ├── data/raw/                Original teammate sample PDFs
-│   │   └── output/                  Standalone Agent 1 JSON examples/exports
-│   ├── agent2/
-│   │   ├── generateESGReport.js      Report generator + standalone CLI
-│   │   ├── normalizeEvidence.js     Input adaptation and provenance
-│   │   ├── rubric.js                Assessment criteria and model output schema
-│   │   ├── README.md
-│   │   ├── examples/                Fictional evidence input
-│   │   ├── tests/                   Agent 2 unit tests
-│   │   └── output/                  Standalone report exports; ignored
+│   ├── agent1/                    PDF extraction and climate classification
+│   │   ├── agent1.js
+│   │   ├── sanitycheck.py
+│   │   ├── data/raw/              Original demo PDFs, preserved
+│   │   └── output/                Legacy standalone evidence JSON
+│   ├── aasb/                      Primary AASB S2 generator
+│   │   ├── rubric.js              Granular disclosure checks
+│   │   ├── context.js             Version, relief and applicability metadata
+│   │   ├── generateAasbS2Report.js
+│   │   └── examples/reportingContext.json
+│   ├── agent2/                    Secondary ESG generator, no embedded AASB section
+│   │   ├── generateESGReport.js
+│   │   ├── normalizeEvidence.js
+│   │   ├── validateCitations.js    Shared exact-quotation validation
+│   │   ├── rubric.js
+│   │   ├── examples/
+│   │   ├── tests/
+│   │   └── output/                Optional standalone JSON exports
 │   ├── database/
-│   │   ├── db.js                    SQLite connection, schema, legacy functions
-│   │   └── repository.js            Company/document/run/report access
+│   │   ├── db.js                  Connection, base schema and legacy accessors
+│   │   ├── migrations.js          Additive typed-output migration
+│   │   └── repository.js          Company/document/run/typed-report accessors
 │   └── pipeline/
-│       ├── processCompany.js        Stored documents → persisted report
-│       └── cli.js                   Command-line interface
-├── tests/                           SQLite and full pipeline integration tests
+│       ├── processCompany.js
+│       └── cli.js
+├── tests/                         Context, migration, SQLite and pipeline tests
 ├── storage/
-│   ├── database/esg_reports.db      Active local SQLite database; ignored
-│   └── backups/                     Local recovery copies; ignored DB files
-└── node_modules/                    Installed dependencies; ignored
+│   ├── database/esg_reports.db    Active local database (ignored)
+│   └── backups/                   Local recovery copies (ignored DB files)
+└── node_modules/                  Local dependencies (ignored)
 ```
-
-Runtime uploads belong in SQLite, not `src/agent1/data/raw/`. That folder contains
-existing demo inputs. Do not add company uploads, API keys or database files to Git.
-There are no empty frontend folders yet; add the web application when its framework
-is chosen. Keep it separate from `src/database` and the Node-only agent code.
 
 ## Setup
 
-Use Node.js 24 (the version tested here) and npm. Install the exact locked dependencies:
+Node.js 24 is the tested runtime. From the project root:
 
 ```powershell
 npm ci
 ```
 
-Native SQLite and PDF dependencies vary by OS. After a fresh clone, or a branch
-switch that removed previously tracked `node_modules`, reinstall dependencies.
-Do not copy macOS native binaries to Windows. If a recent npm version reports
-blocked install scripts and a native module fails to load, review npm's listed
-packages and approve the necessary dependency installation scripts.
+Native dependencies must be installed for the current OS. If dependencies disappear
+after switching from an older branch that tracked `node_modules`, run `npm ci` again.
+The Windows launchers use Node on PATH or the existing Codex runtime; they do not
+install dependencies. If a native dependency cannot load after a recent npm version
+blocks installation scripts, review its listed dependency script approvals.
 
-Create `.env` in the project root if it does not exist. Preserve your existing key:
+Create/edit the **root `.env`**, preserving your key:
 
 ```dotenv
 GEMINI_API_KEY=your_actual_key
 AGENT1_MODEL=gemini-3.6-flash
 AGENT2_MODEL=gemini-3.6-flash
-# Optional; relative paths resolve from the project root:
+AASB_MODEL=gemini-3.6-flash
+# Optional; relative to project root:
 # ESG_DB_PATH=storage/database/esg_reports.db
 ```
 
-Both agents load the root `.env` regardless of the terminal directory. API keys
-stay on the server. Non-empty evidence is sent to Gemini for processing.
+`AASB_MODEL` falls back to `AGENT2_MODEL`. Both generators and the extractor use the
+same existing Google SDK. There is no paid service or new framework. Non-empty
+source evidence is sent to Gemini. Keep the key and database on the backend.
 
-On this Windows machine, the PowerShell launchers find Node on PATH or fall back
-to the installed Codex runtime. If Node is unavailable, install Node and reopen
-the terminal. The launchers do not install dependencies automatically.
+## Manual workflow — uploads to two reports
 
-## Run a complete company document workflow
+Run commands from the project root. Replace example IDs with those returned by your
+commands; report IDs and run IDs are different identifiers.
 
-Run these commands from the project root. Each creation command returns JSON with
-an `id`. Use the returned IDs rather than assuming your company is always ID 1.
-
-### 1. Create or find a company
+### Create a company and upload a PDF
 
 ```powershell
 .\run-pipeline.ps1 company "Example Company"
 .\run-pipeline.ps1 companies
-```
-
-Company names are trimmed and matched case-insensitively for this MVP. This is not
-a legal-entity identifier or a user account.
-
-### 2. Store a document
-
-Replace `1` with the company ID returned above:
-
-```powershell
 .\run-pipeline.ps1 upload 1 2025 src/agent1/data/raw/quality_holdings.pdf public
 .\run-pipeline.ps1 documents 1 2025
 ```
 
-The upload command reads the local file and stores its actual bytes as a BLOB,
-plus its filename, SHA-256, size, detected MIME type, source type and year.
-`sourceType` can be `public`, `internal` or `unknown` (the default).
+Company names are case-insensitively matched for this MVP. Uploads retain actual
+bytes in a SQLite BLOB, filename, SHA-256, size, year and source type (`public`,
+`internal`, or `unknown`). An identical company/year/content/filename/source-type
+upload is deduplicated. Metadata lists omit the BLOB.
 
-The same company/year/content/filename/source-type combination is deduplicated:
-re-upload returns the existing document ID with `duplicate: true`. Changed content
-or metadata creates a distinct document. Original documents are not overwritten.
+### Provide reporting context, when known
 
-### 3. Process the selected documents
+Edit `src/aasb/examples/reportingContext.json` or create a separate context JSON:
 
-Process all documents for that company and year:
-
-```powershell
-.\run-pipeline.ps1 process 1 2025
+```json
+{
+  "reportingPeriodStart": "2025-01-01",
+  "reportingPeriodEnd": "2025-12-31",
+  "earlyAdoptionOf2025Amendments": false,
+  "firstAnnualPeriodApplyingAasbS2": null,
+  "useScope3FirstYearRelief": false,
+  "companySize": { "revenueAud": null, "assetsAud": null, "employees": null },
+  "confirmedNotApplicable": {}
+}
 ```
 
-Or process specific document IDs, for example 2 and 3:
+Leave unknown values unknown. A year alone does not establish a reporting-period
+start. Do not label first application as true simply because it is the first run
+in this application. It means the entity's first annual period applying AASB S2.
+
+### Process once
 
 ```powershell
-.\run-pipeline.ps1 process 1 2025 2 3
+.\run-pipeline.ps1 process 1 2025 --context src/aasb/examples/reportingContext.json
 ```
 
-This is a blocking command. Agent 1 processes PDF chunks sequentially and spaces
-requests, so large reports can take time. Run status is saved before extraction.
-On success the command prints:
+To select particular document IDs, put them after the year:
+
+```powershell
+.\run-pipeline.ps1 process 1 2025 2 3 --context src/aasb/examples/reportingContext.json
+```
+
+Context is optional: `.\run-pipeline.ps1 process 1 2025` still produces both readiness
+outputs, with unknown period/version/applicability metadata where appropriate.
+The command blocks while processing and returns:
 
 ```json
 {
   "companyId": 1,
   "runId": 1,
-  "id": 1,
-  "createdAt": "...",
-  "report": {
-    "company": "Example Company",
-    "overallESGScore": 0,
-    "environmental": {},
-    "social": {},
-    "governance": {},
-    "aasbS2": {},
-    "priorityActions": []
-  }
+  "status": "completed",
+  "reportIds": { "aasbS2": 1, "esg": 2 },
+  "outputs": { "aasbS2Report": {}, "esgReport": {} }
 }
 ```
 
-This is an abbreviated shape, not a predicted assessment. `id` is the report ID;
-`runId` identifies the processing attempt. The full report includes criteria,
-strengths, gaps, recommendations, evidence, methodology and warnings.
+The output objects above are abbreviated. Actual results contain criteria, citations,
+gaps, actions, methodology and warnings. SQLite stores the full JSON independently.
 
-### 4. Retrieve status, extraction evidence and the saved report
+### Retrieve and export each report
 
 ```powershell
 .\run-pipeline.ps1 runs 1
 .\run-pipeline.ps1 run 1 1
-.\run-pipeline.ps1 report 1 1
+.\run-pipeline.ps1 report-aasb 1 1
+.\run-pipeline.ps1 report-esg 1 2
+.\run-pipeline.ps1 export-aasb 1 1 aasbS2Report.json
+.\run-pipeline.ps1 export-esg 1 2 esgReport.json
 ```
 
-The two-argument forms take `companyId` followed by `runId` or `reportId`.
-The `run` command includes per-document extraction snapshots and the final report ID.
-To export the saved report wrapper to a JSON file:
+Retrieval returns metadata plus `report`; export writes the raw report JSON.
+Export paths are optional and default to the two filenames shown. Exports overwrite
+the chosen JSON file; they do not modify the saved report. `run` returns document
+extraction snapshots, shared normalized evidence, context, stage and report IDs.
 
-```powershell
-.\run-pipeline.ps1 report 1 1 > report-export.json
+Every command also works as `npm run pipeline -- <command> <args>` or
+`node src/pipeline/cli.js <command> <args>` when Node/npm are on PATH.
+
+## Pipeline and failure semantics
+
+```text
+created → extracting → aasb_analysing → esg_analysing → completed
+                         │                  │
+                         └── handled error ─┴──→ failed
 ```
 
-The database is the source of truth for this workflow. Running the full pipeline
-does not also generate duplicate JSON files in the source folders.
+The existing `pipeline_runs.status` values are preserved (`extracting`, `analysing`,
+`completed`, `failed`). `run_details.stage` stores the finer-grained stage, including
+the last active stage if the run fails.
 
-All commands also work as `npm run pipeline -- <command> <arguments>` or
-`node src/pipeline/cli.js <command> <arguments>` when Node/npm are on PATH.
+1. Validate company/year/document ownership; create the run and context record.
+2. Extract each selected PDF once and save that document's evidence snapshot.
+3. Normalize and persist the combined evidence exactly once for both generators.
+4. Generate the primary AASB draft and immediately save its immutable typed output.
+5. Generate the secondary ESG assessment from the same evidence; save it separately.
+6. Mark completed only after both outputs are stored.
 
-## Standalone agent commands
+If ESG fails, the AASB draft remains retrievable, the run is failed, and extraction
+snapshots/uploads remain. If AASB fails, ESG is not called. A handled error attempts
+to save a generic failure message and finished timestamp, then rethrows the original
+error to the CLI. Failure-status persistence errors do not replace the original
+processing error. There is no automatic restart after process termination or power
+loss; a killed process can retain an in-progress status. Start a new run after
+resolving the cause. Earlier successful reports are never overwritten.
 
-For Agent 2's fictional JSON demo:
+## AASB S2 rubric, metadata and safeguards
 
-```powershell
-.\run-agent2.ps1
+The primary rubric covers granular criteria within:
+
+- **Governance:** bodies, responsibilities, skills, information flow, decisions,
+  targets, management, controls and remuneration.
+- **Strategy:** risks/opportunities, physical/transition classification, horizons,
+  business model/value chain, responses, transition plans, resource allocation,
+  current/anticipated financial effects, planning, resilience and scenario analysis.
+- **Risk management:** identification, assessment, prioritisation, monitoring,
+  inputs, scenario use, likelihood/magnitude, opportunities and enterprise integration.
+- **Metrics/targets:** Scopes 1/2/3, measurement/data quality/categories, exposures,
+  capital deployment, carbon pricing, remuneration, targets, base/target periods,
+  milestones, basis, progress and review methods.
+- **General requirements:** materiality, evidence sufficiency/fair presentation,
+  entity consistency, connected/financial-statement information, period, judgements,
+  uncertainty, comparatives, transition reliefs and metric consistency/sources.
+
+The model returns criterion statuses and exact supporting quotes, not invented
+emissions values, financial effects or scenario results. Targets are presented as
+target-disclosure checks with quotations, not synthesized target records.
+
+Statuses are `present`, `partial`, `missing`, `not_applicable`, and
+`requires_human_judgement`. JavaScript gives them weights 1, 0.5, 0, excluded, and 0
+respectively. `aasbS2ReadinessScore` is the rounded average over included criteria;
+it is null if all are explicitly excluded. It is never a compliance score.
+
+A model-requested `not_applicable` becomes `requires_human_judgement`; exclusion
+requires explicit human confirmation or established transition-relief metadata.
+For a reviewed criterion, `confirmedNotApplicable` can contain:
+
+```json
+{
+  "strategy.transitionPlan": {
+    "reason": "Document the entity-specific review basis here",
+    "confirmedBy": "Reviewer name or identifier"
+  }
+}
 ```
 
-This writes `src/agent2/output/esgReport.json` and does not persist to SQLite.
-For the empty Agent 1 example, which does not call Gemini:
+These are recorded user assertions, not authenticated director approvals. Their
+basis remains in the output for review. They are not inferred from missing evidence.
 
-```powershell
-.\run-agent2.ps1 -InputFile src/agent1/output/quality_holdings_resources_2025_classified.json
-```
+**Versions:** period starts from 2025-01-01 through 2026-12-31 select `2024-09`.
+Starts on/after 2027-01-01 select `2025-12`; explicit early adoption can select the
+amended version for eligible earlier periods. Unknown/unsupported start dates stay
+unknown. The version registry can be extended. Amended GHG/jurisdictional/financed
+emissions relief details still require human review; the checklist is not a full
+amendment or legal-rule engine.
 
-An empty evidence input intentionally produces zero readiness scores and missing
-statuses. It does not establish that company practices are absent.
+**Transition relief:** confirmed first application plus a supported period can
+exclude comparatives under C3. Scope 3 and its categories are only excluded when
+first application is confirmed and `useScope3FirstYearRelief` is explicitly true.
+Missing first-year/period inputs remain `unknown_requires_confirmation` and do not
+reduce the denominator. Other relief conditions require human review.
 
-For standalone PDF extraction:
+**Applicability:** optional size data supplies conservative group hints. Two supplied
+thresholds identify a likely group; timing is reported separately. Missing size
+information is permitted. The output always requires professional confirmation and
+lists unassessed NGER, entity/investment, and Chapter 2M tests. It never returns
+`legallyRequired: true` or treats size thresholds as a complete statutory test.
 
-```powershell
-node src/agent1/agent1.js src/agent1/data/raw/quality_holdings.pdf "Quality Holdings Resources" 2025
-```
+## Evidence and the secondary ESG report
 
-That CLI retains the teammate's legacy `classifications` upsert and JSON export
-under `src/agent1/output/`. Use the full pipeline to get uploaded document records,
-run history and complete ESG report persistence.
+The normalized snapshot and report evidence registers preserve evidence IDs, original
+document IDs, filenames, source type, page markers and separate pooled pillar pages.
+Every citation must reference an existing ID and an exact source substring of at
+least 12 characters. Invalid quotes/IDs fail generation. Unsupported positive
+statuses are downgraded to missing; low-confidence strong support is capped.
+Quotes still require human interpretation, and source accuracy is not independently
+verified. Missing evidence is not evidence of absent company practices.
 
-## SQLite schema and persistence
+The ESG generator retains its nine established criteria and scoring. It has
+`reportType: ESG_READINESS`, `priority: secondary`, and `overallESGReadinessScore`.
+`overallESGScore` remains as a deprecated numeric alias. New ESG reports have no
+embedded `aasbS2` property. Historical JSON is never rewritten to remove old fields.
 
-| Table | Purpose |
+Agent 1 still filters for climate relevance. This supports the primary product but
+can omit social evidence needed by the secondary ESG assessment. No OCR or broader
+extraction rewrite is included in this task.
+
+## Database and backward compatibility
+
+The active file is `storage/database/esg_reports.db`, configurable with `ESG_DB_PATH`.
+Foreign keys, WAL and a busy timeout are enabled. Uploads are BLOBs; network calls
+run outside short SQLite transactions. Databases, journals and exports are ignored
+by Git. Back up with SQLite's backup API; use persistent local storage for deployment.
+
+| Table | Role |
 | --- | --- |
-| `companies` | Company identity used by the new workflow |
-| `documents` | Company/year, source metadata, original bytes, size and SHA-256 |
-| `pipeline_runs` | One extraction/report attempt, status, timestamps and generic failure message |
-| `run_documents` | Exact selected documents and each one's Agent 1 evidence JSON for that run |
-| `reports` | One complete Agent 2 report JSON per successful run |
-| `classifications` | Preserved legacy Agent 1 company/year classification records |
-| `memos` | Preserved legacy climate-memo records/functions; not the full ESG report format |
+| `companies`, `documents` | Company ownership, metadata and original upload bytes |
+| `pipeline_runs`, `run_documents` | Run history and per-document extraction snapshots |
+| `run_details` | New stage, explicit reporting context and shared normalized evidence |
+| `report_outputs` | New typed outputs, unique per `(run_id, report_type)` |
+| `reports` | Old single-report rows retained unchanged |
+| `classifications`, `memos` | Teammate legacy records/accessors retained |
+| `schema_migrations` | Applied typed-output migration version |
 
-Foreign keys are enabled. Run creation and successful report completion use short
-transactions. Network calls run outside transactions. WAL mode and a five-second
-busy timeout support local concurrent access; this is not a distributed job system.
+Migration 1 is additive and transactional: creates `run_details` and `report_outputs`,
+copies historical `reports` rows as typed ESG outputs preserving IDs/JSON/timestamps,
+and keeps the original rows. The copied outputs are marked `legacy`. Their old embedded
+climate section is historical data, not a new primary AASB draft. Triggers reject
+updates/deletes of typed outputs. A second startup does not recopy or rewrite data.
 
-`processCompany()` follows `extracting → analysing → completed`, or `failed` on a
-handled error. Uploaded bytes and completed extraction snapshots survive failure.
-Retry by starting a new run with the same document IDs; successful earlier reports
-remain immutable. Failure details are shown by the calling CLI while only a generic
-message is saved. A process crash may leave an `extracting` or `analysing` run;
-automatic recovery/resume is not implemented. A new run is the recovery path.
+Use `getAasbS2Report(companyId, id)` and `getEsgReport(companyId, id)` for new work.
+The old `getReport()` and CLI `report` only read the old `reports` table, for backward
+compatibility. A new `processCompany` return value uses `reportIds`/`outputs` instead
+of the previous single `id`/`report` fields; update clients accordingly.
 
-A new checkout creates its schema automatically. If an older root `esg_reports.db`
-exists and the new default database does not, startup copies it using SQLite's
-backup API before adding the new tables. The old file is preserved for recovery.
-Existing new databases are never overwritten by automatic migration.
+Older root database files can still be copied to the new location on first startup
+using SQLite backup. On this checkout the previously committed legacy database was
+recovered, with its one classification retained and a local backup in
+`storage/backups/legacy-esg_reports.db`. No original upload records are fabricated.
 
-On this checkout, one legacy classification was recovered from the previously
-committed database, because the old local file was missing after branch changes.
-It is preserved in the active database, with a recovery copy at
-`storage/backups/legacy-esg_reports.db`. Legacy records are not fabricated into
-uploaded-document records; their original upload bytes/provenance were never saved.
+## Future frontend integration (not implemented)
 
-Back up SQLite using its backup API (`await db.backup(destinationPath)`) rather than
-copying an open database without its WAL. Backups and original uploads are local
-sensitive data. For deployment, configure `ESG_DB_PATH` on a persistent local disk,
-not an ephemeral server filesystem or a live synced/shared drive. This checkout is
-under OneDrive; avoid simultaneous database use/sync during the hackathon demo.
+Keep SQLite, Gemini keys and agent imports on the backend. The future authenticated
+API can call `createCompany`, `storeDocument`, `processCompany`, `getRun` and the typed
+retrieval functions. `getDocument(companyId, documentId, true)` returns original bytes
+for an authorized download; list responses do not include BLOBs.
 
-## How the agents assess evidence
+Suggested routes: company creation/listing; multipart upload/list/download; start run;
+poll run; retrieve/export AASB or ESG output. No route is implemented by this task.
+Use a durable worker for long processing rather than holding an upload HTTP request.
+Repository company checks are not user authentication or tenant authorization.
 
-Agent 1 accepts PDF bytes or a path through:
+The primary screen should show AASB preparation status, missing disclosures, supporting
+quotes, human-review actions and run history. The broader ESG report is a secondary
+tab. Director/assurance/lodgement actions must remain external, never an automatic
+"compliant" or "ready to lodge" badge. Add React/Express only in later work.
 
-```js
-import { extractEvidence } from "./src/agent1/agent1.js";
-const evidence = await extractEvidence(pdfBuffer, companyName, reportYear);
-```
+## Standalone commands and tests
 
-It extracts page text, chunks it, and asks Gemini for a dominant climate pillar:
-`governance`, `strategy`, `risk_management`, `metrics_targets`, or `not_relevant`.
-Its original classification prompt is preserved. It only includes relevant chunks
-with confidence at least 0.5. No OCR is implemented; PDFs without extractable text
-fail clearly. The import does not start a CLI, save files or open SQLite.
-
-The pipeline saves the original extraction, then adds source filename, source type
-and `documentId` to combined chunks. Agent 2 assigns evidence IDs and preserves these
-links. Page markers belong to their original document; pooled pillar pages are not
-precise quotation locations.
-
-Agent 2 assesses three criteria in each ESG category and four climate criteria.
-It requests structured JSON and verifies citation IDs and exact quoted substrings.
-JavaScript calculates `strong=1`, `partial=0.5`, `missing=0` and averages them onto
-0–100. The overall ESG score averages the three rounded category scores; AASB S2 is
-scored separately. Summary and recommendations are assembled from templates.
-
-These scores measure evidence readiness, not company ESG performance or compliance.
-The fixed rubric does not establish industry materiality. Missing social evidence
-may reflect Agent 1's climate filtering. Quotes can exist yet be misinterpreted;
-human review remains necessary. AASB S2 output is a simplified readiness view, not
-legal, audit or assurance advice.
-
-Details: [Agent 1](src/agent1/README.md) · [Agent 2](src/agent2/README.md).
-
-## Backend functions for the future web application
-
-Example server-side integration:
-
-```js
-import { createCompany, storeDocument, getReport } from "./src/database/repository.js";
-import { processCompany } from "./src/pipeline/processCompany.js";
-
-const company = createCompany("Example Company");
-const document = storeDocument({
-  companyId: company.id,
-  reportYear: "2025",
-  filename: "sustainability.pdf",
-  sourceType: "public",
-  content: uploadedFileBuffer
-});
-const result = await processCompany({
-  companyId: company.id,
-  reportYear: "2025",
-  documentIds: [document.id]
-});
-const saved = getReport(company.id, result.id);
-// Return saved.report as JSON to the report screen.
-```
-
-Use `listCompanies`, `listDocuments`, `listRuns`, `getRun` and `getReport` for view
-models. `getDocument(companyId, documentId, true)` returns original `content` bytes
-for an authorized download endpoint; metadata-only calls omit the BLOB. New workflow
-functions live in `repository.js`; the similarly named legacy functions in `db.js`
-serve the old tables.
-
-Suggested HTTP contract — **not implemented endpoints**:
-
-| Endpoint | Service and UI purpose |
-| --- | --- |
-| `POST /api/companies`, `GET /api/companies` | Create/select a company |
-| `POST /api/companies/:id/documents` | Parse multipart upload; call `storeDocument` |
-| `GET /api/companies/:id/documents?year=2025` | Upload list, metadata and supported types |
-| `GET /api/companies/:id/documents/:documentId` | Authorized original-file download |
-| `POST /api/companies/:id/runs` | Schedule `processCompany` with selected IDs/year |
-| `GET /api/companies/:id/runs/:runId` | Poll status and retrieve extraction evidence |
-| `GET /api/companies/:id/reports/:reportId` | Retrieve full report JSON |
-
-A backend worker should call `processCompany` and return a run ID promptly; do not
-hold a browser upload connection open for a long annual-report analysis. The service
-has an `onRunCreated(runId)` callback, but no durable queue/worker is provided yet.
-The future API must authenticate users, authorize company access, limit request
-sizes and set download headers. Company-ID checks in the repository prevent mixed
-records but are not a substitute for user authentication or tenant authorization.
-
-React should handle company selection, upload state, document selection, processing
-status, report history, ESG category cards, a separate climate panel and expandable
-citations. Render quotations as text. Keep API keys, SQLite and agent imports on the
-backend. Do not send BLOB contents in normal list/report responses.
-
-## Limits and next work
-
-- Maximum document size: 25 MiB; maximum 20 distinct documents per run.
-- PDFs are detected by a header; parsing is the final validation. Other formats are
-  retained but fail extraction. Password-protected PDFs and OCR are not supported.
-- Agent 2 rejects more than 200,000 serialized evidence characters rather than
-  silently dropping text. A large multi-document run may need a smaller selection.
-- No persistent queue, automatic retry/resume, cancellation, document deletion or
-  retention policy is implemented. Failed runs do not delete uploaded documents.
-- No HTTP upload handling, authentication, malware scanning, UI or deployment setup
-  exists yet. These must be added before exposing uploads to untrusted users.
-- SQLite BLOBs keep the MVP self-contained. For larger workloads, store originals
-  in object storage and retain metadata, hashes and references in the database.
-
-## Tests and troubleshooting
+`.\run-agent2.ps1` still generates the secondary ESG demo JSON. It does not save to
+SQLite or produce an AASB report. Use the full pipeline for both persisted outputs.
+The original Agent 1 CLI remains available at `src/agent1/agent1.js` and saves its
+legacy classification/export. Importing `extractEvidence()` has no CLI side effects.
 
 ```powershell
 .\run-agent2.ps1 -Test
-# Or:
+# or
 npm test
 ```
 
-The suite includes Agent 2 validation/scoring tests, a legacy SQLite test, and an
-integration test using a real PDF parser and database with simulated Gemini replies.
-It checks original bytes, deduplication, company/year boundaries, persisted reports,
-run history, unsupported files, failure retention, provenance and database reopening.
-Tests use temporary databases and do not write to the company's active database.
+Tests cover source validation, granular sections, version/relief metadata, conditional
+applicability, extraction reuse/order, independent persistence, legacy migration,
+immutable reports, ownership and failure retention. SQLite tests use isolated temp
+databases. Mock model results verify behavior; they are not legal/assessment accuracy
+tests. Full annual reports and human assurance processes are not validated by these tests.
 
-A live one-page pipeline smoke test is also run during verification; live output
-is not an accuracy benchmark and requires API access. Large real annual reports
-have not been fully evaluated by this implementation.
+Limits: 25 MiB/file, 20 distinct documents/run, text PDFs only, and 200,000 normalized
+evidence characters. Other formats can be stored but extraction fails clearly. No
+paid service, vector database, OCR, authentication, UI, distributed queue, cancellation
+or automatic recovery after a killed process is included. SQLite remains the source
+of truth. This task does not commit or push changes.
 
-| Problem | Action |
+## Gemini pacing and retry policy
+
+Agent 1 now groups up to eight independent chunks into each request, with a
+48,000-character grouping limit (a single oversized page remains intact).
+Each chunk retains its text and page markers. Responses must contain every input
+chunk ID exactly once and valid classification fields; malformed batches fail
+without inventing evidence. `AGENT1_BATCH_SIZE=1` restores individual requests;
+the default is 8, with a supported range of 1–16. This is ordinary request grouping,
+not Google's asynchronous Batch API. It reduces request count, not total input
+tokens, so token-per-minute limits can still apply.
+
+The stored-document pipeline commits validated classifications to SQLite's
+`extraction_checkpoints` table before the next request. Repeating `process` creates
+a new audit run and reuses matching classifications from the same document,
+including work saved before a failure. Cache keys include model, prompt, examples,
+classifier version and exact chunk text/page data. Changed inputs are reclassified.
+Standalone Agent 1 does not persist these checkpoints. Report generation still
+runs anew; historical reports remain immutable. Earlier failed runs cannot recover
+classifications that the old code never saved.
+
+Check request counts offline before starting (no Gemini calls or new pipeline run):
+
+```powershell
+.\run-pipeline.ps1 estimate 2 2026
+# Optional document IDs: estimate 2 2026 2
+# Once provider quota is available, reuse the existing upload:
+.\run-pipeline.ps1 process 2 2026 --context src/aasb/examples/reportingContext.json
+```
+
+For the locally uploaded Coles PDF, the estimate is 96 chunks, 13 extraction
+requests and 2 report requests: approximately 15 calls instead of 98. This excludes
+retries and other project usage and is not a guarantee of available quota or final
+report success. Use reporting-context dates appropriate to the actual financial
+period; the example context is a template.
+
+An error containing `GenerateRequestsPerDayPerProjectPerModel-FreeTier` with limit
+20 is a daily allowance failure. Its short generic retry delay does not restore
+that allowance. Google resets daily requests at midnight Pacific time; wait for
+the reset before retrying. You do not need to re-upload the PDF or replace the key.
+
+All live calls (Agent 1, AASB, ESG) share `src/llm/gemini.js` in one Node process.
+Provider quotas apply to project/model usage, including RPM, input TPM and daily
+requests; pacing does not create additional quota. See
+[Google's rate-limit documentation](https://ai.google.dev/gemini-api/docs/rate-limits).
+
+```dotenv
+GEMINI_MIN_REQUEST_INTERVAL_MS=15000
+GEMINI_MAX_RETRIES=3
+GEMINI_MAX_RETRY_DELAY_MS=60000
+```
+
+The first call starts immediately. Subsequent call/retry starts are at least the
+configured interval apart. SDK-level retries are explicitly disabled; the helper
+owns the retry budget. The default allows an initial attempt plus three retries.
+
+Retryable failures: 429/RESOURCE_EXHAUSTED, 408, 5xx and recognized transient network
+codes. Bad requests, keys, permissions, model configuration and invalid generated
+JSON do not enter an indiscriminate retry loop. Provider RetryInfo/retryDelay and
+Retry-After seconds/date are respected with a 250 ms safety buffer. Otherwise the
+helper uses 2s, 4s, 8s... exponential delays capped at 30s, plus up to 500 ms jitter;
+the pacing interval still applies if it is longer.
+
+An explicit daily-quota failure stops further calls in that process. A provider
+wait above the configured retry-delay budget fails rather than retrying early;
+quota-related long waits also stop further calls in that process. Exhausted normal
+transient retries surface the original error with a CLI hint and mark the run failed.
+The helper never loops indefinitely or attempts to bypass quota. It has no automatic
+daily-reset scheduler. Start a new process/run when quota becomes available again.
+
+This queue is process-local, not distributed. Multiple CLIs/workers or other apps on
+the same project can still exceed its quota. Use one worker for the hackathon; no
+large chunk-size increase or provenance reduction was introduced.
+
+The test suite uses fake clocks for pacing/retry scenarios and injected model
+clients elsewhere. It covers successful requests, provider delays, backoff/jitter,
+retry caps, permanent errors, queue recovery, retained extraction after quota failure
+and a subsequent successful run using the same stored documents. One test deliberately
+makes SQLite's failed-status update throw; its expected diagnostic confirms that
+the original processing exception is preserved.
+
+## Verification and changed-file inventory for this course correction
+
+Phase 1 was completed and all 19 tests passed before Phase 2 implementation began.
+The final 28 tests passed. A live one-page PDF was extracted once, generated both
+typed reports, persisted them to an isolated SQLite database, and exported both
+files. Export JSON matched stored JSON; foreign-key checks were empty and SQLite
+integrity was `ok`. The AASB result had 64 criteria and version `2024-09`; its draft,
+human declaration and non-lodgement-ready flags were verified. The ESG export had
+no embedded AASB section. Live testing did not process the user's full Coles report.
+
+| File | Change |
 | --- | --- |
-| `node` not recognized | Use the PowerShell launchers or install Node and reopen the terminal |
-| Missing `dotenv` / `better-sqlite3` | Run `npm ci` after cloning or switching from an older tracked-dependency branch |
-| Missing API key | Edit root `.env`, not `.env.example`, and save |
-| Provider rejects model | Check account access and set the appropriate `AGENT1_MODEL` / `AGENT2_MODEL` |
-| Unsupported or scanned document | Original is retained; upload a text PDF or add an extractor/OCR implementation |
-| Failed run | Inspect CLI error and `run` status; fix input/config and start a new run |
-| All scores are zero | Inspect evidence: an empty or climate-filtered input may provide no relevant support |
-| Database locked | Close competing tools/processes and avoid syncing an actively written database |
+| `.env.example` | AASB model and shared pacing/retry configuration |
+| `.gitignore` | Ignore the primary AASB export filename |
+| `README.md` | Primary/secondary architecture, commands, schema, metadata, retries and review boundaries |
+| `src/agent1/README.md` | Shared-extraction and centralized pacing instructions |
+| `src/agent1/agent1.js` | Route API calls through the shared request queue; preserve extraction/chunking |
+| `src/agent2/README.md` | Secondary ESG contract and backward-compatible score alias |
+| `src/agent2/generateESGReport.js` | Remove embedded AASB output, share normalized input and request handling |
+| `src/agent2/normalizeEvidence.js` | Document the shared snapshot contract |
+| `src/agent2/rubric.js` | Keep the nine ESG criteria; remove the four embedded climate criteria |
+| `src/agent2/validateCitations.js` | New shared exact-quote/ID validation |
+| `src/agent2/tests/generateESGReport.test.js` | Updated secondary-output assertions |
+| `src/aasb/context.js` | New version, explicit relief and conditional applicability metadata |
+| `src/aasb/rubric.js` | New 64-criterion AASB preparation rubric and structured-response schema |
+| `src/aasb/generateAasbS2Report.js` | New primary draft generator, evidence checks, scoring and human-review fields |
+| `src/aasb/examples/reportingContext.json` | New optional context example with unknown size/first-year inputs |
+| `src/database/db.js` | Invoke additive migration, preserve legacy connection and tables |
+| `src/database/migrations.js` | New typed-output and stage/context schema with immutable outputs |
+| `src/database/repository.js` | Typed retrieval/storage, shared snapshot and stages; preserve legacy accessor |
+| `src/pipeline/processCompany.js` | Extract once, save AASB first, save ESG second, preserve partial success/errors |
+| `src/pipeline/cli.js` | Context input, separate report retrieval and exports, useful quota hints |
+| `src/llm/gemini.js` | New centralized queue, provider delays, transient retries, backoff and retry budget |
+| `tests/aasb.test.js` | New primary-schema, citation, version, relief and applicability tests |
+| `tests/gemini.test.js` | New deterministic fake-clock pacing/retry tests |
+| `tests/migrations.test.js` | New legacy-preservation and immutable-output migration test |
+| `tests/pipeline.test.js` | Two-output order/provenance, partial failure, exhausted quota and later recovery |
 
-The latest edits are local working-tree changes. No commit or push is performed by
-the setup, pipeline or tests.
+No Express/React, paid service, package dependency or SQLite replacement was added.
+The existing untracked `Coles_Annual_Report_2026.pdf` is user data, not an implementation
+change. No commit, merge or push was performed.

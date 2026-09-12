@@ -1,55 +1,65 @@
-# Agent 1: evidence extraction
+# Agent 1: shared evidence extraction
 
-This folder contains the existing teammate's PDF extraction and climate pillar
-classification pipeline. Reorganization preserved that logic and the original
-PDFs/sample JSON. The later audit also repaired model configuration, standard
-font loading and error handling; extraction and classification prompts remain.
+This is the teammate's PDF extraction and climate pillar-classification pipeline.
+Its chunking, page provenance and classification prompt are preserved. The full
+pipeline extracts each selected PDF once, then reuses the result for the primary
+AASB S2 draft and the secondary ESG report.
 
-## Files
+## Callable service
 
-- `agent1.js`: PDF text extraction, chunking, Gemini classification and JSON output.
-- `sanitycheck.py`: extracts a first-page preview from the included PDF.
-- `data/raw/`: original input PDFs.
-- `output/`: classified evidence for Agent 2, including the existing empty sample.
+```js
+import { extractEvidence } from "./src/agent1/agent1.js";
+const evidence = await extractEvidence(pdfBuffer, "Example Company", "2025");
+```
 
-## Run from the project root
+The first argument can be PDF bytes or a file path. Importing the module does not
+run its CLI or open SQLite. The service returns `{ company_name, report_year, pillars }`.
+Each pillar contains raw text chunks, confidence/justification and pooled page numbers.
+The full pipeline stores these snapshots and attaches original document IDs and source
+metadata before one shared normalization step.
 
-Set `GEMINI_API_KEY` in the project's root `.env`, then run:
+No OCR is implemented: PDFs without extractable text fail clearly. Original demo
+PDFs remain in `data/raw/`; company uploads are stored as SQLite BLOBs instead.
+
+## Standalone CLI
+
+From the project root, with Node on PATH:
 
 ```powershell
 node src/agent1/agent1.js src/agent1/data/raw/quality_holdings.pdf "Quality Holdings Resources" 2025
 ```
 
-Or use `npm run agent1 -- <pdf_path> "<company_name>" <report_year>`.
-See the root README for the full Node executable command if Node is not on PATH.
+Or `npm run agent1 -- <pdf_path> "<company_name>" <report_year>`.
+The CLI preserves the legacy classification upsert through `src/database/db.js`
+and exports JSON to `src/agent1/output/`. A repeated company/year replaces this
+standalone export/legacy row. Full pipeline runs use immutable typed report history.
 
-Explicit relative PDF paths are relative to your terminal's current directory.
-The `.env` path and output directory are resolved relative to the script.
-Output is written to `src/agent1/output/<company>_<year>_classified.json`.
-Running again with the same company/year replaces that file.
+## Gemini pacing and errors
 
-The model defaults to `gemini-3.6-flash` and can be configured with `AGENT1_MODEL`
-in the root `.env`. The prior model configuration is no longer suitable for the
-current account. API calls require a working key and model access. Invalid model
-responses and exhausted API retries now fail instead of writing a misleading
-empty report. The extraction and classification prompt remain unchanged.
+`AGENT1_MODEL` defaults to `gemini-3.6-flash`; the key comes from root `.env`.
+All live model calls use `src/llm/gemini.js`. The default interval is 15 seconds;
+configure `GEMINI_MIN_REQUEST_INTERVAL_MS`, `GEMINI_MAX_RETRIES` and
+`GEMINI_MAX_RETRY_DELAY_MS` centrally. SDK retries are disabled to prevent hidden
+bursts. Only transient failures retry; provider delays take precedence over fallback
+backoff. Invalid classification JSON is not treated as valid empty evidence.
 
-## Connect to Agent 2
-
-```powershell
-.\run-agent2.ps1 -InputFile src/agent1/output/quality_holdings_resources_2025_classified.json
-```
-
-Agent 2 writes the report to `src/agent2/output/esgReport.json`. The checked-in
-Agent 1 sample is empty, so it currently produces all-missing assessments.
+Mocked clients do not wait 15 seconds. Tests can pass an explicit fake-clock
+`requester` to verify pacing and retry caps. The queue is process-local; run one
+worker on a low-tier project, not many concurrent CLIs sharing the same quota.
 
 ## Python helper
 
-In a Python environment with `pdfplumber` installed:
+With Python and `pdfplumber` installed, `python src/agent1/sanitycheck.py` previews the
+sample PDF's first page. This helper is not required by the Node pipeline.
 
-```powershell
-python src/agent1/sanitycheck.py
-```
+See the [project README](../../README.md) for upload commands, processing, typed
+report retrieval and frontend integration plans.
+# Quota recovery
 
-Its PDF path is relative to this helper file, so it works from any directory.
-Python dependencies remain separate from the Node dependencies.
+Classification groups up to eight independent chunks per request by default
+(`AGENT1_BATCH_SIZE`, range 1–16), preserving original text and page markers.
+The stored-upload pipeline saves each validated chunk in SQLite and reuses it
+when the same process command is repeated. Run `./run-pipeline.ps1 estimate
+<companyId> <year>` from the project root for offline request counts. Standalone
+Agent 1 does not persist checkpoints. Daily quota exhaustion still requires the
+provider reset; batching does not increase your allowance.

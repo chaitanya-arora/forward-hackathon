@@ -1,14 +1,7 @@
-/**
- * db.js — shared SQLite setup for the ESG project
- *
- * Two tables:
- *   - classifications: raw output from Agent 1 (per-pillar text chunks + confidence)
- *   - memos: scored output from Agent 2 (Red/Amber/Green + final memo text)
- *
- * Both are keyed by (company_name, report_year) so they can be joined together.
- *
- * Usage (from agent1.js or agent2.js):
- *   import { db, saveClassification, saveMemo, getClassification, getMemo, listCompanies } from "./db.js";
+/** Shared SQLite connection and base schema.
+ * New company/upload/run/report APIs are in repository.js.
+ * Legacy classifications/memos accessors remain below for compatibility.
+ * Typed outputs and fine-grained stages are added by migrations.js.
  */
 
 import Database from "better-sqlite3";
@@ -16,6 +9,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { mkdirSync, existsSync } from "node:fs";
 import { config } from "dotenv";
+import { migrateReportOutputs } from "./migrations.js";
+import { migrateExtractionCheckpoints } from "./extractionCheckpoint.js";
 
 const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
 config({ path: resolve(projectRoot, ".env"), quiet: true });
@@ -121,6 +116,9 @@ db.exec(`
 // ---------------------------------------------------------------------------
 // Classifications (Agent 1)
 // ---------------------------------------------------------------------------
+
+migrateReportOutputs(db);
+migrateExtractionCheckpoints(db);
 
 export function saveClassification(companyName, reportYear, pillarsObj) {
   const stmt = db.prepare(`

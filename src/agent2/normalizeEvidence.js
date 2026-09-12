@@ -2,7 +2,7 @@ const object = (value) => value && typeof value === "object" && !Array.isArray(v
 const pages = (value) => Array.isArray(value)
   ? [...new Set(value.filter((p) => Number.isInteger(p) && p > 0))] : [];
 
-// Agent 1 enters here. Do not import its CLI: importing it runs PDF extraction.
+// Agent 1 enters here; both generators share the exact normalized snapshot per run.
 export function normalizeEvidence(input) {
   if (!object(input)) throw new TypeError("Evidence input must be an object.");
   const company = input.company_name ?? input.company;
