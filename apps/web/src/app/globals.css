@@ -24,6 +24,7 @@
   --rule: #e2ded4;
   --rule-strong: #cbc5b7;
   --accent: #1f4d47;
+  --accent-deep: #143430;
   --accent-ink: #ffffff;
   --accent-soft: #e8efed;
   --glow: transparent;
@@ -46,21 +47,26 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* The journey's low-light workspace. */
+/* The journey's low-light workspace. Deliberately green-cast rather than
+   neutral near-black — the depth is where the lushness comes from, not from
+   ornament. Every pair here was contrast-checked against WCAG AA; `--ink-faint`
+   in particular carries `.note` body text and sits at 5.07:1 on `--surface`. */
 .surface-dark {
-  --paper: #0a0c0b;
-  --surface: #111513;
-  --surface-sunk: #0d100f;
-  --surface-raised: #171d1a;
-  --ink: #f1efe8;
-  --ink-muted: #9aa8a1;
-  --ink-faint: #6a7873;
-  --rule: #1f2724;
-  --rule-strong: #2c3733;
-  --accent: #77e0b4;
-  --accent-ink: #06211a;
-  --accent-soft: #12241e;
-  --glow: rgba(119, 224, 180, 0.18);
+  --paper: #070d0a;
+  --surface: #0e1712;
+  --surface-sunk: #0a120e;
+  --surface-raised: #152019;
+  --ink: #f0f2ea;
+  --ink-muted: #9db3a7;
+  --ink-faint: #758c82;
+  --rule: #1b2a22;
+  --rule-strong: #294034;
+  --accent: #6ee7b0;
+  /* Forest companion to the mint, so greens have range instead of one flat note. */
+  --accent-deep: #1d7d5c;
+  --accent-ink: #052018;
+  --accent-soft: #0f2a20;
+  --glow: rgba(110, 231, 176, 0.22);
 
   --strong: #77e0b4;
   --strong-bg: #12241e;

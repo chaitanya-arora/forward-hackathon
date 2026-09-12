@@ -4,8 +4,13 @@
 
 .journey {
   min-height: 100vh;
+  /* Two washes rather than one: a mint bloom at the top and a deeper forest
+     pool low and to the side. The overlap is what gives the surface depth
+     instead of a flat vignette. */
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(119, 224, 180, 0.07), transparent 70%),
+    radial-gradient(ellipse 78% 46% at 50% -8%, rgba(110, 231, 176, 0.10), transparent 72%),
+    radial-gradient(ellipse 60% 50% at 88% 18%, rgba(29, 125, 92, 0.12), transparent 70%),
+    radial-gradient(ellipse 90% 40% at 12% 92%, rgba(29, 125, 92, 0.08), transparent 75%),
     var(--paper);
 }
 
@@ -175,10 +180,11 @@
 /* --- panels (upload + processing) ---------------------------------------- */
 
 .panel {
-  background: var(--surface);
+  background: linear-gradient(160deg, var(--surface-raised), var(--surface));
   border: 1px solid var(--rule);
-  border-radius: 12px;
-  padding: 26px;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 18px 40px -30px rgba(0, 0, 0, 0.9);
 }
 
 .dropzone {

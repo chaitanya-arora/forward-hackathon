@@ -40,7 +40,7 @@ export default function LandingPage() {
         <div className="hero">
           <div>
             <p className="eyebrow rise" style={{ ["--i" as string]: 0 }}>
-              Climate disclosure readiness
+              GreenScreen · Climate disclosure readiness
             </p>
             <h1 className="display display-xl rise" style={{ ["--i" as string]: 1 }}>
               Your documents in.
@@ -50,8 +50,8 @@ export default function LandingPage() {
             <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 22 }}>
               Most companies without a sustainability team already hold the evidence an AASB S2 or
               TCFD assessment needs. It is just scattered across files nobody has read together.
-              Upload whatever you have — every claim that comes back is traced to the document and
-              page it came from.
+              GreenScreen reads whatever you have and returns a cited report — every claim traced to
+              the document and page it came from.
             </p>
             <div className="hero-actions rise" style={{ ["--i" as string]: 3 }}>
               <Link href="/upload" className="btn btn-primary">

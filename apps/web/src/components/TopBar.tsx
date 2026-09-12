@@ -5,7 +5,7 @@ export function TopBar({ children }: { children?: React.ReactNode }) {
     <div className="topbar no-print">
       <Link href="/" className="wordmark">
         <span>
-          <strong>Readiness</strong> · AASB S2 / TCFD
+          <strong>GreenScreen</strong> · AASB S2 / TCFD
         </span>
       </Link>
       <div style={{ display: "flex", gap: 10 }}>{children}</div>
