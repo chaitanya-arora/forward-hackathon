@@ -365,12 +365,7 @@ button { font: inherit; cursor: pointer; }
 
   .page { max-width: none; padding: 0; }
 
-  .report-pillar,
   .report-block { break-inside: avoid; page-break-inside: avoid; }
-
-  /* Higher specificity than `[hidden]` above, so collapsed citations still
-     appear in the exported PDF. */
-  .citations[hidden], .citations { display: grid !important; }
 
   .rise, .fade { animation: none !important; opacity: 1 !important; transform: none !important; }
 
