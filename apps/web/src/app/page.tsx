@@ -16,8 +16,8 @@ const STEPS = [
     p: "Annual reports, board policies, internal memos — any mix, in any order. There is nothing to fill in and no questionnaire to work through.",
   },
   {
-    h: "Every document strengthens one assessment",
-    p: "Evidence is pooled across everything you provide rather than compared between sources. More material means a more complete report, never a contradiction to resolve.",
+    h: "Every document strengthens the assessment",
+    p: "Evidence is pooled across everything you provide. More material means a more complete report.",
   },
   {
     h: "Nothing in the report is unsourced",
@@ -34,16 +34,14 @@ export default function LandingPage() {
         </Link>
       </SiteHeader>
 
-      <main className="page page-wide">
+      <main className="page page-wide" style={{ paddingBottom: 32 }}>
         <div className="hero">
           <div>
             <p className="eyebrow rise" style={{ ["--i" as string]: 0 }}>
-              GreenScreened · Climate disclosure readiness
+              Your documents in · Official report out
             </p>
             <h1 className="display display-xl rise" style={{ ["--i" as string]: 1 }}>
-              Your documents in.
-              <br />
-              GreenScreened out.
+              <span className="title-dim">Your Company,</span> GreenScreened
             </h1>
             <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 22 }}>
               Most companies without a sustainability team already hold the evidence an AASB S2 or
@@ -55,14 +53,12 @@ export default function LandingPage() {
               <Link href="/upload" className="btn btn-primary">
                 Generate a report
               </Link>
-              <div className="hero-actions-row">
-                <Link href="/about" className="btn">
-                  About
-                </Link>
-                <Link href="/report/preview" className="btn">
-                  See an example report
-                </Link>
-              </div>
+              <Link href="/about" className="btn">
+                About
+              </Link>
+              <Link href="/report/preview" className="btn">
+                See an example
+              </Link>
             </div>
           </div>
 
@@ -100,7 +96,7 @@ export default function LandingPage() {
             <div key={s.h} className="rise" style={{ ["--i" as string]: 5 + i }}>
               <span className="strip-num">{String(i + 1).padStart(2, "0")}</span>
               <h2>{s.h}</h2>
-              <p className="note">{s.p}</p>
+              <p className="strip-body">{s.p}</p>
             </div>
           ))}
         </div>
