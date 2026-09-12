@@ -111,10 +111,23 @@ button { font: inherit; cursor: pointer; }
 
 .page-wide { max-width: var(--wide); }
 
+/* Sticky: pinned to the top of the viewport on every page. The outer element
+   is full-bleed and carries the translucent, blurred background so wide
+   viewports never show a seam at the edges; the inner row stays centered to
+   the same width as the page content beneath it. */
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.topbar-row {
   max-width: var(--wide);
   margin: 0 auto;
-  padding: 22px 24px;
+  padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;

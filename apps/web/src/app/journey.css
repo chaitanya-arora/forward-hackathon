@@ -23,7 +23,7 @@
   color: var(--ink);
 }
 
-.display-xl { font-size: clamp(38px, 6.2vw, 62px); }
+.display-xl { font-size: clamp(40px, 6.4vw, 66px); }
 .display-l  { font-size: clamp(30px, 4.4vw, 40px); }
 
 .lede {
@@ -47,11 +47,39 @@
   .hero { grid-template-columns: 1fr; gap: 40px; padding-bottom: 48px; }
 }
 
+/* A tall primary action over a shorter secondary row, rather than three
+   buttons abreast. `inline-flex` + column + stretch sizes the whole group to
+   its widest row's natural width — whichever of the two rows is wider, the
+   other stretches to match, so the two secondary buttons combined always run
+   exactly as wide as the primary button above them. */
 .hero-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   margin-top: 34px;
+  max-width: 100%;
+}
+
+.hero-actions .btn-primary {
+  justify-content: center;
+  padding: 15px 20px;
+  font-size: 15.5px;
+}
+
+.hero-actions-row {
+  display: flex;
+  gap: 10px;
+}
+
+.hero-actions-row .btn {
+  flex: 1;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .hero-actions-row { flex-direction: column; }
 }
 
 /* The report fragment shown as proof of what the tool produces. It is a
@@ -456,34 +484,181 @@
   line-height: 1.55;
 }
 
-/* --- about page: pillar method cards + inline completeness badges -------- */
+/* --- about page ----------------------------------------------------------
+   Deliberately varied: card grids at different column counts, a numeral
+   treatment for the scoring steps, and colour-coded rating cards, so the
+   page reads as a designed layout rather than a stack of identical panels.
+   --------------------------------------------------------------------- */
 
-.pillar-grid {
+/* Section labels, bigger and looser than the landing page's dense eyebrow —
+   these introduce a whole section, not a three-word feature. */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.section-head .strip-num {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+
+.section-head h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: clamp(26px, 3.4vw, 34px);
+  margin: 0;
+  color: var(--ink);
+}
+
+/* Generic info card, used for the four pillars and reused at a different
+   column count for the privacy points — same idiom, different rhythm. */
+.info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
 }
 
-.pillar-method {
+.info-grid--2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+.info-card {
   background: linear-gradient(160deg, var(--surface-raised), var(--surface));
   border: 1px solid var(--rule);
   border-radius: 12px;
-  padding: 20px 22px;
+  padding: 22px 24px;
 }
 
-.pillar-method h3 {
+.info-card h3 {
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
-  margin: 0 0 8px;
+  margin: 0 0 9px;
   color: var(--ink);
 }
 
-.pillar-method p {
+.info-card p {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* Rating cards: colour is the content here, not decoration — three
+   completeness ratings, three unambiguous tones, matching the same
+   strong/partial/missing vocabulary the report itself uses. */
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.rating-card {
+  border-radius: 14px;
+  padding: 24px 24px 22px;
+  border: 1px solid transparent;
+}
+
+.rating-card--strong  { background: var(--strong-bg);  border-color: color-mix(in srgb, var(--strong) 30%, transparent); }
+.rating-card--partial { background: var(--partial-bg); border-color: color-mix(in srgb, var(--partial) 30%, transparent); }
+.rating-card--missing { background: var(--missing-bg); border-color: color-mix(in srgb, var(--missing) 30%, transparent); }
+
+.rating-card h3 {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+}
+
+.rating-card--strong h3  { color: var(--strong); }
+.rating-card--partial h3 { color: var(--partial); }
+.rating-card--missing h3 { color: var(--missing); }
+
+.rating-card p {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Step cards: an oversized, faint numeral anchors each card, giving the
+   "from rating to number" sequence a visible order without a bullet list. */
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.step-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  overflow: hidden;
+}
+
+.step-card .step-index {
+  position: absolute;
+  top: -14px;
+  right: 8px;
+  font-family: var(--serif);
+  font-size: 72px;
+  font-weight: 600;
+  color: var(--rule-strong);
+  opacity: 0.55;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.step-card h4 {
+  position: relative;
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  max-width: 88%;
+  color: var(--ink);
+}
+
+.step-card p {
+  position: relative;
   font-family: var(--sans);
   font-size: 13.5px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink-muted);
+  margin: 0;
+  max-width: 92%;
+}
+
+/* The one fact that needs to stand apart rather than sit in a list. */
+.callout {
+  border-radius: 12px;
+  padding: 20px 22px;
+  background: var(--partial-bg);
+  border: 1px solid color-mix(in srgb, var(--partial) 35%, transparent);
+}
+
+.callout-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--partial);
+  margin: 0 0 8px;
+}
+
+.callout p {
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--ink);
   margin: 0;
 }
 

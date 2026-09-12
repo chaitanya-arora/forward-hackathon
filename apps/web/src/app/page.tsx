@@ -43,7 +43,7 @@ export default function LandingPage() {
             <h1 className="display display-xl rise" style={{ ["--i" as string]: 1 }}>
               Your documents in.
               <br />
-              A cited report out.
+              GreenScreened out.
             </h1>
             <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 22 }}>
               Most companies without a sustainability team already hold the evidence an AASB S2 or
@@ -55,12 +55,14 @@ export default function LandingPage() {
               <Link href="/upload" className="btn btn-primary">
                 Generate a report
               </Link>
-              <Link href="/report/preview" className="btn">
-                See an example report
-              </Link>
-              <Link href="/about" className="btn btn-ghost">
-                About
-              </Link>
+              <div className="hero-actions-row">
+                <Link href="/about" className="btn">
+                  About
+                </Link>
+                <Link href="/report/preview" className="btn">
+                  See an example report
+                </Link>
+              </div>
             </div>
           </div>
 
