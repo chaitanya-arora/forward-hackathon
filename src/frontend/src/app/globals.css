@@ -1,0 +1,336 @@
+/* ---------------------------------------------------------------------------
+   Design system.
+
+   Two surfaces, deliberately:
+   - PAPER is the default (`:root`). The report is a document, so it stays
+     paper-white in every theme and prints that way.
+   - DARK is opted into by the journey screens via `.surface-dark`. Landing,
+     upload and processing are a focused, low-light workspace; the report then
+     arrives as bright paper — the payoff at the end of the flow.
+
+   Restraint is the brief: no illustration, no whimsy. The polish comes from
+   type, spacing, contrast and motion.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* paper */
+  --paper: #fbfaf7;
+  --surface: #ffffff;
+  --surface-sunk: #f4f2ed;
+  --surface-raised: #ffffff;
+  --ink: #1a1a17;
+  --ink-muted: #5c584f;
+  --ink-faint: #8a857a;
+  --rule: #e2ded4;
+  --rule-strong: #cbc5b7;
+  --accent: #1f4d47;
+  --accent-deep: #143430;
+  --accent-ink: #ffffff;
+  --accent-soft: #e8efed;
+  --glow: transparent;
+
+  --strong: #2f6b4f;
+  --strong-bg: #e9f1ec;
+  --partial: #8a6218;
+  --partial-bg: #f7f0df;
+  --missing: #8f3a2e;
+  --missing-bg: #f8eae7;
+  /* Two more AASB-specific statuses beyond the strong/partial/missing scale:
+     excluded-by-a-human-decision, and open-question-for-a-human. Neither is a
+     gap, so neither borrows red or amber. */
+  --neutral: #6b6a63;
+  --neutral-bg: #efeee9;
+  --judgement: #4a5a9e;
+  --judgement-bg: #eaecf6;
+
+  /* Pillar identity colours — distinct from the strong/partial/missing rating
+     scale above, which means completeness, not which pillar this is. Each is
+     contrast-checked at 4.5:1+ against paper. */
+  --pillar-governance: #2a5db0;
+  --pillar-strategy: #6b4fcc;
+  --pillar-risk: #b24a2c;
+  --pillar-metrics: #0f7a78;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --measure: 68ch;
+  --page: 860px;
+  --wide: 1120px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* The journey's low-light workspace. Deliberately green-cast rather than
+   neutral near-black — the depth is where the lushness comes from, not from
+   ornament. Every pair here was contrast-checked against WCAG AA; `--ink-faint`
+   in particular carries `.note` body text and sits at 5.07:1 on `--surface`. */
+.surface-dark {
+  --paper: #070d0a;
+  --surface: #0e1712;
+  --surface-sunk: #0a120e;
+  --surface-raised: #152019;
+  --ink: #f0f2ea;
+  --ink-muted: #9db3a7;
+  --ink-faint: #758c82;
+  --rule: #1b2a22;
+  --rule-strong: #294034;
+  --accent: #6ee7b0;
+  /* Forest companion to the mint, so greens have range instead of one flat note. */
+  --accent-deep: #1d7d5c;
+  --accent-ink: #052018;
+  --accent-soft: #0f2a20;
+  --glow: rgba(110, 231, 176, 0.22);
+
+  --strong: #77e0b4;
+  --strong-bg: #12241e;
+  --partial: #e3b765;
+  --partial-bg: #241e12;
+  --missing: #e08f7e;
+  --missing-bg: #241715;
+  --neutral: #a8a69c;
+  --neutral-bg: #1d1d1a;
+  --judgement: #a3b1e8;
+  --judgement-bg: #1a1e2c;
+
+  /* Same identity colours, lightened for the dark surface. Contrast-checked
+     at 8:1+ against every dark background token. */
+  --pillar-governance: #8fb4ff;
+  --pillar-strategy: #bba3ff;
+  --pillar-risk: #ee9b7c;
+  --pillar-metrics: #68dad3;
+
+  background: var(--paper);
+  color: var(--ink);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Author class rules (e.g. `.citations { display: grid }`) outrank the UA
+   [hidden] rule, so state it with !important or `hidden` silently does nothing. */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); }
+
+button { font: inherit; cursor: pointer; }
+
+/* --- layout -------------------------------------------------------------- */
+
+.page {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+.page-wide { max-width: var(--wide); }
+
+/* Sticky: pinned to the top of the viewport on every page. Solid, exact
+   match to the page's own background token — no tint, no blur — so it reads
+   as part of the page rather than a distinct floating bar. The outer element
+   is full-bleed so wide viewports never show a seam at the edges; the inner
+   row stays centered to the same width as the page content beneath it. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--paper);
+}
+
+.topbar-row {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.wordmark strong { color: var(--ink); font-weight: 600; }
+
+.wordmark::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--glow);
+}
+
+/* --- buttons ------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px 18px;
+  border-radius: 7px;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease),
+    transform 0.18s var(--ease);
+}
+
+.btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 550;
+}
+
+.btn-primary:hover { box-shadow: 0 6px 24px -8px var(--glow); }
+
+.btn-primary:disabled,
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ghost { background: transparent; border-color: var(--rule); }
+
+/* --- small type ---------------------------------------------------------- */
+
+.note {
+  font-size: 13.5px;
+  color: var(--ink-faint);
+  line-height: 1.55;
+}
+
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 14px;
+}
+
+/* --- motion -------------------------------------------------------------- */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 var(--glow); }
+  70%  { box-shadow: 0 0 0 10px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Staggered entrance. Set --i on children to order them. */
+.rise {
+  animation: rise 0.6s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.fade {
+  animation: fade 0.5s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .btn:hover { transform: none; }
+}
+
+/* --- print: the PDF export path ------------------------------------------ */
+
+@media print {
+  :root {
+    --paper: #fff;
+    --surface: #fff;
+    --surface-sunk: #fff;
+    --ink: #000;
+    --ink-muted: #333;
+    --ink-faint: #555;
+    --rule: #ccc;
+  }
+
+  .no-print { display: none !important; }
+
+  body { font-size: 11pt; }
+
+  .page { max-width: none; padding: 0; }
+
+  .report-pillar,
+  .report-block { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Higher specificity than `[hidden]` above, so collapsed citations still
+     appear in the exported PDF. */
+  .citations[hidden], .citations { display: grid !important; }
+
+  .rise, .fade { animation: none !important; opacity: 1 !important; transform: none !important; }
+
+  @page { margin: 18mm 16mm; }
+}
+
+/* --- header nav + footer -------------------------------------------------- */
+
+.topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.footer {
+  max-width: var(--wide);
+  margin: 0 auto;
+  padding: 40px 24px 56px;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+}
+
+.footer-brand {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.footer-note { margin: 10px 0 0; font-style: italic; }
+
+@media (max-width: 700px) {
+  .topbar { gap: 14px; }
+}

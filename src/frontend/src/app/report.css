@@ -1,0 +1,728 @@
+/* ---------------------------------------------------------------------------
+   The report view — the hero screen. Everything here is tuned to read as a
+   finished deliverable rather than a dashboard.
+   --------------------------------------------------------------------------- */
+
+.report {
+  font-family: var(--serif);
+}
+
+/* --- masthead ------------------------------------------------------------ */
+
+.report-masthead {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 28px;
+  margin-bottom: 40px;
+}
+
+.report-kicker {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 14px;
+}
+
+.report-company {
+  font-size: clamp(30px, 5.5vw, 46px);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+}
+
+.report-dateline {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink-faint);
+  margin: 0;
+}
+
+/* --- score + summary ----------------------------------------------------- */
+
+.report-lede {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 44px;
+}
+
+.report-summary {
+  font-size: 19px;
+  line-height: 1.62;
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--ink);
+}
+
+.report-summary::first-letter {
+  font-size: 3.1em;
+  float: left;
+  line-height: 0.82;
+  padding: 0.06em 0.09em 0 0;
+  font-weight: 600;
+}
+
+.score-block {
+  text-align: right;
+  border-left: 1px solid var(--rule);
+  padding-left: 32px;
+  min-width: 150px;
+}
+
+.score-value {
+  font-size: 60px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  display: block;
+}
+
+.score-denom {
+  font-size: 22px;
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+
+.score-caption {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 10px;
+}
+
+@media (max-width: 680px) {
+  .report-lede { grid-template-columns: 1fr; gap: 28px; }
+  .score-block {
+    text-align: left;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-left: 0;
+    padding-top: 20px;
+  }
+  .report-summary { font-size: 17px; }
+}
+
+/* --- section headings ---------------------------------------------------- */
+
+.section-rule {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--rule-strong);
+  padding-top: 12px;
+  margin: 56px 0 28px;
+}
+
+/* --- pillars ------------------------------------------------------------- */
+
+.report-pillar {
+  margin-bottom: 42px;
+  padding-bottom: 42px;
+  padding-left: 20px;
+  border-bottom: 1px solid var(--rule);
+  /* Pillar identity colour — set inline per-pillar, subtle enough that it
+     reads as organisation rather than decoration. */
+  border-left: 3px solid var(--rule);
+}
+
+.report-pillar:last-of-type { border-bottom: 0; }
+
+.pillar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.pillar-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.pillar-icon {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.pillar-icon svg { width: 100%; height: 100%; }
+
+.pillar-metrics {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--sans);
+}
+
+.pillar-score {
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.pillar-score span { font-size: 15px; color: var(--ink-faint); font-weight: 400; }
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.badge-strong  { color: var(--strong);  background: var(--strong-bg); }
+.badge-partial { color: var(--partial); background: var(--partial-bg); }
+.badge-missing { color: var(--missing); background: var(--missing-bg); }
+.badge-neutral   { color: var(--neutral);   background: var(--neutral-bg); }
+.badge-judgement { color: var(--judgement); background: var(--judgement-bg); }
+
+/* The score bar is a thin rule, not a progress widget. */
+.pillar-bar {
+  height: 2px;
+  background: var(--rule);
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pillar-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent);
+  display: block;
+}
+
+.pillar-narrative {
+  font-size: 17px;
+  line-height: 1.68;
+  margin: 0 0 18px;
+  max-width: var(--measure);
+}
+
+/* --- citations ----------------------------------------------------------- */
+
+.citations-toggle {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.citations-toggle:hover { text-decoration: underline; }
+
+.citations-toggle .chev { font-size: 10px; transition: transform 0.15s; }
+.citations-toggle[aria-expanded="true"] .chev { transform: rotate(90deg); }
+
+.citations {
+  margin-top: 16px;
+  border-left: 2px solid var(--rule-strong);
+  padding-left: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.citation {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.citation-claim { color: var(--ink); margin: 0 0 4px; }
+
+.citation-source {
+  color: var(--ink-faint);
+  font-size: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.citation-id {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  background: var(--surface-sunk);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.citation-snippet {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-muted);
+  font-size: 13.5px;
+  margin: 6px 0 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--rule);
+}
+
+.citations-empty {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+/* --- findings ------------------------------------------------------------ */
+
+.findings { display: grid; gap: 2px; }
+
+.finding {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+
+.finding:first-child { border-top: 1px solid var(--rule); }
+
+.finding-pillar {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.finding-body { display: flex; flex-direction: column; gap: 8px; }
+.finding-summary { font-size: 16.5px; line-height: 1.55; margin: 0; }
+
+@media (max-width: 620px) {
+  .finding { grid-template-columns: 1fr; gap: 8px; }
+}
+
+/* --- recommendations ----------------------------------------------------- */
+
+.recs { display: grid; gap: 26px; counter-reset: rec; }
+
+.rec {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+}
+
+.rec::before {
+  counter-increment: rec;
+  content: counter(rec, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+  padding-top: 4px;
+}
+
+.rec-pillar {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 5px;
+}
+
+.rec-text { font-size: 16.5px; line-height: 1.6; margin: 0; max-width: var(--measure); }
+
+/* --- sources footer ------------------------------------------------------ */
+
+.sources { display: grid; gap: 10px; }
+
+.source {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.source-file { font-family: var(--mono); font-size: 12.5px; color: var(--ink); }
+.source-label { color: var(--ink-faint); }
+.source-count { color: var(--ink-faint); margin-left: auto; font-size: 12.5px; }
+
+.report-colophon {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.6;
+}
+
+/* --- ephemerality notice -------------------------------------------------- */
+
+/* The report is held in tab memory only, so the reader has to be told before
+   they navigate away. Sits above the masthead and never prints. */
+.keepsafe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: var(--partial-bg);
+  border: 1px solid color-mix(in srgb, var(--partial) 35%, transparent);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 32px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.keepsafe b { color: var(--partial); font-weight: 600; }
+
+
+/* ---------------------------------------------------------------------------
+   Two-report view: AASB S2 (primary) + ESG (secondary), a toggle between them,
+   and per-report download. Reuses the existing serif/badge/citation language
+   rather than inventing a second visual system.
+   --------------------------------------------------------------------------- */
+
+/* --- view toggle + download bar ------------------------------------------ */
+
+.report-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 28px 0 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.view-toggle {
+  display: inline-flex;
+  background: var(--surface-sunk);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-toggle button {
+  border: 0;
+  background: none;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 550;
+  color: var(--ink-muted);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.view-toggle button.is-active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.download-menu { position: relative; }
+
+.download-menu-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.25);
+  padding: 6px;
+  min-width: 200px;
+}
+
+.download-menu-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 9px 12px;
+  border-radius: 5px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.download-menu-list button:hover { background: var(--surface-sunk); }
+
+/* --- AASB masthead stats -------------------------------------------------- */
+
+.aasb-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 24px 0 8px;
+}
+
+.aasb-stat {
+  background: var(--surface);
+  padding: 16px 18px;
+  text-align: center;
+}
+
+.aasb-stat b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.aasb-stat span {
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* --- criterion groups (the 5 AASB sections) ------------------------------- */
+
+.criterion-group {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.criterion-group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 0;
+  text-align: left;
+}
+
+.criterion-group-head h3 {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.criterion-tally {
+  display: flex;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  flex-wrap: wrap;
+}
+
+.criterion-tally span { white-space: nowrap; }
+
+.criterion-group-chevron {
+  color: var(--ink-faint);
+  transition: transform 0.2s var(--ease);
+  flex-shrink: 0;
+}
+
+.criterion-group-chevron svg { width: 16px; height: 16px; }
+
+.criterion-group.is-open .criterion-group-chevron { transform: rotate(180deg); }
+
+.criterion-list {
+  border-top: 1px solid var(--rule);
+}
+
+.criterion-row { border-bottom: 1px solid var(--rule); }
+.criterion-row:last-child { border-bottom: 0; }
+
+.criterion-row-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 18px;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+
+.criterion-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.criterion-row-head p {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink);
+  margin: 0;
+}
+
+.criterion-ref {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.criterion-detail {
+  padding: 0 18px 16px 39px;
+}
+
+.criterion-detail p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0 0 10px;
+}
+
+.criterion-detail .citation { margin-bottom: 10px; }
+
+.criterion-required {
+  font-size: 13px;
+  color: var(--partial);
+  margin: 0;
+}
+
+/* --- ESG category cards ---------------------------------------------------- */
+
+.esg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.esg-card {
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.esg-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.esg-card-head h3 {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.esg-card-score {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.esg-card-score span { font-size: 14px; color: var(--ink-faint); font-weight: 400; }
+
+.esg-card ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.esg-card li { margin-bottom: 6px; }
+
+/* --- section dividers ------------------------------------------------------ */
+
+.report-type-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 56px 0 4px;
+}
+
+.report-type-heading h2 {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.report-type-tag {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-type-sub {
+  font-family: var(--sans);
+  font-size: 14.5px;
+  color: var(--ink-muted);
+  margin: 8px 0 0;
+  max-width: 68ch;
+}
+
+.warning-callout {
+  background: var(--surface-sunk);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 32px 0;
+}
+
+.warning-callout p {
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0 0 6px;
+}
+
+.warning-callout p:last-child { margin-bottom: 0; }

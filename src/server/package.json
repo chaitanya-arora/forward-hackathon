@@ -1,0 +1,16 @@
+{
+  "name": "forward-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Thin HTTP layer over the backend in ../agent1, ../agent2, ../aasb, ../database, ../pipeline. Runs those modules unbundled, exactly as the project's own CLI does — no transpilation, so better-sqlite3's native binding and each module's own .env/storage path resolution (relative to its real file location) both keep working unmodified.",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.2"
+  }
+}
