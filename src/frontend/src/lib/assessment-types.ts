@@ -81,6 +81,7 @@ export interface AasbS2Report {
     limitations: string;
     source: string | null;
     weights: Record<string, number>;
+    humanInputs?: unknown;
   };
   warnings: string[];
 }
