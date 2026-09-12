@@ -1,0 +1,15 @@
+{
+  "reportingPeriodStart": null,
+  "reportingPeriodEnd": null,
+  "earlyAdoptionOf2025Amendments": null,
+  "firstAnnualPeriodApplyingAasbS2": null,
+  "useScope3FirstYearRelief": null,
+  "useComparativesFirstYearRelief": null,
+  "expectedAssurance": { "provider": null, "level": null, "scope": null },
+  "companySize": {
+    "revenueAud": null,
+    "assetsAud": null,
+    "employees": null
+  },
+  "confirmedNotApplicable": {}
+}
