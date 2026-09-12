@@ -1,6 +1,9 @@
 /* ---------------------------------------------------------------------------
-   The report view — the hero screen. Everything here is tuned to read as a
-   finished deliverable rather than a dashboard.
+   The report view. On-screen this is a summary only — which framework, who
+   it's for, and three sections the backend will populate (business
+   engagement summary, key findings, priority actions). The full
+   evidence-level document is a separate PDF the backend produces and links
+   to; this page never renders it directly.
    --------------------------------------------------------------------------- */
 
 .report {
@@ -40,365 +43,7 @@
   margin: 0;
 }
 
-/* --- score + summary ----------------------------------------------------- */
-
-.report-lede {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 40px;
-  align-items: start;
-  margin-bottom: 44px;
-}
-
-.report-summary {
-  font-size: 19px;
-  line-height: 1.62;
-  margin: 0;
-  max-width: var(--measure);
-  color: var(--ink);
-}
-
-.report-summary::first-letter {
-  font-size: 3.1em;
-  float: left;
-  line-height: 0.82;
-  padding: 0.06em 0.09em 0 0;
-  font-weight: 600;
-}
-
-.score-block {
-  text-align: right;
-  border-left: 1px solid var(--rule);
-  padding-left: 32px;
-  min-width: 150px;
-}
-
-.score-value {
-  font-size: 60px;
-  line-height: 1;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  display: block;
-}
-
-.score-denom {
-  font-size: 22px;
-  color: var(--ink-faint);
-  font-weight: 400;
-}
-
-.score-caption {
-  font-family: var(--sans);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-top: 10px;
-}
-
-@media (max-width: 680px) {
-  .report-lede { grid-template-columns: 1fr; gap: 28px; }
-  .score-block {
-    text-align: left;
-    border-left: 0;
-    border-top: 1px solid var(--rule);
-    padding-left: 0;
-    padding-top: 20px;
-  }
-  .report-summary { font-size: 17px; }
-}
-
-/* --- section headings ---------------------------------------------------- */
-
-.section-rule {
-  font-family: var(--sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  border-top: 1px solid var(--rule-strong);
-  padding-top: 12px;
-  margin: 56px 0 28px;
-}
-
-/* --- pillars ------------------------------------------------------------- */
-
-.report-pillar {
-  margin-bottom: 42px;
-  padding-bottom: 42px;
-  padding-left: 20px;
-  border-bottom: 1px solid var(--rule);
-  /* Pillar identity colour — set inline per-pillar, subtle enough that it
-     reads as organisation rather than decoration. */
-  border-left: 3px solid var(--rule);
-}
-
-.report-pillar:last-of-type { border-bottom: 0; }
-
-.pillar-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.pillar-name {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 25px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0;
-}
-
-.pillar-icon {
-  display: inline-flex;
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
-.pillar-icon svg { width: 100%; height: 100%; }
-
-.pillar-metrics {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-family: var(--sans);
-}
-
-.pillar-score {
-  font-family: var(--serif);
-  font-size: 25px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.pillar-score span { font-size: 15px; color: var(--ink-faint); font-weight: 400; }
-
-/* Status (present/partial/missing etc.) renders as a coloured small-caps
-   label, never a filled pill — see .status-label further down. */
-
-/* The score bar is a thin rule, not a progress widget. */
-.pillar-bar {
-  height: 2px;
-  background: var(--rule);
-  margin-bottom: 18px;
-  position: relative;
-  overflow: hidden;
-}
-
-.pillar-bar i {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: var(--accent);
-  display: block;
-}
-
-.pillar-narrative {
-  font-size: 17px;
-  line-height: 1.68;
-  margin: 0 0 18px;
-  max-width: var(--measure);
-}
-
-/* --- citations ----------------------------------------------------------- */
-
-.citations-toggle {
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--accent);
-  background: none;
-  border: 0;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.citations-toggle:hover { text-decoration: underline; }
-
-.citations-toggle .chev { font-size: 10px; transition: transform 0.15s; }
-.citations-toggle[aria-expanded="true"] .chev { transform: rotate(90deg); }
-
-.citations {
-  margin-top: 16px;
-  border-left: 2px solid var(--rule-strong);
-  padding-left: 18px;
-  display: grid;
-  gap: 14px;
-}
-
-.citation {
-  font-family: var(--sans);
-  font-size: 13.5px;
-  line-height: 1.55;
-}
-
-.citation-claim { color: var(--ink); margin: 0 0 4px; }
-
-.citation-source {
-  color: var(--ink-faint);
-  font-size: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: baseline;
-}
-
-.citation-id {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  color: var(--ink-faint);
-  background: var(--surface-sunk);
-  padding: 1px 5px;
-  border-radius: 3px;
-}
-
-.citation-snippet {
-  font-family: var(--serif);
-  font-style: italic;
-  color: var(--ink-muted);
-  font-size: 13.5px;
-  margin: 6px 0 0;
-  padding-left: 12px;
-  border-left: 1px solid var(--rule);
-}
-
-.citations-empty {
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--ink-faint);
-  font-style: italic;
-}
-
-/* --- findings ------------------------------------------------------------ */
-
-.findings { display: grid; gap: 2px; }
-
-.finding {
-  display: grid;
-  grid-template-columns: 130px minmax(0, 1fr);
-  gap: 20px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--rule);
-  align-items: baseline;
-}
-
-.finding:first-child { border-top: 1px solid var(--rule); }
-
-.finding-pillar {
-  font-family: var(--sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-
-.finding-body { display: flex; flex-direction: column; gap: 8px; }
-.finding-summary { font-size: 16.5px; line-height: 1.55; margin: 0; }
-
-@media (max-width: 620px) {
-  .finding { grid-template-columns: 1fr; gap: 8px; }
-}
-
-/* --- recommendations ----------------------------------------------------- */
-
-.recs { display: grid; gap: 26px; counter-reset: rec; }
-
-.rec {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 18px;
-}
-
-.rec::before {
-  counter-increment: rec;
-  content: counter(rec, decimal-leading-zero);
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--ink-faint);
-  padding-top: 4px;
-}
-
-.rec-pillar {
-  font-family: var(--sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 5px;
-}
-
-.rec-text { font-size: 16.5px; line-height: 1.6; margin: 0; }
-
-/* --- sources footer ------------------------------------------------------ */
-
-.sources { display: grid; gap: 10px; }
-
-.source {
-  font-family: var(--sans);
-  font-size: 13.5px;
-  display: flex;
-  gap: 10px;
-  align-items: baseline;
-  flex-wrap: wrap;
-}
-
-.source-file { font-family: var(--mono); font-size: 12.5px; color: var(--ink); }
-.source-label { color: var(--ink-faint); }
-.source-count { color: var(--ink-faint); margin-left: auto; font-size: 12.5px; }
-
-.report-colophon {
-  margin-top: 56px;
-  padding-top: 20px;
-  border-top: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-faint);
-  line-height: 1.6;
-}
-
-/* --- ephemerality notice -------------------------------------------------- */
-
-/* The report is held in tab memory only, so the reader has to be told before
-   they navigate away. Sits above the masthead and never prints. */
-.keepsafe {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  background: var(--partial-bg);
-  border: 1px solid color-mix(in srgb, var(--partial) 35%, transparent);
-  border-radius: 10px;
-  padding: 14px 18px;
-  margin-bottom: 32px;
-  font-family: var(--sans);
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--ink-muted);
-}
-
-.keepsafe b { color: var(--partial); font-weight: 600; }
-
-
-/* ---------------------------------------------------------------------------
-   Two-report view: AASB S2 (primary) + ESG (secondary), a toggle between
-   them, and per-report download. Deliberately restrained — numbered
-   sections, hairline rules, colour used only in status text, never as a
-   filled badge or a coloured card border. This is meant to read as a
-   document someone could hand to an auditor, not as a product screen.
-   --------------------------------------------------------------------------- */
-
-/* --- view toggle + download bar (page chrome, not the document itself) --- */
+/* --- controls: report-type toggle + download (page chrome, not the document itself) --- */
 
 .report-controls {
   display: flex;
@@ -432,40 +77,15 @@
   border-bottom-color: var(--ink);
 }
 
-.download-menu { position: relative; }
+/* --- the document itself -------------------------------------------------- */
 
-.download-menu-list {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  z-index: 20;
-  background: var(--surface);
-  border: 1px solid var(--rule-strong);
-  padding: 4px;
-  min-width: 200px;
-}
-
-.download-menu-list button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: 0;
-  background: none;
-  padding: 9px 12px;
-  font-family: var(--sans);
-  font-size: 13.5px;
-  color: var(--ink);
-}
-
-.download-menu-list button:hover { background: var(--surface-sunk); }
-
-/* --- explanatory intro (what this report type is, in plain language) ----- */
+.report-block { margin-top: 8px; }
 
 .report-type-heading {
   display: flex;
   align-items: baseline;
   gap: 12px;
-  margin: 56px 0 4px;
+  margin: 0 0 4px;
 }
 
 .report-type-heading h2 {
@@ -476,211 +96,13 @@
   margin: 0;
 }
 
-.report-type-sub {
-  font-family: var(--serif);
-  font-size: 15.5px;
-  line-height: 1.6;
-  color: var(--ink-muted);
-  margin: 10px 0 0;
-  max-width: 74ch;
-}
-
-.report-executive-summary {
+.report-audience {
   font-family: var(--sans);
   font-size: 13.5px;
   line-height: 1.6;
-  color: var(--ink-faint);
+  color: var(--ink-muted);
   margin: 14px 0 0;
   max-width: 74ch;
-  font-style: italic;
-}
-
-/* --- key facts line (replaces the earlier rounded stat tiles) ------------ */
-
-.aasb-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0;
-  border-top: 1px solid var(--rule-strong);
-  border-bottom: 1px solid var(--rule-strong);
-  margin: 24px 0 8px;
-}
-
-.aasb-stat {
-  padding: 14px 28px 14px 0;
-  margin-right: 28px;
-  border-right: 1px solid var(--rule);
-}
-
-.aasb-stat:last-child { border-right: 0; margin-right: 0; }
-
-.aasb-stat b {
-  display: block;
-  font-family: var(--serif);
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-
-.aasb-stat span {
-  font-family: var(--sans);
-  font-size: 10.5px;
-  color: var(--ink-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-/* --- numbered sections (the 5 AASB sections / 3 ESG categories) ---------- */
-
-.criterion-group { margin-bottom: 36px; }
-
-.criterion-group-head {
-  width: 100%;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 0 0 10px;
-  background: none;
-  border: 0;
-  border-bottom: 1px solid var(--rule-strong);
-  text-align: left;
-  margin-bottom: 4px;
-}
-
-.criterion-group-number {
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 600;
-  color: var(--ink-faint);
-  min-width: 1.4em;
-}
-
-.criterion-group-head h3 {
-  font-family: var(--serif);
-  font-size: 19px;
-  font-weight: 600;
-  margin: 0;
-  flex: 1;
-  min-width: 0;
-}
-
-.criterion-group-score {
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.criterion-group-score span { font-size: 12px; color: var(--ink-faint); font-weight: 400; }
-
-.criterion-tally {
-  display: flex;
-  gap: 10px;
-  font-family: var(--sans);
-  font-size: 11px;
-  color: var(--ink-faint);
-  flex-wrap: wrap;
-  white-space: nowrap;
-}
-
-/* --- criteria: a numbered list, not bordered cards ------------------------ */
-
-.criterion-list { display: block; }
-
-.criterion-row {
-  border-bottom: 1px solid var(--rule);
-  padding: 12px 0;
-}
-
-.criterion-row:last-child { border-bottom: 0; }
-
-.criterion-row-head {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 2.6em minmax(0, 1fr) auto auto;
-  align-items: baseline;
-  gap: 12px;
-  padding: 0;
-  background: none;
-  border: 0;
-  text-align: left;
-}
-
-.criterion-number {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-faint);
-}
-
-.criterion-row-head p {
-  font-family: var(--serif);
-  font-size: 14.5px;
-  color: var(--ink);
-  margin: 0;
-}
-
-.criterion-ref {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  color: var(--ink-faint);
-  white-space: nowrap;
-}
-
-.criterion-detail {
-  padding: 8px 0 4px 2.6em;
-}
-
-.criterion-detail p {
-  font-family: var(--sans);
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--ink-muted);
-  margin: 0 0 8px;
-}
-
-.criterion-detail .citation { margin-bottom: 8px; }
-
-.criterion-required {
-  font-size: 12.5px;
-  color: var(--ink-faint);
-  font-style: italic;
-  margin: 0;
-}
-
-/* Status is plain coloured small-caps text — never a filled pill. The colour
-   itself is the entire signal; there is no background chip to read as "UI". */
-.status-label {
-  font-family: var(--sans);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.status-strong,
-.status-present    { color: var(--strong); }
-.status-partial    { color: var(--partial); }
-.status-missing    { color: var(--missing); }
-.status-neutral    { color: var(--neutral); }
-.status-judgement  { color: var(--judgement); }
-
-/* --- ESG category sections (reuse the same numbered-list treatment) ------ */
-
-.esg-grid { display: block; }
-
-/* --- section dividers ------------------------------------------------------ */
-
-.report-explainer {
-  font-family: var(--sans);
-  font-size: 13.5px;
-  line-height: 1.65;
-  color: var(--ink-muted);
-  max-width: 74ch;
-  margin: 0 0 10px;
 }
 
 .report-explainer-label {
@@ -694,347 +116,81 @@
   margin: 0 0 6px;
 }
 
-/* ---------------------------------------------------------------------------
-   Readiness Overview vs Disclosure Report: two different documents sharing
-   one paper sheet. The overview is what a visitor sees on screen — scores,
-   key findings, priority actions. The Disclosure Report is the full
-   section-by-section document and only ever renders for print/download.
-   Both trees are mounted at all times; CSS alone decides which medium sees
-   which one, so Download never has to wait on a re-render before printing.
-   --------------------------------------------------------------------------- */
-
-.report-controls-label {
-  font-family: var(--sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin: 0;
-}
-
-@media print {
-  .report-overview { display: none !important; }
-}
-
-.print-only { display: none; }
-
-@media print {
-  .print-only { display: block; }
-}
-
-.disclosure-report[data-target="aasb"] .disclosure-esg { display: none; }
-.disclosure-report[data-target="esg"] .disclosure-aasb { display: none; }
-
-/* --- Readiness Overview --------------------------------------------------- */
-
-.overview-scores {
-  display: flex;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--rule-strong);
-  border-bottom: 1px solid var(--rule-strong);
-  margin: 24px 0;
-}
-
-.overview-score-card {
-  padding: 18px 32px 18px 0;
-  margin-right: 32px;
-  border-right: 1px solid var(--rule);
-}
-
-.overview-score-card:last-child { border-right: 0; margin-right: 0; }
-
-@media (max-width: 560px) {
-  .overview-scores { flex-direction: column; }
-  .overview-score-card {
-    border-right: 0;
-    margin-right: 0;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--rule);
-  }
-  .overview-score-card:last-child { border-bottom: 0; }
-}
-
-.overview-score-value {
-  display: block;
+.report-type-sub {
   font-family: var(--serif);
-  font-size: 40px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.overview-score-label {
-  font-family: var(--sans);
-  font-size: 11px;
-  color: var(--ink-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.overview-pillars {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.overview-pillar {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 16px;
-  border: 1px solid var(--rule);
-}
-
-.overview-pillar-label {
-  font-family: var(--sans);
-  font-size: 11px;
-  color: var(--ink-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.overview-pillar-score {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.overview-heading {
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 600;
-  margin: 32px 0 10px;
-}
-
-.overview-actions {
-  margin: 0;
-  padding-left: 1.4em;
-  display: grid;
-  gap: 10px;
-}
-
-.overview-actions li {
-  font-size: 14.5px;
-  line-height: 1.55;
-}
-
-.overview-action-source {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ink-faint);
-  margin-right: 6px;
-}
-
-.overview-cta-note {
-  margin: 32px 0 0;
-  padding-top: 20px;
-  border-top: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: 13.5px;
-  color: var(--ink-muted);
-}
-
-.link-button {
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  color: var(--accent);
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-/* --- Disclosure Report (full download) ------------------------------------ */
-
-.disclosure-section { margin-top: 56px; }
-
-@media print {
-  .disclosure-section { break-before: page; page-break-before: always; }
-  .disclosure-section:first-child { break-before: auto; page-break-before: auto; }
-}
-
-.disclosure-subhead {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--ink-faint);
-  margin: 24px 0 10px;
-}
-
-.pillar-explainer { margin-bottom: 22px; }
-
-.pillar-explainer h4 {
-  font-family: var(--serif);
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-
-.pillar-explainer p {
-  font-family: var(--sans);
-  font-size: 14px;
+  font-size: 15.5px;
   line-height: 1.6;
   color: var(--ink-muted);
+  margin: 18px 0 0;
+  max-width: 74ch;
+}
+
+.report-executive-summary {
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink);
   margin: 0;
   max-width: 74ch;
 }
 
-.disclaimer-box {
+.summary-heading {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  margin: 44px 0 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.summary-list {
+  margin: 0;
+  padding-left: 1.3em;
+  display: grid;
+  gap: 10px;
   font-family: var(--sans);
-  font-size: 13.5px;
-  line-height: 1.65;
-  color: var(--ink-muted);
-  border: 1px solid var(--rule-strong);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 74ch;
+}
+
+/* --- placeholders: sections the backend hasn't populated yet -------------- */
+
+.placeholder-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border: 1px dashed var(--rule-strong);
   padding: 16px 20px;
   max-width: 74ch;
 }
 
-.kv-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
+.placeholder-block p {
   font-family: var(--sans);
   font-size: 13.5px;
-}
-
-.kv-table th,
-.kv-table td {
-  text-align: left;
-  vertical-align: top;
-  padding: 9px 14px 9px 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.kv-table th {
-  width: 220px;
+  line-height: 1.55;
   color: var(--ink-faint);
-  font-weight: 600;
+  font-style: italic;
+  margin: 0;
+  max-width: 56ch;
+}
+
+.placeholder-tag {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  padding: 4px 10px;
   white-space: nowrap;
 }
 
-.kv-table ul { margin: 0; padding-left: 1.2em; }
-
-.weights-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+@media print {
+  .report-block { break-inside: avoid; page-break-inside: avoid; }
 }
-
-.criteria-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0 24px;
-  font-family: var(--sans);
-  font-size: 12.5px;
-}
-
-.criteria-table th {
-  text-align: left;
-  padding: 6px 10px 6px 0;
-  border-bottom: 1px solid var(--rule-strong);
-  color: var(--ink-faint);
-  font-weight: 600;
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.criteria-table td {
-  padding: 8px 10px 8px 0;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: top;
-}
-
-.criteria-table td:last-child,
-.criteria-table th:last-child { text-align: right; }
-
-.evidence-snapshot-heading {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-faint);
-  margin: 0 0 12px;
-}
-
-.criterion-snapshot {
-  padding: 14px 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.criterion-snapshot:last-child { border-bottom: 0; }
-
-.criterion-snapshot-head {
-  font-family: var(--serif);
-  font-size: 14.5px;
-  margin: 0 0 4px;
-}
-
-.criterion-snapshot-meta {
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-faint);
-  margin: 0 0 8px;
-}
-
-.criterion-snapshot-finding {
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--ink-muted);
-  line-height: 1.6;
-  margin: 0 0 10px;
-}
-
-.citation-more {
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-faint);
-  font-style: italic;
-  margin: 2px 0 0;
-}
-
-.actions-list {
-  margin: 0 0 12px;
-  padding-left: 1.4em;
-  display: grid;
-  gap: 8px;
-  font-size: 14.5px;
-  line-height: 1.55;
-}
-
-.evidence-register-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--sans);
-  font-size: 12px;
-  margin: 20px 0;
-}
-
-.evidence-register-table th {
-  text-align: left;
-  padding: 6px 10px 6px 0;
-  border-bottom: 1px solid var(--rule-strong);
-  color: var(--ink-faint);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 0.05em;
-}
-
-.evidence-register-table td {
-  padding: 7px 10px 7px 0;
-  border-bottom: 1px solid var(--rule);
-  vertical-align: top;
-}
-
-.mono { font-family: var(--mono); font-size: 0.92em; }
