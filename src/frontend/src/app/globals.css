@@ -23,19 +23,21 @@
   --ink-faint: #8a857a;
   --rule: #e2ded4;
   --rule-strong: #cbc5b7;
-  /* One hue (160°) for every green in the app — the brand accent, its deep
-     companion, and the "good status" semantic colour all share it, varying
-     only in lightness/saturation. They previously drifted independently
-     (accent sat at 172°, strong at 152°) which is what made the report and
-     the rest of the app read as two different products. */
-  --accent: #1f5140;
-  --accent-deep: #133429;
+  /* One hue AND chroma, in OKLCH (165°, C 0.105), for every green in the app
+     — varying only lightness between tokens and between surfaces. Matching
+     HSL hue alone was not enough: HSL's "saturation" isn't perceptually
+     uniform, so the light-surface accent came out at real chroma 0.06 while
+     the dark-surface one sat at 0.12 — visibly a dull green next to a bright
+     one even at the identical hue angle. OKLCH keeps chroma constant, so
+     both read as the same green, just lighter or darker. */
+  --accent: #004a2c;
+  --accent-deep: #00270d;
   --accent-ink: #ffffff;
-  --accent-soft: #e6efec;
+  --accent-soft: #dcece4;
   --glow: transparent;
 
-  --strong: #2e6b57;
-  --strong-bg: #e8f2ef;
+  --strong: #005e3e;
+  --strong-bg: #ddf1e7;
   --partial: #8a6218;
   --partial-bg: #f7f0df;
   --missing: #8f3a2e;
@@ -82,16 +84,17 @@
   --ink-faint: #758c82;
   --rule: #1b2a22;
   --rule-strong: #294034;
-  /* Same 160° hue as the light surface — brighter and more saturated here
-     since it has to read against near-black, but it's the same green. */
-  --accent: #6de3bc;
-  --accent-deep: #218362;
+  /* Same hue and chroma as the light surface in OKLCH (165°, C 0.105) — only
+     lightness moves, from L 0.35 there to L 0.78 here, so it reads as the
+     same green turned up for a dark background, not a different green. */
+  --accent: #71cda7;
+  --accent-deep: #007654;
   --accent-ink: #052018;
-  --accent-soft: #162721;
-  --glow: rgba(109, 227, 188, 0.22);
+  --accent-soft: #071a13;
+  --glow: rgba(113, 205, 167, 0.22);
 
-  --strong: #76e0bd;
-  --strong-bg: #172b24;
+  --strong: #77d3ad;
+  --strong-bg: #082016;
   --partial: #e3b765;
   --partial-bg: #241e12;
   --missing: #e08f7e;
