@@ -8,10 +8,10 @@ import {
   type AasbS2Report,
   type AasbSectionBlock,
   type AasbStatus,
+  type EsgCriterion,
   type EsgReport,
   type EsgStatus,
 } from "@/lib/assessment-types";
-import { ChevronDownIcon } from "@/components/icons";
 import { PILLAR_META } from "@/lib/pillar-meta";
 
 type View = "both" | "aasb" | "esg";
@@ -49,6 +49,14 @@ function sectionScore(criteria: AasbCriterion[], weights: Record<string, number>
   return Math.round((scored.reduce((sum, c) => sum + (weights[c.status] ?? 0), 0) / scored.length) * 100);
 }
 
+/**
+ * The actual deliverable is a downloaded PDF, so the document itself (this
+ * component) has no expand/collapse anywhere — a PDF cannot have interactive
+ * disclosure widgets, and Download just prints whatever is currently
+ * visible. Everything here always renders in full. The view toggle and
+ * download menu are page chrome around the document, not part of it, and
+ * that's the only interactivity in this file.
+ */
 export function AssessmentReport({
   aasbS2Report,
   esgReport,
@@ -71,16 +79,7 @@ export function AssessmentReport({
   const company = aasbS2Report.company || esgReport.company;
 
   return (
-    <article className="report">
-      <header className="report-masthead rise">
-        <p className="report-kicker">Climate &amp; ESG Readiness Assessment</p>
-        <h1 className="report-company">{company}</h1>
-        <p className="report-dateline">
-          AASB S2 climate disclosure draft, reporting year {aasbS2Report.reportingPeriod.year} · plus a
-          secondary ESG evidence-readiness assessment
-        </p>
-      </header>
-
+    <>
       <div className="report-controls no-print">
         <div className="view-toggle" role="tablist" aria-label="Report view">
           {(
@@ -116,16 +115,29 @@ export function AssessmentReport({
         </div>
       </div>
 
-      {showAasb && <AasbReportSection report={aasbS2Report} />}
-      {showEsg && <EsgReportSection report={esgReport} />}
-    </article>
+      <div className="paper-sheet">
+        <article className="report">
+          <header className="report-masthead">
+            <p className="report-kicker">Climate &amp; ESG Readiness Assessment</p>
+            <h1 className="report-company">{company}</h1>
+            <p className="report-dateline">
+              AASB S2 climate disclosure draft, reporting year {aasbS2Report.reportingPeriod.year} · plus
+              a secondary ESG evidence-readiness assessment
+            </p>
+          </header>
+
+          {showAasb && <AasbReportSection report={aasbS2Report} />}
+          {showEsg && <EsgReportSection report={esgReport} />}
+        </article>
+      </div>
+    </>
   );
 }
 
 function AasbReportSection({ report }: { report: AasbS2Report }) {
   return (
     <section className="report-block">
-      <div className="report-type-heading rise">
+      <div className="report-type-heading">
         <h2>AASB S2 Climate Readiness</h2>
       </div>
       <p className="report-type-sub">
@@ -134,7 +146,7 @@ function AasbReportSection({ report }: { report: AasbS2Report }) {
         {report.executiveSummary.totalCriteria} criteria across five sections.
       </p>
 
-      <div className="aasb-stats rise">
+      <div className="aasb-stats">
         <div className="aasb-stat">
           <b>{report.aasbS2ReadinessScore ?? "—"}</b>
           <span>Readiness score</span>
@@ -177,14 +189,13 @@ function CriterionGroup({
   block: AasbSectionBlock;
   weights: Record<string, number>;
 }) {
-  const [open, setOpen] = useState(false);
   const counts = tally(block.criteria);
   const score = sectionScore(block.criteria, weights);
   const { colorVar, Icon } = PILLAR_META[sectionKey];
 
   return (
-    <div className={`criterion-group${open ? " is-open" : ""}`} style={{ borderLeftColor: colorVar }}>
-      <button className="criterion-group-head" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+    <div className="criterion-group" style={{ borderLeftColor: colorVar }}>
+      <div className="criterion-group-head">
         <span
           className="criterion-group-icon"
           style={{ color: colorVar, background: `color-mix(in srgb, ${colorVar} 16%, transparent)` }}
@@ -208,12 +219,9 @@ function CriterionGroup({
             </span>
           ))}
         </span>
-        <span className="criterion-group-chevron">
-          <ChevronDownIcon />
-        </span>
-      </button>
+      </div>
 
-      <div className="criterion-list" hidden={!open}>
+      <div className="criterion-list">
         {block.criteria.map((c) => (
           <CriterionRow key={c.id} criterion={c} />
         ))}
@@ -223,19 +231,18 @@ function CriterionGroup({
 }
 
 function CriterionRow({ criterion }: { criterion: AasbCriterion }) {
-  const [open, setOpen] = useState(false);
   const meta = AASB_STATUS_META[criterion.status];
 
   return (
     <div className="criterion-row">
-      <button className="criterion-row-head" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+      <div className="criterion-row-head">
         <span className="criterion-dot" style={{ background: meta.dot }} />
         <p>{criterion.description}</p>
         <span className={`badge ${meta.badge}`}>{meta.label}</span>
         <span className="criterion-ref">{criterion.reference}</span>
-      </button>
+      </div>
 
-      <div className="criterion-detail" hidden={!open}>
+      <div className="criterion-detail">
         <p>{criterion.finding}</p>
         {criterion.citations.map((c, i) => (
           <div className="citation" key={i}>
@@ -264,45 +271,39 @@ const ESG_SECTIONS: Array<{ key: "environmental" | "social" | "governance"; labe
 function EsgReportSection({ report }: { report: EsgReport }) {
   return (
     <section className="report-block">
-      <div className="report-type-heading rise">
+      <div className="report-type-heading">
         <h2>ESG Evidence Readiness</h2>
       </div>
       <p className="report-type-sub">{report.executiveSummary}</p>
 
-      <div className="aasb-stats rise" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))" }}>
+      <div className="aasb-stats" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))" }}>
         <div className="aasb-stat">
           <b>{report.overallESGScore}</b>
           <span>Overall ESG score</span>
         </div>
       </div>
 
-      <div className="esg-grid">
-        {ESG_SECTIONS.map(({ key, label }) => {
-          const block = report[key];
-          const meta = ESG_STATUS_META[block.status];
-          return (
-            <div className="esg-card" key={key}>
-              <div className="esg-card-head">
-                <h3>{label}</h3>
-                <span className="esg-card-score">
-                  {block.score}
-                  <span>/100</span>
-                </span>
-              </div>
-              <span className={`badge ${meta.badge}`} style={{ marginBottom: 14, display: "inline-block" }}>
-                {meta.label}
+      {ESG_SECTIONS.map(({ key, label }) => {
+        const block = report[key];
+        const meta = ESG_STATUS_META[block.status];
+        return (
+          <div className="criterion-group" key={key} style={{ borderLeftColor: "var(--rule-strong)" }}>
+            <div className="criterion-group-head">
+              <h3>{label}</h3>
+              <span className="criterion-group-score">
+                {block.score}
+                <span>/100</span>
               </span>
-              <ul>
-                {block.criteria.map((c) => (
-                  <li key={c.id}>
-                    <b style={{ color: ESG_STATUS_META[c.status].dot }}>&bull;</b> {c.description}
-                  </li>
-                ))}
-              </ul>
+              <span className={`badge ${meta.badge}`}>{meta.label}</span>
             </div>
-          );
-        })}
-      </div>
+            <div className="criterion-list">
+              {block.criteria.map((c) => (
+                <EsgCriterionRow key={c.id} criterion={c} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
 
       {report.priorityActions.length > 0 && (
         <>
@@ -319,5 +320,32 @@ function EsgReportSection({ report }: { report: EsgReport }) {
         </>
       )}
     </section>
+  );
+}
+
+function EsgCriterionRow({ criterion }: { criterion: EsgCriterion }) {
+  const meta = ESG_STATUS_META[criterion.status];
+
+  return (
+    <div className="criterion-row">
+      <div className="criterion-row-head">
+        <span className="criterion-dot" style={{ background: meta.dot }} />
+        <p>{criterion.description}</p>
+        <span className={`badge ${meta.badge}`}>{meta.label}</span>
+      </div>
+
+      {criterion.citations.length > 0 && (
+        <div className="criterion-detail">
+          {criterion.citations.map((c, i) => (
+            <div className="citation" key={i}>
+              <div className="citation-source">
+                <span className="citation-id">{c.evidenceId}</span>
+              </div>
+              <p className="citation-snippet">&ldquo;{c.quote}&rdquo;</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

@@ -579,16 +579,6 @@
 
 .criterion-tally span { white-space: nowrap; }
 
-.criterion-group-chevron {
-  color: var(--ink-faint);
-  transition: transform 0.2s var(--ease);
-  flex-shrink: 0;
-}
-
-.criterion-group-chevron svg { width: 16px; height: 16px; }
-
-.criterion-group.is-open .criterion-group-chevron { transform: rotate(180deg); }
-
 .criterion-list {
   border-top: 1px solid var(--rule);
 }

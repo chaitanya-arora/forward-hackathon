@@ -9,7 +9,7 @@ import { SiteHeader } from "@/components/SiteHeader";
  */
 export default function ReportIndexPage() {
   return (
-    <>
+    <div className="surface-dark journey">
       <SiteHeader />
       <main className="page" style={{ paddingTop: 48 }}>
         <h1 style={{ fontFamily: "var(--serif)", fontSize: 30, fontWeight: 600, margin: "0 0 12px" }}>
@@ -29,6 +29,6 @@ export default function ReportIndexPage() {
         </div>
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }
