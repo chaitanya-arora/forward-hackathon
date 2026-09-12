@@ -58,6 +58,9 @@ export default function LandingPage() {
               <Link href="/report/preview" className="btn">
                 See an example report
               </Link>
+              <Link href="/about" className="btn btn-ghost">
+                About
+              </Link>
             </div>
           </div>
 
