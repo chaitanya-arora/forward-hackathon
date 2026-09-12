@@ -26,19 +26,6 @@ export default function ReportPreviewPage() {
         </Link>
       </SiteHeader>
       <main className="page page-wide" style={{ paddingTop: 32 }}>
-        <p
-          className="no-print note"
-          style={{
-            marginBottom: 24,
-            padding: "8px 12px",
-            background: "var(--surface-sunk)",
-            border: "1px solid var(--rule)",
-            borderRadius: 5,
-            display: "inline-block",
-          }}
-        >
-          Preview — a real saved run, not a live one.
-        </p>
         <AssessmentReport aasbS2Report={aasbS2Report} esgReport={esgReport} />
       </main>
 
