@@ -24,7 +24,9 @@ export function sourceExcerpts(input, schema, { excerptCharacters = 1000 } = {})
   const responseJsonSchema = structuredClone(schema);
   responseJsonSchema.properties.assessments.items.properties.citations.items = {
     type: "object", additionalProperties: false, required: ["excerptId"],
-    properties: { excerptId: { type: "string", enum: [...lookup.keys()] } },
+    // Large document-dependent enums can exceed the provider's schema complexity
+    // limit. IDs remain in the prompt and are strictly checked against lookup below.
+    properties: { excerptId: { type: "string", description: "An exact excerptId supplied in the evidence." } },
   };
   const resolveCitations = citations => Array.isArray(citations) ? citations.map(c => {
     if (!c || !Object.hasOwn(c, "excerptId")) throw new Error("Citation must select a supplied excerptId; model-written quotations are not accepted.");

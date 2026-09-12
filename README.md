@@ -503,6 +503,14 @@ unknown IDs fail validation. Exact matching does not establish relevance: model
 assessments and selected excerpts still require human review. There is no automatic
 full-report citation-correction call. Each report uses one generation request.
 
+Excerpt IDs and AASB information-element IDs are supplied in the prompt and checked
+locally, rather than duplicated as large response-schema enums. This keeps the
+schema compact for long documents and avoids a potential source of Gemini
+`400 INVALID_ARGUMENT` schema-complexity errors. Unknown IDs and invented quotations
+still fail validation; evidence text and scoring rules are unchanged.
+The detailed AASB request allows up to five minutes for generation; a client timeout
+does not produce or persist a partial report.
+
 The shared live requester stops at 20 physical API attempts per process, including
 transport retries across extraction and both reports. It does not know usage from
 earlier processes, other applications or other keys on the project, so this is not

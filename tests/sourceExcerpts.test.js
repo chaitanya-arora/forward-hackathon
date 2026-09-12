@@ -23,3 +23,11 @@ test("shared requester stops before physical call 21", async () => {
   assert.equal(calls,20);
 });
 
+test("large evidence keeps schema size constant and still rejects unknown nested citations", () => {
+  const small=sourceExcerpts({evidence:[{id:"e1",text:"Source evidence text."}]},responseJsonSchema);
+  const large=sourceExcerpts({evidence:[{id:"e1",text:"Source evidence text. ".repeat(20000)}]},responseJsonSchema,{excerptCharacters:350});
+  assert.ok(large.evidence[0].excerpts.length>1000);
+  assert.deepEqual(large.responseJsonSchema,small.responseJsonSchema);
+  assert.throws(()=>large.resolve({assessments:[{citations:[],elements:[{citations:[{excerptId:"invented"}]}]}]}),/Unknown/);
+});
+

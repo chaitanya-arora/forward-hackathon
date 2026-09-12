@@ -150,14 +150,14 @@ export async function generateAasbS2FromNormalized(input, rawContext = {}, optio
   assessmentSchema.required.push("elements");
   assessmentSchema.properties.elements = {type:"array",items:{type:"object",additionalProperties:false,
     required:["elementId","status","citations"],properties:{
-      elementId:{type:"string",enum:[...new Set(aasbRubric.flatMap(r=>requirementFor(r).requiredElements))]},
+      elementId:{type:"string",description:"An exact requiredElements identifier from this criterion in the supplied rubric; validated locally."},
       status:{type:"string",enum:["explicit","partial","requires_human_confirmation"]},
       citations:structuredClone(assessmentSchema.properties.citations),
     }}};
   const request = {
     model: options.model ?? process.env.AASB_MODEL ?? process.env.AGENT2_MODEL ?? "gemini-3.6-flash",
     contents: JSON.stringify({ rubric: aasbRubric.map(requirementFor), evidence: excerpts.evidence, standard: resolveStandard(context) }),
-    config: { responseMimeType: "application/json", responseJsonSchema: excerpts.responseJsonSchema, temperature: 0, maxOutputTokens: 26000, httpOptions: { timeout: 120000 },
+    config: { responseMimeType: "application/json", responseJsonSchema: excerpts.responseJsonSchema, temperature: 0, maxOutputTokens: 26000, httpOptions: { timeout: 300000 },
       systemInstruction: `Assess EVERY rubric criterion exactly once for an AASB S2 preparation/readiness draft.
 For each criterion retrieve evidence for its specific requiredElements. Return elements only when supported,
 using elementId, status and source excerpt citations. Do not reuse generic topical evidence as proof of
