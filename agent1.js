@@ -25,6 +25,7 @@ import fs from "fs";
 import { GoogleGenAI } from "@google/genai";
 // Use the legacy build — the standard build assumes a browser environment
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { saveClassification } from "./db.js"; // Make sure to put this in agent 2
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const MODEL = "gemini-2.0-flash"; // fast + cheap + generous free tier
@@ -280,6 +281,8 @@ async function run(pdfPath, companyName, reportYear, outPath) {
   }
 
   const output = buildOutputSchema(companyName, reportYear, chunks, classifications);
+  
+  saveClassification(companyName, reportYear, output.pillars); // Saving it to the database
 
   fs.writeFileSync(outPath, JSON.stringify(output, null, 2));
 
