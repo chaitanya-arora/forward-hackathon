@@ -59,13 +59,13 @@ export default function ReportPage() {
       </SiteHeader>
 
       <main className="page page-wide" style={{ paddingTop: 24 }}>
-<<<<<<< HEAD
-        {state === "loading" && <p className="note" role="status">Loading report…</p>}
-=======
         {isDemo && <span className="example-tag">Example report</span>}
 
-        {state === "loading" && <p className="note" role="status">Loading reports…</p>}
->>>>>>> origin/main
+        {state === "loading" && (
+          <p className="note" role="status">
+            Loading report…
+          </p>
+        )}
 
         {state === "empty" && (
           <div style={{ paddingTop: 48, maxWidth: "54ch" }}>

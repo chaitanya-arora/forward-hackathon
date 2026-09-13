@@ -1,36 +1,16 @@
 "use client";
 
 import { useState } from "react";
-<<<<<<< HEAD
-import { InfoIcon } from "@/components/icons";
+import { AlertTriangleIcon, CheckCircleIcon, InfoIcon } from "@/components/icons";
 import type { AasbS2Report } from "@/lib/assessment-types";
 import { AASB_SECTION_KEYS, AASB_SECTION_LABELS } from "@/lib/assessment-types";
-import { AASB_AUDIENCE, AASB_INTRO } from "@/lib/report-copy";
-import { readinessTone } from "@/lib/readiness";
-import { downloadReportPdf } from "@/lib/api";
-
-export function AssessmentReport({ companyId, runId, report }: { companyId: number; runId: number; report: AasbS2Report }) {
-=======
-import { AlertTriangleIcon, CheckCircleIcon, InfoIcon } from "@/components/icons";
-import { AASB_SECTION_LABELS, type AasbS2Report, type EsgReport } from "@/lib/assessment-types";
 import type { Presentation } from "@/lib/presentation";
-import { AASB_AUDIENCE, AASB_INTRO, ESG_AUDIENCE, ESG_INTRO } from "@/lib/report-copy";
+import { AASB_AUDIENCE, AASB_INTRO } from "@/lib/report-copy";
 import { readinessTone } from "@/lib/readiness";
 import { downloadReportPdf } from "@/lib/api";
 
 type Finding = Presentation["keyFindings"][number];
 type PriorityAction = Presentation["priorityActions"][number];
-
-const ESG_SECTION_LABELS: Record<string, string> = {
-  environmental: "Environmental",
-  social: "Social",
-  governance: "Governance",
-};
-
-function sectionLabel(view: "aasb" | "esg", section: string): string {
-  const labels = view === "aasb" ? AASB_SECTION_LABELS : ESG_SECTION_LABELS;
-  return labels[section] ?? section;
-}
 
 const ACTION_TYPE_LABELS: Record<string, string> = {
   provide_evidence: "Evidence needed",
@@ -41,10 +21,8 @@ const ACTION_TYPE_LABELS: Record<string, string> = {
   director_action: "Director action",
 };
 
-export function AssessmentReport({ aasbS2Report, esgReport }: { aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
-export function AssessmentReport({ companyId, runId, aasbS2Report, esgReport }: { companyId: number; runId: number; aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
-  const [view, setView] = useState<"aasb" | "esg">("aasb");
->>>>>>> origin/main
+export function AssessmentReport({ companyId, runId, report }: { companyId: number; runId: number; report: AasbS2Report }) {
+
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
@@ -141,7 +119,6 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
           <InfoIcon />
         </span>
         <div>
-<<<<<<< HEAD
           <p className="callout-label">About this assessment</p>
           <p>
             A draft for management, director and assurance review. It assesses disclosure evidence and preparation needs; it does not certify compliance or approval for lodgement.
@@ -154,8 +131,6 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
           <InfoIcon />
         </span>
         <div>
-=======
->>>>>>> origin/main
           <p className="callout-label">Who this report is for</p>
           <p>{AASB_AUDIENCE}</p>
         </div>
@@ -189,7 +164,7 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
       {keyFindings.length ? (
         <div className="findings-grid" aria-label="Key findings">
           {keyFindings.map((f) => (
-            <FindingCard key={f.id} finding={f} view={view} />
+            <FindingCard key={f.id} finding={f} />
           ))}
         </div>
       ) : (
@@ -201,7 +176,7 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
         <>
           <div className="actions-grid" aria-label="Priority actions">
             {actions.map((a, i) => (
-              <ActionCard key={a.id} action={a} view={view} rank={i + 1} />
+              <ActionCard key={a.id} action={a} rank={i + 1} />
             ))}
           </div>
           {priorityActions.length > 5 && (
@@ -222,7 +197,7 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
   );
 }
 
-function FindingCard({ finding, view }: { finding: Finding; view: "aasb" | "esg" }) {
+function FindingCard({ finding }: { finding: Finding }) {
   const evidenceCount = finding.evidenceIds.length;
   return (
     <div className={"finding-card finding-card--" + finding.importance}>
@@ -233,7 +208,7 @@ function FindingCard({ finding, view }: { finding: Finding; view: "aasb" | "esg"
         <h4 className="finding-title">{finding.title}</h4>
         <p className="finding-summary">{finding.summary}</p>
         <div className="finding-meta">
-          <span>{sectionLabel(view, finding.section)}</span>
+          <span>{AASB_SECTION_LABELS[finding.section] ?? finding.section}</span>
           {evidenceCount > 0 && <span>{evidenceCount} source{evidenceCount === 1 ? "" : "s"}</span>}
           {finding.references.length > 0 && (
             <span>{finding.references.length} reference{finding.references.length === 1 ? "" : "s"}</span>
@@ -244,7 +219,7 @@ function FindingCard({ finding, view }: { finding: Finding; view: "aasb" | "esg"
   );
 }
 
-function ActionCard({ action, view, rank }: { action: PriorityAction; view: "aasb" | "esg"; rank: number }) {
+function ActionCard({ action, rank }: { action: PriorityAction; rank: number }) {
   const evidenceCount = action.evidenceIds.length;
   return (
     <div className={"action-card action-card--" + action.priority}>
@@ -257,7 +232,7 @@ function ActionCard({ action, view, rank }: { action: PriorityAction; view: "aas
         <p className="action-description">{action.description}</p>
         <div className="action-meta">
           <span>{ACTION_TYPE_LABELS[action.actionType] ?? action.actionType}</span>
-          <span>{sectionLabel(view, action.section)}</span>
+          <span>{AASB_SECTION_LABELS[action.section] ?? action.section}</span>
           {action.reference && <span className="mono">{action.reference}</span>}
           {evidenceCount > 0 && <span>{evidenceCount} source{evidenceCount === 1 ? "" : "s"}</span>}
         </div>
