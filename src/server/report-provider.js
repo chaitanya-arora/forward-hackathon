@@ -10,9 +10,15 @@ export function validRunIds(companyId, runId) {
   return [companyId, runId].every(id => Number.isSafeInteger(id) && id > 0);
 }
 
-// TODO: Replace the default file provider with repository-backed retrieval once
-// shared SQLite demo provisioning is agreed. Keep the HTTP envelope unchanged.
-// Filenames follow exportCompletedReports; no company-specific assessment logic.
+export function createRepositoryReportProvider() {
+  return async (companyId, runId) => {
+    if (!validRunIds(companyId, runId)) throw new ReportError(404, "Run not found.");
+    return getRepositoryRun(companyId, runId);
+  };
+}
+
+// Kept for isolated tests and validating legacy export file handling; live API
+// requests use the repository-backed provider so report retrieval stays in SQLite.
 export function createFileReportProvider(root = reportsRoot) {
   return async (companyId, runId) => {
     if (!validRunIds(companyId, runId)) throw new ReportError(404, "Run not found.");
@@ -41,8 +47,6 @@ export function createFileReportProvider(root = reportsRoot) {
   };
 }
 
-// Retain the existing repository path for live upload progress. Lazy loading keeps
-// fixture reads and health checks independent of database initialization/API keys.
 export async function getRepositoryRun(companyId, runId) {
   const { getRun, getAasbS2Report, getEsgReport } = await import("../database/repository.js");
   let run;
@@ -50,9 +54,19 @@ export async function getRepositoryRun(companyId, runId) {
   catch { throw new ReportError(404, "Run not found."); }
   const stage = run.status === "failed" ? "failed" : run.stage ?? run.status;
   const done = stage === "completed" || stage === "failed";
+
+  let aasbS2Report = null;
+  let esgReport = null;
+  try {
+    if (done && stage !== "failed" && run.reportIds.aasbS2) aasbS2Report = getAasbS2Report(companyId, run.reportIds.aasbS2).report;
+    if (done && stage !== "failed" && run.reportIds.esg) esgReport = getEsgReport(companyId, run.reportIds.esg).report;
+  } catch {
+    throw new ReportError(500, "Stored reports are missing or invalid in SQLite.");
+  }
+
   return { companyId, runId, stage, stageLabel: stage.replaceAll("_", " "), done,
     error: stage === "failed" ? "Processing failed. Saved evidence is retained." : null,
     reportIds: run.reportIds,
-    aasbS2Report: done && stage !== "failed" && run.reportIds.aasbS2 ? getAasbS2Report(companyId, run.reportIds.aasbS2).report : null,
-    esgReport: done && stage !== "failed" && run.reportIds.esg ? getEsgReport(companyId, run.reportIds.esg).report : null };
+    aasbS2Report,
+    esgReport };
 }

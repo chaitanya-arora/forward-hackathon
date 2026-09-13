@@ -1,10 +1,9 @@
 import cors from "cors";
 import express from "express";
 import multer from "multer";
-import { createFileReportProvider, getRepositoryRun, validRunIds } from "./report-provider.js";
+import { createRepositoryReportProvider, getRepositoryRun, validRunIds } from "./report-provider.js";
 
-
-export function createApp({ reportProvider = createFileReportProvider(), corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000" } = {}) {
+export function createApp({ reportProvider = createRepositoryReportProvider(), corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000" } = {}) {
   const app = express();
   const liveRuns = new Set();
   const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 20 } });

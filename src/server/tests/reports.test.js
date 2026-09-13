@@ -14,7 +14,7 @@ async function serve(t, provider) {
   return `http://127.0.0.1:${server.address().port}`;
 }
 
-test("health, real report exports, CORS and controlled invalid-run responses over HTTP", async t => {
+test("health, SQLite-backed run 11, CORS and controlled invalid-run responses over HTTP", async t => {
   const url = await serve(t);
   assert.deepEqual(await (await fetch(`${url}/api/ping`)).json(), { ok: true, service: "forward-server" });
   const response = await fetch(`${url}/api/companies/2/runs/11`, { headers: { Origin: "http://localhost:3000" } });
@@ -22,12 +22,13 @@ test("health, real report exports, CORS and controlled invalid-run responses ove
   assert.equal(response.headers.get("access-control-allow-origin"), "http://localhost:3000");
   const run = await response.json();
   assert.equal(run.stage, "completed");
-  assert.deepEqual(run.reportIds, { aasbS2: null, esg: null }); // Never invent DB report IDs from files.
+  assert.equal(typeof run.reportIds.aasbS2, "number");
+  assert.equal(typeof run.reportIds.esg, "number");
+  assert.ok(run.aasbS2Report?.presentation?.executiveSummary?.headline);
+  assert.ok(run.esgReport?.presentation?.executiveSummary?.headline);
   for (const name of ["aasbS2Report", "esgReport"]) {
-    const original = JSON.parse(await readFile(new URL(`../../../storage/reports/company-2/run-11/${name}.json`, import.meta.url), "utf8"));
-    assert.deepEqual(run[name], original);
-    assert.ok(run[name].presentation.executiveSummary.headline);
     assert.ok(Array.isArray(run[name].presentation.keyFindings));
+    assert.ok(Array.isArray(run[name].presentation.priorityActions));
   }
   for (const ids of ["0/11", "2/no", "999999/11", "3/11", "2/999999", "9007199254740992/11"]) {
     const [company, id] = ids.split("/");

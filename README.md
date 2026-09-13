@@ -356,14 +356,34 @@ using SQLite backup. On this checkout the previously committed legacy database w
 recovered, with its one classification retained and a local backup in
 `storage/backups/legacy-esg_reports.db`. No original upload records are fabricated.
 
-## Future frontend integration (not implemented)
+## Current frontend integration architecture
 
-Keep SQLite, Gemini keys and agent imports on the backend. The future authenticated
-API can call `createCompany`, `storeDocument`, `processCompany`, `getRun` and the typed
-retrieval functions. `getDocument(companyId, documentId, true)` returns original bytes
-for an authorized download; list responses do not include BLOBs.
+The current live web app uses the canonical backend storage path:
 
-The current API supports health, multipart upload/start, and run/report retrieval.
+```text
+Next.js frontend
+  ↓ HTTP
+Express API
+  ↓ provider/service layer
+repository.js
+  ↓ SQLite
+storage/database/esg_reports.db
+```
+
+The frontend never reads `storage/reports/*.json` directly and never accesses SQLite
+itself. The report API continues to expose the same response contract used by the
+React UI: `aasbS2Report` and `esgReport` are returned under the same run envelope,
+with the same `presentation.executiveSummary`, `keyFindings` and `priorityActions`
+fields the dashboard expects.
+
+The current demo fixture is company 2 / run 11. It is a known-good local run stored
+in SQLite and served over HTTP through `/api/companies/2/runs/11`.
+
+Generated JSON files under `storage/reports/company-<id>/run-<id>/` remain export or
+inspection artefacts. They are not the source used by the live web API; SQLite is the
+source of truth. `processCompany` writes typed reports into SQLite, and the report
+provider reads them back for HTTP responses.
+
 Company listing, document download and authenticated access remain future work.
 Use a durable worker for long processing rather than holding an upload HTTP request.
 Repository company checks are not user authentication or tenant authorization.
