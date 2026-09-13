@@ -521,6 +521,12 @@
 
 .about-section + .about-section { margin-top: 96px; }
 
+/* Body copy on this page reads as a document, not a hero: descriptions run
+   the full measure of the section rather than the narrow 52ch `.lede`
+   default built for landing-page headline copy. Anything actually inside a
+   card (info-card, panel, callout, etc.) keeps its own contained width. */
+.about-section > .lede { max-width: none; }
+
 .section-head {
   display: flex;
   align-items: baseline;
@@ -529,7 +535,7 @@
 }
 
 .section-head .strip-num {
-  font-size: 15px;
+  font-size: clamp(26px, 3.4vw, 34px);
   margin-bottom: 0;
 }
 
@@ -555,7 +561,10 @@
    stays reserved for the rating cards, where colour IS the content. */
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* 3 columns rather than 4: the AASB model is 5 sections (4 pillars plus
+     General Requirements), and 3 columns gives a 3-over-2 split instead of
+     stranding one lone card under an otherwise-empty second row. */
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
@@ -613,16 +622,72 @@
   margin: 0;
 }
 
-/* Rating cards: colour is the content here — three completeness ratings,
-   three unambiguous tones, matching the vocabulary the report itself uses.
-   An icon backs up the colour so the meaning doesn't rely on hue alone. */
-.rating-grid {
+/* The two report kinds: bigger than an info-card since each carries a full
+   paragraph plus a "who it's for" line, not a one-line summary. */
+.report-kind-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
 @media (max-width: 760px) {
+  .report-kind-grid { grid-template-columns: 1fr; }
+}
+
+.report-kind-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-kind-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-kind-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-kind-icon svg { width: 18px; height: 18px; }
+
+.report-kind-head h3 {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.report-kind-body {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.62;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* Rating cards: colour is the content here — four completeness statuses,
+   four unambiguous tones, matching the vocabulary the report itself uses.
+   An icon backs up the colour so the meaning doesn't rely on hue alone. */
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .rating-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
   .rating-grid { grid-template-columns: 1fr; }
 }
 
@@ -632,9 +697,10 @@
   border: 1px solid transparent;
 }
 
-.rating-card--strong  { background: var(--strong-bg);  border-color: color-mix(in srgb, var(--strong) 30%, transparent); }
-.rating-card--partial { background: var(--partial-bg); border-color: color-mix(in srgb, var(--partial) 30%, transparent); }
-.rating-card--missing { background: var(--missing-bg); border-color: color-mix(in srgb, var(--missing) 30%, transparent); }
+.rating-card--strong    { background: var(--strong-bg);    border-color: color-mix(in srgb, var(--strong) 30%, transparent); }
+.rating-card--partial   { background: var(--partial-bg);   border-color: color-mix(in srgb, var(--partial) 30%, transparent); }
+.rating-card--judgement { background: var(--judgement-bg); border-color: color-mix(in srgb, var(--judgement) 30%, transparent); }
+.rating-card--missing   { background: var(--missing-bg);   border-color: color-mix(in srgb, var(--missing) 30%, transparent); }
 
 .rating-card-head {
   display: flex;
@@ -653,9 +719,10 @@
   margin: 0;
 }
 
-.rating-card--strong  .rating-card-head { color: var(--strong); }
-.rating-card--partial .rating-card-head { color: var(--partial); }
-.rating-card--missing .rating-card-head { color: var(--missing); }
+.rating-card--strong    .rating-card-head { color: var(--strong); }
+.rating-card--partial   .rating-card-head { color: var(--partial); }
+.rating-card--judgement .rating-card-head { color: var(--judgement); }
+.rating-card--missing   .rating-card-head { color: var(--missing); }
 
 .rating-card p {
   font-family: var(--sans);

@@ -9,7 +9,8 @@ export function SiteFooter() {
     <footer className="footer no-print">
       <p className="footer-brand">GreenScreened · Climate disclosure readiness</p>
       <p className="footer-note note">
-        Reports are not saved. A report exists only in the browser tab that generated it.
+        Every generated report is saved and keeps working at its own link — not just a
+        browser-tab session.
       </p>
     </footer>
   );
