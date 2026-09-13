@@ -7,11 +7,13 @@ import { AssessmentReport } from "@/components/AssessmentReport";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { fetchRunStatus } from "@/lib/api";
+import { DEMO_COMPANY_ID, DEMO_RUN_ID } from "@/lib/demo";
 import { type ReportPair } from "@/lib/report-store";
 
 // Every report URL loads its own validated response from Express.
 export default function ReportPage() {
   const { companyId, runId } = useParams<{ companyId: string; runId: string }>();
+  const isDemo = Number(companyId) === DEMO_COMPANY_ID && Number(runId) === DEMO_RUN_ID;
   const [reports, setLocalReports] = useState<ReportPair | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "empty" | "error">("loading");
   const [error, setError] = useState("");
@@ -51,16 +53,19 @@ export default function ReportPage() {
   return (
     <div className="surface-dark journey">
       <SiteHeader>
-        <Link href="/report/preview" className="btn btn-ghost">
-          Example report
-        </Link>
-        <Link href="/upload" className="btn btn-ghost">
-          New report
+        <Link href="/upload" className="btn btn-primary">
+          Generate a report
         </Link>
       </SiteHeader>
 
       <main className="page page-wide" style={{ paddingTop: 24 }}>
+<<<<<<< HEAD
         {state === "loading" && <p className="note" role="status">Loading report…</p>}
+=======
+        {isDemo && <span className="example-tag">Example report</span>}
+
+        {state === "loading" && <p className="note" role="status">Loading reports…</p>}
+>>>>>>> origin/main
 
         {state === "empty" && (
           <div style={{ paddingTop: 48, maxWidth: "54ch" }}>

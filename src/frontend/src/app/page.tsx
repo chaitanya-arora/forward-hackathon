@@ -1,13 +1,21 @@
 import Link from "next/link";
+import { AlertTriangleIcon, CheckCircleIcon } from "@/components/icons";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
-/** Mirrors the real report's shape so the hero is an honest preview, not decoration. */
-const PREVIEW_PILLARS = [
-  { name: "Governance", score: 87 },
-  { name: "Strategy", score: 54 },
-  { name: "Risk Management", score: 66 },
-  { name: "Metrics & Targets", score: 38 },
+/** Mirrors the real report's shape (a readiness score plus key findings) so
+ * the hero is an honest preview, not decoration. */
+const PREVIEW_FINDINGS = [
+  {
+    importance: "high" as const,
+    title: "Metrics & targets: disclosure evidence gaps",
+    summary: "Emissions and target information is missing or incomplete across several disclosure criteria.",
+  },
+  {
+    importance: "medium" as const,
+    title: "Governance contains supported disclosures",
+    summary: "Board oversight and reporting responsibilities are clearly evidenced across the supplied documents.",
+  },
 ];
 
 const STEPS = [
@@ -68,24 +76,26 @@ export default function LandingPage() {
               <p className="proof-meta">Prepared from 2 documents provided by the company</p>
 
               <div className="proof-score">
-                <b>61</b>
-                <span>Overall readiness</span>
+                <div className="proof-score-ring">
+                  <b>61</b>
+                  <small>/100</small>
+                </div>
+                <span>Readiness</span>
               </div>
 
-              {PREVIEW_PILLARS.map((p) => (
-                <div className="proof-row" key={p.name}>
-                  <em>{p.name}</em>
-                  <b>{p.score}</b>
-                  <div className="proof-bar">
-                    <i style={{ width: `${p.score}%` }} />
+              {PREVIEW_FINDINGS.map((f) => (
+                <div className={`proof-finding proof-finding--${f.importance}`} key={f.title}>
+                  <span className="proof-finding-icon">
+                    {f.importance === "high" ? <AlertTriangleIcon /> : <CheckCircleIcon />}
+                  </span>
+                  <div>
+                    <b>{f.title}</b>
+                    <p>{f.summary}</p>
                   </div>
                 </div>
               ))}
 
-              <p className="proof-cite">
-                <code>ev_001</code> quality_holdings.pdf · page 12 — “The Board Risk and
-                Sustainability Committee meets quarterly…”
-              </p>
+              <p className="proof-footer">6 key findings · 12 priority actions identified</p>
             </div>
           </div>
         </div>

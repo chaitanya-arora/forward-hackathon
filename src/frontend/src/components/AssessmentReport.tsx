@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+<<<<<<< HEAD
 import { InfoIcon } from "@/components/icons";
 import type { AasbS2Report } from "@/lib/assessment-types";
 import { AASB_SECTION_KEYS, AASB_SECTION_LABELS } from "@/lib/assessment-types";
@@ -9,6 +10,41 @@ import { readinessTone } from "@/lib/readiness";
 import { downloadReportPdf } from "@/lib/api";
 
 export function AssessmentReport({ companyId, runId, report }: { companyId: number; runId: number; report: AasbS2Report }) {
+=======
+import { AlertTriangleIcon, CheckCircleIcon, InfoIcon } from "@/components/icons";
+import { AASB_SECTION_LABELS, type AasbS2Report, type EsgReport } from "@/lib/assessment-types";
+import type { Presentation } from "@/lib/presentation";
+import { AASB_AUDIENCE, AASB_INTRO, ESG_AUDIENCE, ESG_INTRO } from "@/lib/report-copy";
+import { readinessTone } from "@/lib/readiness";
+import { downloadReportPdf } from "@/lib/api";
+
+type Finding = Presentation["keyFindings"][number];
+type PriorityAction = Presentation["priorityActions"][number];
+
+const ESG_SECTION_LABELS: Record<string, string> = {
+  environmental: "Environmental",
+  social: "Social",
+  governance: "Governance",
+};
+
+function sectionLabel(view: "aasb" | "esg", section: string): string {
+  const labels = view === "aasb" ? AASB_SECTION_LABELS : ESG_SECTION_LABELS;
+  return labels[section] ?? section;
+}
+
+const ACTION_TYPE_LABELS: Record<string, string> = {
+  provide_evidence: "Evidence needed",
+  human_confirmation: "Needs confirmation",
+  professional_judgement: "Professional judgement",
+  resolve_conflict: "Resolve conflict",
+  external_assurance: "External assurance",
+  director_action: "Director action",
+};
+
+export function AssessmentReport({ aasbS2Report, esgReport }: { aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
+export function AssessmentReport({ companyId, runId, aasbS2Report, esgReport }: { companyId: number; runId: number; aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
+  const [view, setView] = useState<"aasb" | "esg">("aasb");
+>>>>>>> origin/main
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
@@ -105,6 +141,7 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
           <InfoIcon />
         </span>
         <div>
+<<<<<<< HEAD
           <p className="callout-label">About this assessment</p>
           <p>
             A draft for management, director and assurance review. It assesses disclosure evidence and preparation needs; it does not certify compliance or approval for lodgement.
@@ -117,6 +154,8 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
           <InfoIcon />
         </span>
         <div>
+=======
+>>>>>>> origin/main
           <p className="callout-label">Who this report is for</p>
           <p>{AASB_AUDIENCE}</p>
         </div>
@@ -148,14 +187,11 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
 
       <h3 className="subhead">Key findings</h3>
       {keyFindings.length ? (
-        <ul className="summary-list" aria-label="Key findings">
+        <div className="findings-grid" aria-label="Key findings">
           {keyFindings.map((f) => (
-            <li key={f.id}>
-              <strong>{f.title}</strong>
-              <p>{f.summary}</p>
-            </li>
+            <FindingCard key={f.id} finding={f} view={view} />
           ))}
-        </ul>
+        </div>
       ) : (
         <p className="note">No key findings identified from the supplied documents.</p>
       )}
@@ -163,14 +199,11 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
       <h3 className="subhead">Priority actions</h3>
       {priorityActions.length ? (
         <>
-          <ol className="summary-list" aria-label="Priority actions">
-            {actions.map((a) => (
-              <li key={a.id}>
-                <strong>{a.title}</strong>
-                <p>{a.description}</p>
-              </li>
+          <div className="actions-grid" aria-label="Priority actions">
+            {actions.map((a, i) => (
+              <ActionCard key={a.id} action={a} view={view} rank={i + 1} />
             ))}
-          </ol>
+          </div>
           {priorityActions.length > 5 && (
             <button
               className="btn"
@@ -186,5 +219,49 @@ function ReportSummary({ report }: { report: AasbS2Report }) {
         <p className="note">No priority evidence actions identified from the supplied documents.</p>
       )}
     </section>
+  );
+}
+
+function FindingCard({ finding, view }: { finding: Finding; view: "aasb" | "esg" }) {
+  const evidenceCount = finding.evidenceIds.length;
+  return (
+    <div className={"finding-card finding-card--" + finding.importance}>
+      <span className="finding-icon">
+        {finding.importance === "high" ? <AlertTriangleIcon /> : <CheckCircleIcon />}
+      </span>
+      <div className="finding-body">
+        <h4 className="finding-title">{finding.title}</h4>
+        <p className="finding-summary">{finding.summary}</p>
+        <div className="finding-meta">
+          <span>{sectionLabel(view, finding.section)}</span>
+          {evidenceCount > 0 && <span>{evidenceCount} source{evidenceCount === 1 ? "" : "s"}</span>}
+          {finding.references.length > 0 && (
+            <span>{finding.references.length} reference{finding.references.length === 1 ? "" : "s"}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActionCard({ action, view, rank }: { action: PriorityAction; view: "aasb" | "esg"; rank: number }) {
+  const evidenceCount = action.evidenceIds.length;
+  return (
+    <div className={"action-card action-card--" + action.priority}>
+      <span className="action-rank">{String(rank).padStart(2, "0")}</span>
+      <div>
+        <div className="action-head">
+          <h4 className="action-title">{action.title}</h4>
+          <span className={"action-priority action-priority--" + action.priority}>{action.priority}</span>
+        </div>
+        <p className="action-description">{action.description}</p>
+        <div className="action-meta">
+          <span>{ACTION_TYPE_LABELS[action.actionType] ?? action.actionType}</span>
+          <span>{sectionLabel(view, action.section)}</span>
+          {action.reference && <span className="mono">{action.reference}</span>}
+          {evidenceCount > 0 && <span>{evidenceCount} source{evidenceCount === 1 ? "" : "s"}</span>}
+        </div>
+      </div>
+    </div>
   );
 }
