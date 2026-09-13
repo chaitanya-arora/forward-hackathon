@@ -1,3 +1,4 @@
+import { runSchema } from "./presentation";
 import type { RunStatus } from "@/lib/assessment-types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -31,8 +32,18 @@ export async function startReport(
   return res.json();
 }
 
-export async function fetchRunStatus(companyId: number, runId: number): Promise<RunStatus> {
-  const res = await fetch(`${API_URL}/api/companies/${companyId}/runs/${runId}`, { cache: "no-store" });
-  if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? "Could not read run status.");
-  return res.json();
+export async function fetchRunStatus(companyId: number, runId: number, signal?: AbortSignal): Promise<RunStatus> {
+  if (![companyId, runId].every(id => Number.isSafeInteger(id) && id > 0)) throw new Error("Run not found. Check the report link.");
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/api/companies/${companyId}/runs/${runId}`, { cache: "no-store", signal });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    throw new Error("Cannot reach the report API. Check that the backend is running and try again.");
+  }
+  if (!res.ok) throw new Error(res.status === 404 ? "Run not found. Check the company and run in this link." : "The API could not load the saved reports. Check the server and report exports.");
+  const parsed = runSchema.safeParse(await res.json().catch(() => null));
+  if (!parsed.success) throw new Error("The API returned an invalid report format. A valid presentation section is required for each report.");
+  if (parsed.data.companyId !== companyId || parsed.data.runId !== runId) throw new Error("The API returned a different run. Please reload the correct report link.");
+  return parsed.data as unknown as RunStatus;
 }

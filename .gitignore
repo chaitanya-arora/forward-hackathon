@@ -2,6 +2,8 @@
 node_modules/
 esgReport.json
 aasbS2Report.json
+!storage/reports/**/aasbS2Report.json
+!storage/reports/**/esgReport.json
 src/agent2/output/*.json
 __pycache__/
 *.pyc

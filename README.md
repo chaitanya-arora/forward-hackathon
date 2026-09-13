@@ -18,7 +18,8 @@ Every successful processing run produces two independently stored reports:
 
 SQLite is the source of truth. These filenames are export names, not required source
 files. Uploaded PDFs are extracted once per run, and both generators reuse the same
-persisted evidence snapshot. There is no Express server or React application yet.
+persisted evidence snapshot. The `frontend-integration` branch includes a Next.js /
+React frontend and an Express API. See local development below for the saved-report demo.
 
 ## What the AASB output means
 
@@ -441,22 +442,129 @@ Contract tests cover deterministic assembly, negative findings, valid evidence I
 real actions, priority ordering, absent visual fields, preserved scores/detail,
 SQLite round trips and exactly two JSON exports, using mocked model clients.
 
-## Future frontend integration (not implemented)
+## Local frontend and API development
+
+Run from the repository root with the root, `src/server` and `src/frontend`
+dependencies installed. These are separate npm packages, not workspaces.
+
+Terminal 1 (Express API):
+
+```powershell
+npm --prefix src/server run dev
+```
+
+Terminal 2 (Next.js / React):
+
+```powershell
+npm --prefix src/frontend run dev
+```
+
+- Frontend: http://localhost:3000
+- Demo entry: http://localhost:3000/report/preview
+- Demo report: http://localhost:3000/report/2/11
+- API: http://localhost:4000
+- Health: http://localhost:4000/api/ping
+- Report endpoint: `GET /api/companies/2/runs/11`
+
+If PowerShell cannot find npm, use `& "C:\Program Files\nodejs\npm.cmd"` in
+place of `npm`, when Node is installed at that location. Do not start duplicate
+servers if ports 3000 and 4000 are already in use by this project.
+
+The demo IDs are defined only in `src/frontend/src/lib/demo.ts` for navigation.
+The preview redirects to the generic report URL and makes an HTTP request through
+`src/frontend/src/lib/api.ts`. It does not import the old frontend mock JSON.
+
+### Configuration
+
+`NEXT_PUBLIC_API_URL` belongs in frontend configuration (for example
+`src/frontend/.env.local`) and defaults to `http://localhost:4000`. Restart Next
+after changing it. The existing `.env.example` documents this public API URL.
+Never put Gemini keys in `NEXT_PUBLIC_*` settings.
+
+Express loads the root `.env`. `PORT` defaults to `4000`; `CORS_ORIGIN` accepts
+a comma-separated list and defaults to `http://localhost:3000`. Set it explicitly
+for deployed origins. No credentials or SQLite paths are sent to React.
+
+### Current saved-file provider and API contract
+
+`src/server/report-provider.js` reads the existing files
+`storage/reports/company-2/run-11/aasbS2Report.json` and `esgReport.json` for the
+demo. The same provider supports other exported company/run directories. A missing
+run directory returns 404; missing, malformed or incompatible reports within an
+existing directory return a controlled 500. Internal paths and stack traces are
+not returned. These reads make no Gemini calls and do not initialize SQLite.
+
+The existing endpoint and field names are retained:
+
+```text
+{
+  companyId, runId,
+  stage: "completed", stageLabel: "completed", done: true, error: null,
+  reportIds: { aasbS2: null, esg: null },
+  aasbS2Report: <full AASB JSON, including presentation>,
+  esgReport: <full ESG JSON, including presentation>
+}
+```
+
+File exports do not carry SQLite report-row IDs, so `reportIds` are null rather
+than invented. All detailed report data is preserved. Zod validates the envelope
+and fields rendered by the UI, preserving other fields for future detailed views.
+The report page always fetches its requested company/run; it does not reuse an
+unkeyed browser cache. Loading, absent reports, invalid shapes, failed runs and
+network/server errors have explicit messages. There is no fake-data fallback.
+
+Both tabs use `presentation` directly. Only the overall score receives frontend
+colour through `src/frontend/src/lib/readiness.ts`: null = neutral, below 50 = red,
+50–79 = amber, 80–100 = green. Findings and actions show titles and descriptions
+without colour indicators. Actions retain backend order, with the first five
+shown initially and a button exposing the complete list. Empty arrays are valid.
+Backend disclaimers and human-review flags remain visible.
+
+### Uploads and next phases
+
+The existing upload endpoint still invokes the existing SQLite-backed pipeline.
+Runs started by the current API process use repository polling; successful runs
+also export both report files. After server restart, file retrieval can serve
+completed exported runs; in-progress/failed or unexported historical runs need the
+next repository-provider phase. Existing SQLite code and generators are unchanged.
+
+SQLite remains the canonical backend store. The file provider is a temporary demo
+read adapter, not a replacement database. Once shared database provisioning is
+settled, change the provider passed to `createApp` to `getRepositoryRun` (already
+used for live runs), retaining the same HTTP contract. No React changes are needed.
+
+PDF generation is deferred. The disabled button says “PDF export coming soon.”
+The future backend renderer will consume stored report JSON without new AI calls.
+
+Verification commands:
+
+```powershell
+npm test
+node --test src/server/tests/reports.test.js
+npm --prefix src/frontend run typecheck
+npm --prefix src/frontend run build
+```
+
+HTTP tests use the two saved exports and isolated temporary fixtures for errors;
+they do not initialize SQLite or request Gemini. Root tests use their existing
+isolated databases and mocked clients.
+
+## Deployment boundaries
 
 Keep SQLite, Gemini keys and agent imports on the backend. The future authenticated
 API can call `createCompany`, `storeDocument`, `processCompany`, `getRun` and the typed
 retrieval functions. `getDocument(companyId, documentId, true)` returns original bytes
 for an authorized download; list responses do not include BLOBs.
 
-Suggested routes: company creation/listing; multipart upload/list/download; start run;
-poll run; retrieve/export AASB or ESG output. No route is implemented by this task.
+The current API supports health, multipart upload/start, and run/report retrieval.
+Company listing, document download and authenticated access remain future work.
 Use a durable worker for long processing rather than holding an upload HTTP request.
 Repository company checks are not user authentication or tenant authorization.
 
 The primary screen should show AASB preparation status, missing disclosures, supporting
 quotes, human-review actions and run history. The broader ESG report is a secondary
 tab. Director/assurance/lodgement actions must remain external, never an automatic
-"compliant" or "ready to lodge" badge. Add React/Express only in later work.
+"compliant" or "ready to lodge" badge.
 
 ## Standalone commands and tests
 

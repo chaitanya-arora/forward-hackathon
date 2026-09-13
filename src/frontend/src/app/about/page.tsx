@@ -76,27 +76,27 @@ const STEPS = [
 
 const PRIVACY_ITEMS: DisclosureItem[] = [
   {
-    title: "Nothing is stored",
-    teaser: "Held in memory only, then it's gone — even the report itself.",
-    body: "A file is held in memory only while it is being read, and discarded once evidence has been pulled from it — it is never written to disk. The report that comes back works the same way: it lives only in the browser tab that generated it. Reload the page or close the tab and it is gone. There is no database, no history and no account — download the report first if you want to keep it.",
+    title: "Documents and reports are retained",
+    teaser: "Backend storage preserves uploads, evidence and report history.",
+    body: "The backend retains uploaded documents, extracted evidence and generated reports. Reports can be reopened using their company and run link. The example assessment is served from saved backend report exports through the API. PDF export is planned for a later phase.",
     Icon: LockIcon,
   },
   {
-    title: "Document text reaches Anthropic's API",
-    teaser: "Claude reads your documents to produce the assessment.",
-    body: "Your documents are read, classified against the four pillars, and turned into the written assessment by Claude, Anthropic's model. That's the material fact about how this works: your content leaves this application to be processed by a third-party model.",
+    title: "New assessments use Google's Gemini API",
+    teaser: "Opening a saved report does not make another model request.",
+    body: "Generating a new assessment sends extracted document text to Google's Gemini API. Opening an existing report only retrieves saved report data from the backend; it does not regenerate the assessment.",
     Icon: SendIcon,
   },
   {
-    title: "A short-lived job, not a database",
-    teaser: "Progress sits in memory just long enough to finish the report.",
-    body: "While a report is generating, its progress sits in the server's memory under a temporary id so your browser can poll for it. This holds at most the 20 most recent jobs across every visitor, oldest evicted first, and all of it is lost on a server restart — it exists to make the upload-and-poll flow work, not to keep anything.",
+    title: "Processing history lives on the backend",
+    teaser: "SQLite stores run progress and completed reports.",
+    body: "The existing pipeline saves run progress, extraction checkpoints and reports in SQLite. The current demo reads exported report files through Express. Broader retrieval of historical database runs is the next integration phase.",
     Icon: ClockIcon,
   },
   {
-    title: "No sign-in, no analytics, no cookies",
-    teaser: "Nothing about you or your visit is recorded.",
-    body: "There is no account to create and nothing to opt out of — nothing about you or your visit is recorded beyond the ordinary logs any running server produces.",
+    title: "No sign-in is implemented yet",
+    teaser: "This is a development MVP, without user access controls.",
+    body: "The current application has no account or authentication layer. The backend retains uploaded information and ordinary server logs; use approved demonstration documents in this environment.",
     Icon: EyeOffIcon,
   },
 ];
@@ -184,9 +184,9 @@ export default function AboutPage() {
           </div>
 
           <p className="note rise" style={{ ["--i" as string]: 10, marginTop: 24, maxWidth: "62ch" }}>
-            The calculation is deterministic throughout — nothing here is asked of the model, so the
-            same evidence always produces the same score. That&rsquo;s why adding a second document
-            and re-running moves the number for a reason you can point to.
+            The backend calculates scores from validated assessments. Model interpretation can
+            vary between generation runs; opening a saved report preserves its recorded score.
+            Readiness is an internal evidence measure, not compliance or company ESG performance.
           </p>
 
           <div className="callout rise" style={{ ["--i" as string]: 11, marginTop: 28, maxWidth: "62ch" }}>
@@ -228,9 +228,9 @@ export default function AboutPage() {
             <div>
               <p className="callout-label">One limitation, stated rather than glossed over</p>
               <p>
-                The backend has no authentication, so anyone who could reach it while a report is
-                generating could, in principle, read that job&rsquo;s status. Nothing is retained
-                afterward and each job is short-lived, so the exposure is narrow — but it is real.
+                The backend has no authentication. Anyone who can reach it and knows a report link
+                may retrieve that report. Access controls are required before sharing private
+                company documents through a deployed service.
               </p>
             </div>
           </div>

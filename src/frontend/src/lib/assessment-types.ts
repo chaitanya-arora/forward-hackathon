@@ -49,16 +49,11 @@ export interface AasbSectionBlock {
 }
 
 export interface AasbS2Report {
+  presentation: import("./presentation").Presentation;
   reportType?: "AASB_S2_DRAFT";
   priority?: "primary";
   status: string;
   company: string;
-  // Not yet produced by the pipeline — this logic is moving server-side.
-  // The frontend renders a placeholder until these show up in the JSON.
-  businessEngagementSummary?: string;
-  keyFindingsSummary?: string[];
-  priorityActionsSummary?: string[];
-  fullReportUrl?: string;
   reportingPeriod: { year: string; startDate: string | null; endDate: string | null };
   standard: { name: string; version: string; source: string | null; amendmentReview: string | null };
   reportingApplicability: { assessment: string; requiresProfessionalConfirmation: boolean };
@@ -114,17 +109,12 @@ export interface EsgSectionBlock {
 }
 
 export interface EsgReport {
+  presentation: import("./presentation").Presentation;
   reportType?: "ESG_READINESS";
   priority?: "secondary";
   company: string;
   reportYear: string | null;
   executiveSummary: string;
-  // Not yet produced by the pipeline — this logic is moving server-side.
-  // The frontend renders a placeholder until these show up in the JSON.
-  businessEngagementSummary?: string;
-  keyFindingsSummary?: string[];
-  priorityActionsSummary?: string[];
-  fullReportUrl?: string;
   // The real backend emits both of these with the same value — a redundancy
   // in the source data (see the field-quality note in the project record),
   // not something invented here. overallESGScore is the one actually used.

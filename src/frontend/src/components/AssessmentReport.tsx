@@ -1,184 +1,87 @@
 "use client";
-
 import { useState } from "react";
 import { InfoIcon } from "@/components/icons";
 import type { AasbS2Report, EsgReport } from "@/lib/assessment-types";
+import type { Presentation } from "@/lib/presentation";
+import { readinessTone } from "@/lib/readiness";
 
-type View = "aasb" | "esg";
-
-const AASB_AUDIENCE =
-  "This is a government-facing report: AASB S2 is a mandatory legislated disclosure standard, so it's written the way a regulator, auditor, or lodgement reviewer would read it.";
-
-const AASB_INTRO =
-  "AASB S2 is Australia's mandatory climate-related disclosure standard — legislated, effective for reporting periods from 2025, and based on the international ISSB framework. It requires companies to report across four pillars: Governance, Strategy, Risk Management, and Metrics & Targets. Our Climate Readiness Report scores a company against exactly these four pillars, using its own uploaded documentation as evidence, showing where disclosure is strong and where it falls short of what the standard actually requires.";
-
-const ESG_AUDIENCE =
-  "This is a stakeholder-facing report: it's written for investors, customers, and partners deciding whether to trust an ESG claim, not for a regulator.";
-
-const ESG_INTRO =
-  "Before a company can credibly claim anything about its ESG performance, it needs to be able to back that claim with real, traceable evidence — not just a statement of intent. This report is the evidence layer underneath the readiness score: it shows exactly what supporting material exists for each ESG claim, how strong that evidence actually is, and where claims currently rest on nothing verifiable.";
-
-/**
- * The full evidence-level report (every criterion, every citation) isn't
- * built here — it's a separate, formally-formatted PDF the backend will
- * produce and link to (report.fullReportUrl). This component is the
- * on-screen summary, styled as part of the site rather than a paper
- * document: which framework, who it's for, and three sections the backend
- * will populate (business engagement summary, key findings, priority
- * actions) — placeholders until that JSON lands.
- */
-export function AssessmentReport({
-  aasbS2Report,
-  esgReport,
-}: {
-  aasbS2Report: AasbS2Report;
-  esgReport: EsgReport;
-}) {
-  const [view, setView] = useState<View>("aasb");
-
-  const company = aasbS2Report.company || esgReport.company;
-  const fullReportUrl = view === "aasb" ? aasbS2Report.fullReportUrl : esgReport.fullReportUrl;
-
+export function AssessmentReport({ aasbS2Report, esgReport }: { aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
+  const [view, setView] = useState<"aasb" | "esg">("aasb");
+  const selected = view === "aasb" ? aasbS2Report : esgReport;
   return (
     <div className="report-page">
-      <div className="report-hero rise" style={{ ["--i" as string]: 0 }}>
+      <div className="report-hero rise">
         <p className="eyebrow">Climate &amp; ESG Readiness Assessment</p>
-        <h1 className="display display-l" style={{ marginTop: 8 }}>
-          {company}
-        </h1>
+        <h1 className="display display-l" style={{ marginTop: 8 }}>{selected.company}</h1>
         <p className="lede" style={{ marginTop: 10, fontSize: 15.5 }}>
-          {view === "aasb"
-            ? `AASB S2 climate disclosure draft, reporting year ${aasbS2Report.reportingPeriod.year}`
-            : "ESG evidence-readiness assessment"}
+          {view === "aasb" ? "AASB S2 climate disclosure draft, reporting year " + (aasbS2Report.reportingPeriod.year ?? "unconfirmed") : "ESG evidence-readiness assessment"}
         </p>
       </div>
-
-      <div className="report-controls rise" style={{ ["--i" as string]: 1 }}>
+      <div className="report-controls">
         <div className="view-toggle" role="tablist" aria-label="Report type">
-          <button
-            role="tab"
-            aria-selected={view === "aasb"}
-            className={view === "aasb" ? "is-active" : ""}
-            onClick={() => setView("aasb")}
-          >
-            AASB S2
-          </button>
-          <button
-            role="tab"
-            aria-selected={view === "esg"}
-            className={view === "esg" ? "is-active" : ""}
-            onClick={() => setView("esg")}
-          >
-            ESG
-          </button>
+          {(["aasb", "esg"] as const).map(tab => (
+            <button key={tab} id={"tab-" + tab} role="tab" aria-selected={view === tab}
+              aria-controls="report-summary" className={view === tab ? "is-active" : ""}
+              onClick={() => setView(tab)}>{tab === "aasb" ? "AASB S2" : "ESG"}</button>
+          ))}
         </div>
-
-        {fullReportUrl ? (
-          <a className="btn btn-primary" href={fullReportUrl}>
-            Download full report (PDF)
-          </a>
-        ) : (
-          <button className="btn btn-primary" disabled title="The full report isn't ready yet">
-            Download full report (PDF)
-          </button>
-        )}
+        <button className="btn btn-primary" disabled>PDF export coming soon</button>
       </div>
-
-      {view === "aasb" ? (
-        <ReportSummary
-          heading="AASB S2 Climate Readiness"
-          audience={AASB_AUDIENCE}
-          intro={AASB_INTRO}
-          businessEngagementSummary={aasbS2Report.businessEngagementSummary}
-          keyFindings={aasbS2Report.keyFindingsSummary}
-          priorityActions={aasbS2Report.priorityActionsSummary}
-        />
-      ) : (
-        <ReportSummary
-          heading="ESG Evidence Readiness"
-          audience={ESG_AUDIENCE}
-          intro={ESG_INTRO}
-          businessEngagementSummary={esgReport.businessEngagementSummary}
-          keyFindings={esgReport.keyFindingsSummary}
-          priorityActions={esgReport.priorityActionsSummary}
-        />
-      )}
+      <ReportSummary key={view} view={view} presentation={selected.presentation} />
     </div>
   );
 }
 
-function ReportSummary({
-  heading,
-  audience,
-  intro,
-  businessEngagementSummary,
-  keyFindings,
-  priorityActions,
-}: {
-  heading: string;
-  audience: string;
-  intro: string;
-  businessEngagementSummary?: string;
-  keyFindings?: string[];
-  priorityActions?: string[];
-}) {
+function ReportSummary({ view, presentation }: { view: "aasb" | "esg"; presentation: Presentation }) {
+  const { executiveSummary: summary, keyFindings, priorityActions } = presentation;
+  const [showAllActions, setShowAllActions] = useState(false);
+  const actions = showAllActions ? priorityActions : priorityActions.slice(0, 5);
   return (
-    <section className="report-summary-section rise" style={{ ["--i" as string]: 2 }}>
-      <div className="section-head">
-        <h2>{heading}</h2>
-      </div>
-
+    <section id="report-summary" role="tabpanel" aria-labelledby={"tab-" + view} className="report-summary-section">
+      <div className="section-head"><h2>{view === "aasb" ? "AASB S2 Climate Readiness" : "ESG Evidence Readiness"}</h2></div>
       <div className="callout">
-        <span className="callout-icon">
-          <InfoIcon />
-        </span>
+        <span className="callout-icon"><InfoIcon /></span>
         <div>
-          <p className="callout-label">Who this report is for</p>
-          <p>{audience}</p>
+          <p className="callout-label">About this assessment</p>
+          <p>{view === "aasb"
+            ? "A draft for management, director and assurance review. It assesses disclosure evidence and preparation needs; it does not certify compliance or approval for lodgement."
+            : "An assessment of the evidence supporting environmental, social and governance disclosures. It does not rate company ESG performance."}</p>
         </div>
       </div>
-
-      <p className="lede" style={{ marginTop: 24, fontSize: 15.5 }}>
-        {intro}
-      </p>
-
       <h3 className="subhead">Executive summary</h3>
-      {businessEngagementSummary ? (
-        <p className="summary-text">{businessEngagementSummary}</p>
-      ) : (
-        <PlaceholderPanel text="A summary of how this business engages with the framework, generated from its uploaded documentation, will appear here." />
-      )}
-
+      <div className="readiness-overview">
+        <div className={"readiness-score readiness-" + readinessTone(summary.readinessScore)}
+          aria-label={(summary.readinessScore == null ? "Unavailable" : summary.readinessScore + " out of 100") + " Readiness"}>
+          <strong>{summary.readinessScore == null ? "—" : summary.readinessScore}<small>{summary.readinessScore == null ? "" : "/100"}</small></strong>
+          <span>{summary.readinessLabel}</span>
+        </div>
+        <div>
+          <h4 className="summary-headline">{summary.headline}</h4>
+          <p className="summary-text">{summary.summary}</p>
+          <p className="note score-disclaimer">{summary.scoreDisclaimer}</p>
+          {summary.requiresHumanReview && <p className="note">Human review required.</p>}
+        </div>
+      </div>
       <h3 className="subhead">Key findings</h3>
-      {keyFindings && keyFindings.length > 0 ? (
-        <ul className="summary-list">
-          {keyFindings.map((f, i) => (
-            <li key={i}>{f}</li>
-          ))}
+      {keyFindings.length ? (
+        <ul className="summary-list" aria-label="Key findings">
+          {keyFindings.map(f => <li key={f.id}><strong>{f.title}</strong><p>{f.summary}</p></li>)}
         </ul>
-      ) : (
-        <PlaceholderPanel text="Key findings from the rubric assessment will appear here." />
-      )}
-
+      ) : <p className="note">No key findings identified from the supplied documents.</p>}
       <h3 className="subhead">Priority actions</h3>
-      {priorityActions && priorityActions.length > 0 ? (
-        <ol className="summary-list">
-          {priorityActions.map((a, i) => (
-            <li key={i}>{a}</li>
-          ))}
-        </ol>
-      ) : (
-        <PlaceholderPanel text="Prioritised action points will appear here." />
-      )}
+      {priorityActions.length ? (
+        <>
+          <ol className="summary-list" aria-label="Priority actions">
+            {actions.map(a => <li key={a.id}><strong>{a.title}</strong><p>{a.description}</p></li>)}
+          </ol>
+          {priorityActions.length > 5 && (
+            <button className="btn" style={{ marginTop: 20 }} aria-expanded={showAllActions}
+              onClick={() => setShowAllActions(!showAllActions)}>
+              {showAllActions ? "Show top 5 actions" : "Show all " + priorityActions.length + " actions"}
+            </button>
+          )}
+        </>
+      ) : <p className="note">No priority evidence actions identified from the supplied documents.</p>}
     </section>
-  );
-}
-
-function PlaceholderPanel({ text }: { text: string }) {
-  return (
-    <div className="placeholder-panel">
-      <p>{text}</p>
-      <span className="placeholder-tag">Coming soon</span>
-    </div>
   );
 }
