@@ -17,8 +17,10 @@ export function createRepositoryReportProvider() {
   };
 }
 
-// Kept for isolated tests and validating legacy export file handling; live API
-// requests use the repository-backed provider so report retrieval stays in SQLite.
+// Serves the fixed demo id (company 2 / run 11) from saved JSON exports so
+// "Example report" works without a seeded SQLite run. Any run actually
+// started through this server (tracked in `liveRuns` in app.js) always reads
+// live from SQLite regardless of which provider is passed to createApp.
 export function createFileReportProvider(root = reportsRoot) {
   return async (companyId, runId) => {
     if (!validRunIds(companyId, runId)) throw new ReportError(404, "Run not found.");
