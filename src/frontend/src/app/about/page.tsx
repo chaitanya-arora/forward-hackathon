@@ -7,25 +7,24 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
   AlertTriangleIcon,
+  BarChartIcon,
   CheckCircleIcon,
   ClockIcon,
   EyeOffIcon,
   InfoIcon,
   LockIcon,
   SendIcon,
+  ShieldIcon,
   XCircleIcon,
 } from "@/components/icons";
 import { PILLAR_META } from "@/lib/pillar-meta";
+import { AASB_AUDIENCE, AASB_INTRO, ESG_AUDIENCE, ESG_INTRO } from "@/lib/report-copy";
 
-// TODO(follow-up): still describes the retired 4-pillar/3-status model in
-// places below (RATINGS, STEPS) — content needs a real rewrite for the 5
-// AASB sections (64 criteria, 5-state status) and the separate ESG rubric
-// (3 categories, 3-state status). Tracked as pending work, not done here.
 const PILLAR_SUMMARIES: Record<(typeof AASB_SECTION_KEYS)[number], string> = {
   governance:
     "Which board or committee oversees climate risk, how often it actually considers climate matters, and how management escalates to it.",
   strategy:
-    "The physical and transition risks identified, the time horizons used, and whether scenario analysis — including a 1.5°C or well-below-2°C case — was actually run rather than just mentioned.",
+    "The physical and transition risks identified, the time horizons used, and whether scenario analysis (including a 1.5°C or well-below-2°C case) was actually run rather than just mentioned.",
   riskManagement:
     "How climate risk is identified and assessed, and whether that process is integrated into the same enterprise risk management used for everything else, rather than run separately.",
   metricsAndTargets:
@@ -36,67 +35,73 @@ const PILLAR_SUMMARIES: Record<(typeof AASB_SECTION_KEYS)[number], string> = {
 
 const RATINGS = [
   {
-    label: "Well-substantiated",
+    label: "Present",
     tone: "strong" as const,
     Icon: CheckCircleIcon,
-    body: "The evidence addresses most of the pillar's disclosure criteria with real specifics — names, figures, dates — not general statements of intent.",
+    body: "Every piece of information the criterion requires was found and extracted from the evidence you provided.",
   },
   {
-    label: "Partial / Vague",
+    label: "Partial",
     tone: "partial" as const,
     Icon: AlertTriangleIcon,
-    body: "Some criteria are addressed, or addressed only in general terms. Common when a company discloses that it does something without saying how.",
+    body: "Some, but not all, of the required information was found. This is common when a company discloses that it does something without the specifics the standard actually asks for.",
+  },
+  {
+    label: "Requires human judgement",
+    tone: "judgement" as const,
+    Icon: ClockIcon,
+    body: "Evidence was found, but confirming it actually satisfies the criterion needs a qualified reviewer, not something a checklist can settle on its own.",
   },
   {
     label: "Missing",
     tone: "missing" as const,
     Icon: XCircleIcon,
-    body: "Little or no evidence was found against the pillar's criteria in the documents provided.",
+    body: "None of the required information was found anywhere in the documents provided.",
   },
 ];
 
 const STEPS = [
   {
-    h: "The rating sets the starting point.",
-    p: "Well-substantiated starts well ahead of Partial, which starts well ahead of Missing.",
+    h: "Every criterion has its own checklist.",
+    p: "AASB S2 criteria aren't yes/no. Scope 1 emissions, for instance, needs a value, a unit, a reporting period and a boundary, each checked off only when it's backed by evidence extracted from your documents.",
   },
   {
-    h: "Evidence volume moves it, with fast diminishing returns.",
-    p: "A second citation matters far more than a ninth — corroboration confirms a rating, it doesn't inflate one.",
+    h: "How much of that checklist is satisfied sets the status.",
+    p: "Present when every required element is backed by evidence, Partial when some are, Missing when none are, Requires human judgement when the evidence exists but needs a reviewer to confirm it's enough.",
   },
   {
-    h: "Confidence nudges it slightly.",
-    p: "How sure the model was in each piece of evidence shifts the score a little around that base, up or down.",
+    h: "Each status carries a fixed weight.",
+    p: "Present counts fully, Partial counts at half, Missing counts as zero: the same weights published in every report's own methodology section, not adjusted per company.",
   },
   {
-    h: "The overall score is a plain average.",
-    p: "The four pillar scores are averaged with no weighting — no pillar counts for more than another.",
+    h: "The overall score is the weighted average across every applicable criterion.",
+    p: "Not-applicable criteria are excluded rather than counted as missing, and the score can be capped below what that average implies if something like the reporting period or applicable standard version is still unresolved.",
   },
 ];
 
 const PRIVACY_ITEMS: DisclosureItem[] = [
   {
-    title: "Documents and reports are retained",
-    teaser: "Backend storage preserves uploads, evidence and report history.",
-    body: "The backend retains uploaded documents, extracted evidence and generated reports. Reports can be reopened using their company and run link. The example assessment is served from saved backend report exports through the API. PDF export is planned for a later phase.",
+    title: "Documents are stored, not discarded",
+    teaser: "Uploaded files and the reports built from them are saved to a database.",
+    body: "Each file you upload is saved as-is in a database, tied to the company and reporting year you gave it, and deduplicated by content, so uploading the same file twice doesn't create two copies. Reports generated from it are stored the same way and can be reopened using their company and run link, which is why a report keeps working if you reload the page or come back later. The example report linked from this site is served from a saved export rather than generated live.",
     Icon: LockIcon,
   },
   {
-    title: "New assessments use Google's Gemini API",
-    teaser: "Opening a saved report does not make another model request.",
-    body: "Generating a new assessment sends extracted document text to Google's Gemini API. Opening an existing report only retrieves saved report data from the backend; it does not regenerate the assessment.",
+    title: "Document text reaches Google's Gemini API",
+    teaser: "Gemini reads your documents to produce the assessment.",
+    body: "Generating a new assessment sends extracted document text to Google's Gemini API, matched against each AASB S2 and ESG criterion. Opening an existing report only retrieves what was already saved; it does not send anything to Gemini again.",
     Icon: SendIcon,
   },
   {
-    title: "Processing history lives on the backend",
-    teaser: "SQLite stores run progress and completed reports.",
-    body: "The existing pipeline saves run progress, extraction checkpoints and reports in SQLite. The current demo reads exported report files through Express. Broader retrieval of historical database runs is the next integration phase.",
+    title: "Run progress is tracked in the same database",
+    teaser: "Not an in-memory job queue: the stage is written down as it happens.",
+    body: "While a report is generating, its stage (extracting, analysing AASB S2, analysing ESG, completed) is recorded in the database so your browser can poll for it. That means it survives a server restart, unlike a purely in-memory job, and nothing about a finished run is automatically cleared away afterward.",
     Icon: ClockIcon,
   },
   {
-    title: "No sign-in is implemented yet",
-    teaser: "This is a development MVP, without user access controls.",
-    body: "The current application has no account or authentication layer. The backend retains uploaded information and ordinary server logs; use approved demonstration documents in this environment.",
+    title: "No sign-in, no analytics, no cookies",
+    teaser: "Nothing about you or your visit is recorded.",
+    body: "There is no account to create and nothing to opt out of: nothing about you or your visit is recorded beyond the ordinary logs any running server produces, and the company/run records described above.",
     Icon: EyeOffIcon,
   },
 ];
@@ -111,31 +116,83 @@ export default function AboutPage() {
       </SiteHeader>
 
       <main className="page page-wide about-intro">
-        <div style={{ maxWidth: "56ch" }}>
-          <p className="eyebrow rise" style={{ ["--i" as string]: 0 }}>
+        <div>
+          <p
+            className="eyebrow rise"
+            style={{ ["--i" as string]: 0, fontSize: "clamp(22px, 2.8vw, 28px)" }}
+          >
             About GreenScreened
           </p>
-          <h1 className="display display-l rise" style={{ ["--i" as string]: 1 }}>
-            From your documents to your score
+          <h1
+            className="display rise"
+            style={{ ["--i" as string]: 1, marginTop: 10, fontSize: "clamp(28px, 6.8vw, 68px)" }}
+          >
+            From your documents
+            <br />
+            to your score
           </h1>
-          <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 18, fontSize: 16.5 }}>
-            Here&rsquo;s exactly how a report gets its score, and exactly what happens to the
-            documents you upload. No fine print, no black box.
-          </p>
         </div>
 
-        {/* --- how scores are calculated ----------------------------------- */}
+        {/* --- what you get -------------------------------------------------- */}
         <section className="about-section" style={{ marginTop: 72 }}>
           <div className="section-head rise" style={{ ["--i" as string]: 3 }}>
             <span className="strip-num">01</span>
-            <h2>How scores are calculated</h2>
+            <h2>What you get</h2>
           </div>
           <p className="lede rise" style={{ ["--i" as string]: 4, marginBottom: 28, fontSize: 15.5 }}>
-            Every report is assessed against four pillars, drawn directly from the AASB S2 / TCFD
-            disclosure framework.
+            One upload produces two separate reports. They use different rubrics, different status
+            vocabularies, and are written for different readers.
           </p>
 
-          <div className="info-grid rise" style={{ ["--i" as string]: 5 }}>
+          <div className="report-kind-grid rise" style={{ ["--i" as string]: 5 }}>
+            <div className="panel report-kind-card">
+              <div className="report-kind-head">
+                <span className="report-kind-icon">
+                  <ShieldIcon />
+                </span>
+                <h3>AASB S2 Climate Readiness</h3>
+              </div>
+              <div>
+                <span className="report-explainer-label">Who it&rsquo;s for</span>
+                <p className="report-audience" style={{ marginTop: 0 }}>
+                  {AASB_AUDIENCE}
+                </p>
+              </div>
+              <p className="report-kind-body">{AASB_INTRO}</p>
+            </div>
+
+            <div className="panel report-kind-card">
+              <div className="report-kind-head">
+                <span className="report-kind-icon">
+                  <BarChartIcon />
+                </span>
+                <h3>ESG Evidence Readiness</h3>
+              </div>
+              <div>
+                <span className="report-explainer-label">Who it&rsquo;s for</span>
+                <p className="report-audience" style={{ marginTop: 0 }}>
+                  {ESG_AUDIENCE}
+                </p>
+              </div>
+              <p className="report-kind-body">{ESG_INTRO}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* --- how AASB is calculated ----------------------------------------- */}
+        <section className="about-section">
+          <div className="section-head rise" style={{ ["--i" as string]: 6 }}>
+            <span className="strip-num">02</span>
+            <h2>How AASB is calculated</h2>
+          </div>
+          <p className="lede rise" style={{ ["--i" as string]: 7, marginBottom: 28, fontSize: 15.5 }}>
+            AASB S2&rsquo;s four core pillars (Governance, Strategy, Risk Management, and Metrics
+            &amp; Targets) plus a fifth section of general reporting requirements break down into
+            64 individual criteria. Each pillar has its own set of these; your uploaded documents
+            are checked against every one of them, criterion by criterion.
+          </p>
+
+          <div className="info-grid rise" style={{ ["--i" as string]: 8 }}>
             {AASB_SECTION_KEYS.map((key) => {
               const { colorVar, Icon } = PILLAR_META[key];
               return (
@@ -155,10 +212,10 @@ export default function AboutPage() {
             })}
           </div>
 
-          <h3 className="subhead rise" style={{ ["--i" as string]: 6 }}>
-            What the ratings mean
+          <h3 className="subhead rise" style={{ ["--i" as string]: 9 }}>
+            What the statuses mean
           </h3>
-          <div className="rating-grid rise" style={{ ["--i" as string]: 7 }}>
+          <div className="rating-grid rise" style={{ ["--i" as string]: 10 }}>
             {RATINGS.map((r) => (
               <div className={`rating-card rating-card--${r.tone}`} key={r.label}>
                 <div className="rating-card-head">
@@ -170,10 +227,10 @@ export default function AboutPage() {
             ))}
           </div>
 
-          <h3 className="subhead rise" style={{ ["--i" as string]: 8 }}>
+          <h3 className="subhead rise" style={{ ["--i" as string]: 11 }}>
             From rating to number
           </h3>
-          <div className="step-grid rise" style={{ ["--i" as string]: 9 }}>
+          <div className="step-grid rise" style={{ ["--i" as string]: 12 }}>
             {STEPS.map((step, i) => (
               <div className="step-card" key={step.h}>
                 <span className="step-tag">Step {String(i + 1).padStart(2, "0")}</span>
@@ -183,21 +240,15 @@ export default function AboutPage() {
             ))}
           </div>
 
-          <p className="note rise" style={{ ["--i" as string]: 10, marginTop: 24, maxWidth: "62ch" }}>
-            The backend calculates scores from validated assessments. Model interpretation can
-            vary between generation runs; opening a saved report preserves its recorded score.
-            Readiness is an internal evidence measure, not compliance or company ESG performance.
-          </p>
-
-          <div className="callout rise" style={{ ["--i" as string]: 11, marginTop: 28, maxWidth: "62ch" }}>
+          <div className="callout rise" style={{ ["--i" as string]: 14, marginTop: 28 }}>
             <span className="callout-icon">
               <InfoIcon />
             </span>
             <div>
-              <p className="callout-label">Worth stating plainly</p>
+              <p className="callout-label">Disclaimer</p>
               <p>
-                A Missing rating means no supporting evidence was found in the documents provided —
-                it is not proof that the underlying practice does not exist, only that it was not
+                A Missing status means no supporting evidence was found in the documents provided.
+                It is not proof that the underlying practice does not exist, only that it was not
                 disclosed anywhere we could read it.
               </p>
             </div>
@@ -205,32 +256,46 @@ export default function AboutPage() {
         </section>
 
         {/* --- privacy & data ------------------------------------------------ */}
-        <section className="about-section" style={{ paddingBottom: 48 }}>
-          <div className="section-head rise" style={{ ["--i" as string]: 12 }}>
-            <span className="strip-num">02</span>
+        <section className="about-section">
+          <div className="section-head rise" style={{ ["--i" as string]: 15 }}>
+            <span className="strip-num">03</span>
             <h2>Privacy &amp; your documents</h2>
           </div>
-          <p className="lede rise" style={{ ["--i" as string]: 13, marginBottom: 28, fontSize: 15.5 }}>
+          <p className="lede rise" style={{ ["--i" as string]: 16, marginBottom: 28, fontSize: 15.5 }}>
             What actually happens between an upload and a report. Tap any of these for the full
             explanation.
           </p>
 
-          <div className="disclosure-grid rise" style={{ ["--i" as string]: 14 }}>
+          <div className="disclosure-grid rise" style={{ ["--i" as string]: 17 }}>
             {PRIVACY_ITEMS.map((item) => (
               <Disclosure item={item} key={item.title} />
             ))}
           </div>
+        </section>
 
-          <div className="callout rise" style={{ ["--i" as string]: 15, marginTop: 20, maxWidth: "72ch" }}>
+        {/* --- AI policy ------------------------------------------------------ */}
+        <section className="about-section" style={{ paddingBottom: 48 }}>
+          <div className="section-head rise" style={{ ["--i" as string]: 19 }}>
+            <span className="strip-num">04</span>
+            <h2>AI policy</h2>
+          </div>
+          <p className="lede rise" style={{ ["--i" as string]: 20, marginBottom: 20, fontSize: 15.5 }}>
+            Every judgement in a report, including what a passage says, whether it satisfies a
+            criterion, and how confident that reading is, is made by Gemini, not a person. The
+            scoring math on top of that judgement is deterministic; the judgement itself is not
+            independently verified, beyond one mechanical check.
+          </p>
+          <div className="callout rise" style={{ ["--i" as string]: 22 }}>
             <span className="callout-icon">
               <AlertTriangleIcon />
             </span>
             <div>
-              <p className="callout-label">One limitation, stated rather than glossed over</p>
+              <p className="callout-label">This is AI, not a compliance sign-off</p>
               <p>
-                The backend has no authentication. Anyone who can reach it and knows a report link
-                may retrieve that report. Access controls are required before sharing private
-                company documents through a deployed service.
+                Nothing in a report has been checked by a human reviewer, an auditor, or a lawyer.
+                Treat every finding as a starting point for your own professional review, not as a
+                finished disclosure, an assurance opinion, or advice you can act on directly,
+                especially before anything here is disclosed externally or lodged with a regulator.
               </p>
             </div>
           </div>
