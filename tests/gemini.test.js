@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createGeminiRequester, providerRetryDelayMs, requestGemini } from "../src/llm/gemini.js";
+import { classifyGeminiError, createGeminiRequester, providerRetryDelayMs, requestGemini } from "../src/llm/gemini.js";
+
+test("classifies provider quota failures without exposing provider details", () => {
+  assert.equal(classifyGeminiError({ status: 429, message: "private provider response" }), "AI_QUOTA_EXHAUSTED");
+  assert.equal(classifyGeminiError({ message: JSON.stringify({ error: { code: 429, status: "RESOURCE_EXHAUSTED" } }) }), "AI_QUOTA_EXHAUSTED");
+  assert.equal(classifyGeminiError(new Error("malformed PDF")), null);
+});
 
 function clock() {
   let time=0;

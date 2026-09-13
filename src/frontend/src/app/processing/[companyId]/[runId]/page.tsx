@@ -38,7 +38,7 @@ export default function ProcessingPage() {
         if (cancelled) return;
         setStatus(next);
         if (next.stage === "failed") {
-          setError(next.error ?? "The analysis failed.");
+          setError(next.error?.message ?? "The analysis failed.");
         } else if (next.done && next.aasbS2Report && next.esgReport) {
           setReports({ aasbS2Report: next.aasbS2Report, esgReport: next.esgReport });
           router.push(`/report/${companyId}/${runId}`);
@@ -64,15 +64,17 @@ export default function ProcessingPage() {
       <SiteHeader />
 
       <main className="page" style={{ paddingTop: 28 }}>
-        <p className="eyebrow rise">{error ? "Analysis failed" : "Step two of two"}</p>
+        <p className="eyebrow rise">{error ? (status?.error?.code === "AI_QUOTA_EXHAUSTED" ? "Temporarily unavailable" : "Analysis failed") : "Step two of two"}</p>
         <h1 className="display display-l rise" style={{ ["--i" as string]: 1 }}>
-          {error ? "Something went wrong" : "Building both reports"}
+          {error ? (status?.error?.code === "AI_QUOTA_EXHAUSTED" ? "AI processing is temporarily unavailable" : "Something went wrong") : "Building both reports"}
         </h1>
 
         {error ? (
           <>
             <div className="alert" style={{ marginTop: 22, maxWidth: "60ch" }}>
-              {error}
+              {status?.error?.code === "AI_QUOTA_EXHAUSTED"
+                ? "The AI service has reached its current usage limit. Your upload was received, but report generation could not complete. Please try again later."
+                : error}
             </div>
             <Link href="/upload" className="btn" style={{ marginTop: 20 }}>
               Try again

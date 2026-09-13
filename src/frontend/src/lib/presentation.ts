@@ -27,7 +27,9 @@ const report = z.object({ company: z.string().min(1), presentation: presentation
 export const runSchema = z.object({
   companyId: z.number().int().positive(), runId: z.number().int().positive(),
   stage: z.enum(["extracting", "aasb_analysing", "esg_analysing", "completed", "failed"]),
-  stageLabel: z.string(), done: z.boolean(), error: z.string().nullable(),
+  stageLabel: z.string(), done: z.boolean(), error: z.object({
+    code: z.enum(["AI_QUOTA_EXHAUSTED", "PROCESSING_FAILED"]), message: z.string().min(1),
+  }).nullable(),
   reportIds: z.object({ aasbS2: z.number().int().positive().nullable(), esg: z.number().int().positive().nullable() }),
   aasbS2Report: report.extend({ reportType: z.literal("AASB_S2_DRAFT"),
     reportingPeriod: z.object({ year: z.string().nullable() }).passthrough(),

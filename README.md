@@ -79,6 +79,7 @@ forward-hackathon/
 │   │   ├── db.js                  Connection, base schema and legacy accessors
 │   │   ├── migrations.js          Additive typed-output migration
 │   │   └── repository.js          Company/document/run/typed-report accessors
+│   ├── server/                     Express API and on-demand PDF renderer
 │   └── pipeline/
 │       ├── processCompany.js
 │       └── cli.js
@@ -211,6 +212,37 @@ extraction snapshots, shared normalized evidence, context, stage and report IDs.
 Every command also works as `npm run pipeline -- <command> <args>` or
 `node src/pipeline/cli.js <command> <args>` when Node/npm are on PATH.
 
+## Browser workflow and PDF exports
+
+The browser remains independent of storage details:
+
+```text
+Browser upload/report UI
+  ↓
+Express API
+  ↓
+Pipeline / repository
+  ↓
+SQLite (canonical source)
+  ↓
+Report retrieval
+  ↓
+PDF renderer (on demand)
+```
+
+The report page downloads the selected tab through the backend. AASB S2 and ESG
+are separate derived PDFs:
+
+```text
+GET /api/companies/:companyId/runs/:runId/reports/aasb/pdf
+GET /api/companies/:companyId/runs/:runId/reports/esg/pdf
+```
+
+PDFs are generated from stored typed report JSON using PDFKit. No Gemini call is
+made, no PDF is stored as canonical data, and a rendering failure does not change
+the pipeline run. Downloads use sanitized company-based filenames such as
+`coles-aasb-s2-readiness-report.pdf`.
+
 ## Pipeline and failure semantics
 
 ```text
@@ -231,12 +263,17 @@ the last active stage if the run fails.
 6. Mark completed only after both outputs are stored.
 
 If ESG fails, the AASB draft remains retrievable, the run is failed, and extraction
-snapshots/uploads remain. If AASB fails, ESG is not called. A handled error attempts
-to save a generic failure message and finished timestamp, then rethrows the original
-error to the CLI. Failure-status persistence errors do not replace the original
-processing error. There is no automatic restart after process termination or power
-loss; a killed process can retain an in-progress status. Start a new run after
-resolving the cause. Earlier successful reports are never overwritten.
+snapshots/uploads remain. If AASB fails, ESG is not called. A handled error saves a
+safe failure message and code, then rethrows the original error to the CLI. Gemini
+429/`RESOURCE_EXHAUSTED` failures are classified as `AI_QUOTA_EXHAUSTED`; other
+failures use `PROCESSING_FAILED`. The GET run response exposes only a structured
+`{ code, message }` error and never raw provider bodies, keys or stack traces. The
+processing UI shows a retry-later state for quota failures and keeps a generic
+failure state for malformed PDFs, database failures and unexpected errors.
+Failure-status persistence errors do not replace the original processing error.
+There is no automatic restart after process termination or power loss; a killed
+process can retain an in-progress status. Start a new run after resolving the
+cause. Earlier successful reports are never overwritten.
 
 ## AASB S2 rubric, metadata and safeguards
 

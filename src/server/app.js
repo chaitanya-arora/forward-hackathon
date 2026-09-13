@@ -1,9 +1,16 @@
 import cors from "cors";
 import express from "express";
 import multer from "multer";
-import { createRepositoryReportProvider, getRepositoryRun, validRunIds } from "./report-provider.js";
+import { createRepositoryReportProvider, getRepositoryRun, ReportError, validRunIds } from "./report-provider.js";
+import { getAasbS2Report, getEsgReport, getRun } from "../database/repository.js";
+import { renderReportPdf } from "./pdf-renderer.js";
 
-export function createApp({ reportProvider = createRepositoryReportProvider(), corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000" } = {}) {
+function downloadName(company, type) {
+  const safeCompany = String(company).normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_-]+/g, "-").toLowerCase() || "company";
+  return `${safeCompany}-${type === "aasb" ? "aasb-s2-readiness" : "esg-readiness"}-report.pdf`;
+}
+
+export function createApp({ reportProvider = createRepositoryReportProvider(), corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000", pdfRenderer = renderReportPdf } = {}) {
   const app = express();
   const liveRuns = new Set();
   const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 20 } });
@@ -82,6 +89,30 @@ export function createApp({ reportProvider = createRepositoryReportProvider(), c
     } catch (error) {
       const status = [404, 500].includes(error.status) ? error.status : 500;
       res.status(status).json({ error: error.status ? error.message : "Reports could not be loaded." });
+    }
+  });
+
+  app.get("/api/companies/:companyId/runs/:runId/reports/:reportType/pdf", async (req, res) => {
+    const companyId = Number(req.params.companyId), runId = Number(req.params.runId);
+    const reportType = req.params.reportType;
+    if (!/^\d+$/.test(req.params.companyId) || !/^\d+$/.test(req.params.runId) || !validRunIds(companyId, runId)) {
+      return res.status(404).json({ error: "Run not found." });
+    }
+    if (!["aasb", "esg"].includes(reportType)) return res.status(404).json({ error: "Report type not found." });
+    try {
+      let run;
+      try { run = getRun(companyId, runId); }
+      catch { throw new ReportError(404, "Run not found."); }
+      if (run.status !== "completed") return res.status(404).json({ error: "Report is not available for this run." });
+      const reportId = reportType === "aasb" ? run.reportIds.aasbS2 : run.reportIds.esg;
+      if (!reportId) return res.status(404).json({ error: "Report is not available for this run." });
+      const report = (reportType === "aasb" ? getAasbS2Report : getEsgReport)(companyId, reportId).report;
+      const pdf = await pdfRenderer(report);
+      res.set({ "Content-Type": "application/pdf", "Content-Length": pdf.length, "Content-Disposition": `attachment; filename="${downloadName(report.company, reportType)}"`, "Cache-Control": "no-store" });
+      return res.send(pdf);
+    } catch (error) {
+      if (error?.status !== 404) console.error(`[server] PDF render failed for ${companyId}/${runId}/${reportType}:`, error?.message);
+      return res.status(error?.status === 404 ? 404 : 500).json({ error: error?.status === 404 ? error.message : "PDF could not be generated." });
     }
   });
   app.use((error, _req, res, _next) => {

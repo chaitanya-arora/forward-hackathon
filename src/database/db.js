@@ -74,6 +74,7 @@ db.exec(`
     report_year TEXT NOT NULL,
     status TEXT NOT NULL CHECK(status IN ('extracting','analysing','completed','failed')),
     error TEXT,
+    error_code TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     finished_at TEXT
   );
@@ -92,6 +93,12 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS documents_company_year ON documents(company_id, report_year);
   CREATE INDEX IF NOT EXISTS runs_company_year ON pipeline_runs(company_id, report_year);
 `);
+
+// Older databases predate structured run failure codes.
+const runColumns = db.prepare("PRAGMA table_info(pipeline_runs)").all();
+if (!runColumns.some((column) => column.name === "error_code")) {
+  db.exec("ALTER TABLE pipeline_runs ADD COLUMN error_code TEXT");
+}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS memos (
