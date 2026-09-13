@@ -113,8 +113,10 @@ export const setRunStage = db.transaction((runId, stage, evidenceSnapshot) => {
   db.prepare("UPDATE pipeline_runs SET status=?,finished_at=CASE WHEN ?='completed' THEN CURRENT_TIMESTAMP ELSE NULL END WHERE id=?")
     .run(stage === "extracting" ? "extracting" : stage === "completed" ? "completed" : "analysing", stage, runId);
 });
-export const failRun = db.transaction((runId) => {
-  db.prepare("UPDATE pipeline_runs SET status='failed',error=?,finished_at=CURRENT_TIMESTAMP WHERE id=?")
-    .run("Processing failed. Uploaded documents, extracted evidence and completed reports are retained. Start a new run after resolving the cause.", runId);
+export const failRun = db.transaction((runId) => failRunWithCode(runId, "PROCESSING_FAILED"));
+export const failRunWithCode = db.transaction((runId, errorCode = "PROCESSING_FAILED") => {
+  if (!["PROCESSING_FAILED", "AI_QUOTA_EXHAUSTED"].includes(errorCode)) throw new TypeError("Unknown run failure code.");
+  db.prepare("UPDATE pipeline_runs SET status='failed',error=?,error_code=?,finished_at=CURRENT_TIMESTAMP WHERE id=?")
+    .run("Processing failed. Uploaded documents, extracted evidence and completed reports are retained. Start a new run after resolving the cause.", errorCode, runId);
   // Keep the last detailed stage to show where failure occurred.
 });

@@ -1,11 +1,12 @@
 import { db } from "../database/db.js";
 import { extractionCheckpoint } from "../database/extractionCheckpoint.js";
-import { createRun, getCompany, getDocument, listDocuments, saveTypedReport, setRunStage, failRun } from "../database/repository.js";
+import { createRun, getCompany, getDocument, listDocuments, saveTypedReport, setRunStage, failRunWithCode } from "../database/repository.js";
 import { extractEvidence } from "../agent1/agent1.js";
 import { generateESGFromNormalized } from "../agent2/generateESGReport.js";
 import { normalizeEvidence } from "../agent2/normalizeEvidence.js";
 import { generateAasbS2FromNormalized } from "../aasb/generateAasbS2Report.js";
 import { prepareContext } from "../aasb/context.js";
+import { classifyGeminiError } from "../llm/gemini.js";
 
 // A future HTTP handler/worker can call this service without invoking either CLI.
 export async function processCompany({ companyId, reportYear, documentIds, reportingContext = {} }, options = {}) {
@@ -60,7 +61,7 @@ export async function processCompany({ companyId, reportYear, documentIds, repor
       outputs: { aasbS2Report, esgReport } };
   } catch (error) {
     // Do not persist raw provider errors that might contain request details.
-    try { failRun(runId); } catch { console.error(`Unable to persist failed status for run ${runId}; original processing error follows.`); }
+    try { failRunWithCode(runId, classifyGeminiError(error) ?? "PROCESSING_FAILED"); } catch { console.error(`Unable to persist failed status for run ${runId}; original processing error follows.`); }
     try { if (error && typeof error === "object") error.runId = runId; } catch { /* Rethrow even frozen provider errors unchanged. */ }
     throw error;
   }

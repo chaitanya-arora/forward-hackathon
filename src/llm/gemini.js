@@ -12,6 +12,9 @@ function statusCode(error) {
   if (error?.status === "RESOURCE_EXHAUSTED" || body?.error?.status === "RESOURCE_EXHAUSTED" || /RESOURCE_EXHAUSTED/.test(error?.message ?? "")) return 429;
   return null;
 }
+export function classifyGeminiError(error) {
+  return statusCode(error) === 429 ? "AI_QUOTA_EXHAUSTED" : null;
+}
 export function isTransient(error) {
   const status = statusCode(error);
   if (status !== null) return status === 408 || status === 429 || status >= 500;

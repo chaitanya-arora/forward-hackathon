@@ -67,7 +67,12 @@ export async function getRepositoryRun(companyId, runId) {
   }
 
   return { companyId, runId, stage, stageLabel: stage.replaceAll("_", " "), done,
-    error: stage === "failed" ? "Processing failed. Saved evidence is retained." : null,
+    error: stage === "failed" ? {
+      code: run.error_code === "AI_QUOTA_EXHAUSTED" ? "AI_QUOTA_EXHAUSTED" : "PROCESSING_FAILED",
+      message: run.error_code === "AI_QUOTA_EXHAUSTED"
+        ? "AI processing is temporarily unavailable because the service has reached its current usage limit. Please try again later."
+        : "Processing failed. Saved evidence is retained.",
+    } : null,
     reportIds: run.reportIds,
     aasbS2Report,
     esgReport };

@@ -161,7 +161,7 @@ export interface RunStatus {
   stage: RunStage;
   stageLabel: string;
   done: boolean;
-  error: string | null;
+  error: { code: "AI_QUOTA_EXHAUSTED" | "PROCESSING_FAILED"; message: string } | null;
   reportIds: { aasbS2: number | null; esg: number | null };
   aasbS2Report: AasbS2Report | null;
   esgReport: EsgReport | null;

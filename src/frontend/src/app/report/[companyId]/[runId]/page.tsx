@@ -91,7 +91,7 @@ export default function ReportPage() {
         )}
 
         {state === "ready" && reports && (
-          <AssessmentReport aasbS2Report={reports.aasbS2Report} esgReport={reports.esgReport} />
+          <AssessmentReport companyId={Number(companyId)} runId={Number(runId)} aasbS2Report={reports.aasbS2Report} esgReport={reports.esgReport} />
         )}
       </main>
 

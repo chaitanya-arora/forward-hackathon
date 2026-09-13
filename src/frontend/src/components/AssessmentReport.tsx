@@ -6,6 +6,7 @@ import { AASB_SECTION_LABELS, type AasbS2Report, type EsgReport } from "@/lib/as
 import type { Presentation } from "@/lib/presentation";
 import { AASB_AUDIENCE, AASB_INTRO, ESG_AUDIENCE, ESG_INTRO } from "@/lib/report-copy";
 import { readinessTone } from "@/lib/readiness";
+import { downloadReportPdf } from "@/lib/api";
 
 type Finding = Presentation["keyFindings"][number];
 type PriorityAction = Presentation["priorityActions"][number];
@@ -31,8 +32,29 @@ const ACTION_TYPE_LABELS: Record<string, string> = {
 };
 
 export function AssessmentReport({ aasbS2Report, esgReport }: { aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
+export function AssessmentReport({ companyId, runId, aasbS2Report, esgReport }: { companyId: number; runId: number; aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
   const [view, setView] = useState<"aasb" | "esg">("aasb");
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const selected = view === "aasb" ? aasbS2Report : esgReport;
+
+  async function exportPdf() {
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      const result = await downloadReportPdf(companyId, runId, view);
+      const url = URL.createObjectURL(result.blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = result.filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setDownloadError(error instanceof Error ? error.message : "PDF could not be generated.");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <div className="report-page">
@@ -62,8 +84,11 @@ export function AssessmentReport({ aasbS2Report, esgReport }: { aasbS2Report: Aa
             </button>
           ))}
         </div>
-        <button className="btn btn-primary" disabled>PDF export coming soon</button>
+        <button className="btn btn-primary" onClick={exportPdf} disabled={downloading}>
+          {downloading ? "Preparing PDF…" : `Download ${view === "aasb" ? "AASB S2" : "ESG"} PDF`}
+        </button>
       </div>
+      {downloadError && <p className="alert" role="alert">{downloadError}</p>}
 
       <ReportSummary key={view} view={view} report={selected} />
     </div>
