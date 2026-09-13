@@ -60,16 +60,7 @@
   margin: 0;
 }
 
-.summary-list {
-  margin: 0;
-  padding-left: 1.3em;
-  display: grid;
-  gap: 10px;
-  font-family: var(--sans);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--ink);
-}
+.mono { font-family: var(--mono); font-size: 0.85em; }
 
 /* Reused wherever a report type is introduced: this page's callout and the
    About page's "What you get" cards. */
@@ -102,7 +93,167 @@
 .readiness-amber { color: var(--partial); background: var(--partial-bg); }
 .readiness-red { color: var(--missing); background: var(--missing-bg); }
 .readiness-neutral { color: var(--neutral); background: var(--neutral-bg); }
-.summary-headline { font-size: 20px; margin: 0 0 12px; }
+
+/* The headline is the one line meant to be read first — serif, like every
+   other heading on the page, rather than blending into the sans body copy
+   around it. */
+.summary-headline {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+
 .score-disclaimer { margin-top: 16px; }
-.summary-list p { margin: 4px 0 10px; }
 @media (max-width: 600px) { .readiness-overview { grid-template-columns: 1fr; gap: 20px; } }
+
+/* --- key findings: a set of cards, not a bulleted information dump ------- */
+
+.findings-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.finding-card {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: 10px;
+  background: linear-gradient(160deg, var(--surface-raised), var(--surface));
+}
+
+.finding-card--high { border-left-color: var(--partial); }
+.finding-card--medium { border-left-color: var(--strong); }
+
+.finding-icon { flex-shrink: 0; width: 20px; height: 20px; margin-top: 3px; }
+.finding-icon svg { width: 100%; height: 100%; }
+.finding-card--high .finding-icon { color: var(--partial); }
+.finding-card--medium .finding-icon { color: var(--strong); }
+
+.finding-body { min-width: 0; }
+
+.finding-title {
+  font-family: var(--serif);
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.finding-summary {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.finding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.finding-meta span {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* --- priority actions: rank + priority + type signal, not just a number -- */
+
+.actions-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.action-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.action-card--critical { border-left-color: var(--missing); }
+.action-card--high { border-left-color: var(--partial); }
+.action-card--medium { border-left-color: var(--neutral); }
+.action-card--low { border-left-color: var(--rule-strong); }
+
+.action-rank {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-faint);
+  padding-top: 3px;
+}
+
+.action-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.action-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 0;
+  color: var(--ink);
+}
+
+.action-priority {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.action-priority--critical { color: var(--missing); }
+.action-priority--high { color: var(--partial); }
+.action-priority--medium { color: var(--neutral); }
+.action-priority--low { color: var(--ink-faint); }
+
+.action-description {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.action-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.action-meta .mono { text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 1.05em; }
+
+@media (max-width: 560px) {
+  .action-card { grid-template-columns: 1fr; }
+  .action-rank { display: none; }
+}
