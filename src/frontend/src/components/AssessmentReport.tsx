@@ -88,20 +88,6 @@ function ReportSummary({ view, report }: { view: "aasb" | "esg"; report: AasbS2R
           <InfoIcon />
         </span>
         <div>
-          <p className="callout-label">About this assessment</p>
-          <p>
-            {view === "aasb"
-              ? "A draft for management, director and assurance review. It assesses disclosure evidence and preparation needs; it does not certify compliance or approval for lodgement."
-              : "An assessment of the evidence supporting environmental, social and governance disclosures. It does not rate company ESG performance."}
-          </p>
-        </div>
-      </div>
-
-      <div className="callout" style={{ marginTop: 16 }}>
-        <span className="callout-icon">
-          <InfoIcon />
-        </span>
-        <div>
           <p className="callout-label">Who this report is for</p>
           <p>{audience}</p>
         </div>
