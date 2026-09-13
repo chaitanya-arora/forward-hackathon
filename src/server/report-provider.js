@@ -48,7 +48,7 @@ export function createFileReportProvider(root = reportsRoot) {
 }
 
 export async function getRepositoryRun(companyId, runId) {
-  const { getRun, getAasbS2Report, getEsgReport } = await import("../database/repository.js");
+  const { getRun, getAasbS2Report } = await import("../database/repository.js");
   let run;
   try { run = getRun(companyId, runId); }
   catch { throw new ReportError(404, "Run not found."); }
@@ -56,10 +56,9 @@ export async function getRepositoryRun(companyId, runId) {
   const done = stage === "completed" || stage === "failed";
 
   let aasbS2Report = null;
-  let esgReport = null;
+  const esgReport = null;
   try {
     if (done && stage !== "failed" && run.reportIds.aasbS2) aasbS2Report = getAasbS2Report(companyId, run.reportIds.aasbS2).report;
-    if (done && stage !== "failed" && run.reportIds.esg) esgReport = getEsgReport(companyId, run.reportIds.esg).report;
   } catch {
     throw new ReportError(500, "Stored reports are missing or invalid in SQLite.");
   }
@@ -71,7 +70,7 @@ export async function getRepositoryRun(companyId, runId) {
         ? "AI processing is temporarily unavailable because the service has reached its current usage limit. Please try again later."
         : "Processing failed. Saved evidence is retained.",
     } : null,
-    reportIds: run.reportIds,
+    reportIds: { aasbS2: run.reportIds.aasbS2, esg: null },
     aasbS2Report,
     esgReport };
 }

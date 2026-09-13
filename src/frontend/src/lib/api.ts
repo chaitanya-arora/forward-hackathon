@@ -10,8 +10,8 @@ export interface UploadEntry {
 
 /**
  * Starts a real processCompany() run: creates/finds the company, stores every
- * uploaded document under it for reportYear, and kicks off extraction + both
- * report generators. Returns as soon as the run exists in the database — the
+ * uploaded document under it for reportYear, and starts extraction + AASB S2
+ * generation. Returns as soon as the run exists in the database — the
  * caller polls fetchRunStatus for progress.
  */
 export async function startReport(
@@ -41,17 +41,17 @@ export async function fetchRunStatus(companyId: number, runId: number, signal?: 
     if (signal?.aborted) throw error;
     throw new Error("Cannot reach the report API. Check that the backend is running and try again.");
   }
-  if (!res.ok) throw new Error(res.status === 404 ? "Run not found. Check the company and run in this link." : "The API could not load the saved reports. Check the server and report exports.");
+  if (!res.ok) throw new Error(res.status === 404 ? "Run not found. Check the company and run in this link." : "The API could not load the saved reports. Check the server and saved run.");
   const parsed = runSchema.safeParse(await res.json().catch(() => null));
   if (!parsed.success) throw new Error("The API returned an invalid report format. A valid presentation section is required for each report.");
   if (parsed.data.companyId !== companyId || parsed.data.runId !== runId) throw new Error("The API returned a different run. Please reload the correct report link.");
   return parsed.data as unknown as RunStatus;
 }
 
-export async function downloadReportPdf(companyId: number, runId: number, reportType: "aasb" | "esg"): Promise<{ blob: Blob; filename: string }> {
-  const res = await fetch(`${API_URL}/api/companies/${companyId}/runs/${runId}/reports/${reportType}/pdf`);
+export async function downloadReportPdf(companyId: number, runId: number): Promise<{ blob: Blob; filename: string }> {
+  const res = await fetch(`${API_URL}/api/companies/${companyId}/runs/${runId}/reports/aasb/pdf`);
   if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? "PDF could not be generated.");
   const disposition = res.headers.get("content-disposition") ?? "";
-  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? `${reportType}-readiness-report.pdf`;
+  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? "aasb-s2-readiness-report.pdf";
   return { blob: await res.blob(), filename };
 }

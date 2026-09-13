@@ -1,7 +1,6 @@
 # Forward — AASB S2 preparation and readiness
 
-The primary MVP is an **AI-assisted AASB S2 climate-disclosure draft/readiness tool**.
-A broader ESG evidence-readiness assessment is a separate secondary output.
+Forward is an **AI-assisted AASB S2 readiness platform** that turns uploaded corporate reports into a structured evidence-readiness assessment, identifies evidence gaps and human-review requirements, and generates a management-ready PDF report.
 
 The AASB generator now evaluates **required information elements**, rather than
 giving full credit whenever relevant text is cited. It extracts structured source
@@ -11,15 +10,12 @@ human completion steps, and calculates completeness-based readiness. See
 The example reporting context now leaves unknown dates and elections `null`;
 enter authoritative dates only when known. No calendar year is inferred from a report year.
 
-Every successful processing run produces two independently stored reports:
-
-1. `aasbS2Report.json` — primary AASB S2 preparation/readiness draft.
-2. `esgReport.json` — secondary Environmental, Social and Governance assessment.
+Every successful active run stores one canonical AASB S2 preparation/readiness report in SQLite and exports it as `aasbS2Report.json`.
 
 SQLite is the source of truth. These filenames are export names, not required source
-files. Uploaded PDFs are extracted once per run, and both generators reuse the same
-persisted evidence snapshot. The `frontend-integration` branch includes a Next.js /
-React frontend and an Express API. See local development below for the saved-report demo.
+files. Uploaded PDFs are extracted once per run, then the AASB S2 generator reuses
+the persisted evidence snapshot. Historical ESG code, rows and exports remain
+available only for legacy compatibility and are not part of the active product.
 
 ## What the AASB output means
 
@@ -55,7 +51,7 @@ forward-hackathon/
 ├── .env.example                   No real key
 ├── package.json / package-lock.json
 ├── run-pipeline.ps1               Full stored-document workflow
-├── run-agent2.ps1                 Standalone secondary ESG demo / all tests
+├── run-agent2.ps1                 Legacy secondary analysis demo / tests
 ├── src/
 │   ├── agent1/                    PDF extraction and climate classification
 │   │   ├── agent1.js
@@ -67,7 +63,7 @@ forward-hackathon/
 │   │   ├── context.js             Version, relief and applicability metadata
 │   │   ├── generateAasbS2Report.js
 │   │   └── examples/reportingContext.json
-│   ├── agent2/                    Secondary ESG generator, no embedded AASB section
+│   ├── agent2/                    Legacy inactive secondary generator
 │   │   ├── generateESGReport.js
 │   │   ├── normalizeEvidence.js
 │   │   ├── validateCitations.js    Shared exact-quotation validation
@@ -104,22 +100,19 @@ The Windows launchers use Node on PATH or the existing Codex runtime; they do no
 install dependencies. If a native dependency cannot load after a recent npm version
 blocks installation scripts, review its listed dependency script approvals.
 
-Create/edit the **root `.env`**, preserving your key:
+Create/edit the **root .env**, preserving your key. Use the model identifiers configured for your project:
 
 ```dotenv
 GEMINI_API_KEY=your_actual_key
-AGENT1_MODEL=gemini-3.6-flash
-AGENT2_MODEL=gemini-3.6-flash
-AASB_MODEL=gemini-3.6-flash
-# Optional; relative to project root:
+# Optional database override, relative to the project root:
 # ESG_DB_PATH=storage/database/esg_reports.db
 ```
 
-`AASB_MODEL` falls back to `AGENT2_MODEL`. Both generators and the extractor use the
-same existing Google SDK. There is no paid service or new framework. Non-empty
-source evidence is sent to Gemini. Keep the key and database on the backend.
+AASB_MODEL falls back to AGENT2_MODEL for legacy configuration compatibility.
+The extractor and AASB generator use the existing Google SDK. Non-empty source
+evidence is sent to Gemini. Keep the key and database on the backend.
 
-## Manual workflow — uploads to two reports
+## Manual workflow — uploads to an AASB S2 report
 
 Run commands from the project root. Replace example IDs with those returned by your
 commands; report IDs and run IDs are different identifiers.
@@ -171,8 +164,8 @@ To select particular document IDs, put them after the year:
 .\run-pipeline.ps1 process 1 2025 2 3 --context src/aasb/examples/reportingContext.json
 ```
 
-Context is optional: `.\run-pipeline.ps1 process 1 2025` still produces both readiness
-outputs, with unknown period/version/applicability metadata where appropriate.
+Context is optional: `.\run-pipeline.ps1 process 1 2025` still produces one AASB S2 readiness
+output, with unknown period/version/applicability metadata where appropriate.
 The command blocks while processing and returns:
 
 ```json
@@ -180,28 +173,25 @@ The command blocks while processing and returns:
   "companyId": 1,
   "runId": 1,
   "status": "completed",
-  "reportIds": { "aasbS2": 1, "esg": 2 },
+  "reportIds": { "aasbS2": 1, "esg": null },
   "files": {
-    "aasbS2Report": "<absolute export directory>/aasbS2Report.json",
-    "esgReport": "<absolute export directory>/esgReport.json"
+    "aasbS2Report": "<absolute export directory>/aasbS2Report.json"
   }
 }
 ```
 
 The CLI prints file paths rather than full report bodies. The JavaScript
-`processCompany` function still returns an `outputs` object containing both full
-reports. SQLite stores their criteria, citations, gaps, actions, methodology,
-warnings and presentation independently of these convenience exports.
+`processCompany` returns the AASB report in `outputs.aasbS2Report`. SQLite stores
+its criteria, citations, gaps, actions, methodology, warnings and presentation
+independently of the convenience export.
 
-### Retrieve and export each report
+### Retrieve and export the AASB report
 
 ```powershell
 .\run-pipeline.ps1 runs 1
 .\run-pipeline.ps1 run 1 1
 .\run-pipeline.ps1 report-aasb 1 1
-.\run-pipeline.ps1 report-esg 1 2
 .\run-pipeline.ps1 export-aasb 1 1 aasbS2Report.json
-.\run-pipeline.ps1 export-esg 1 2 esgReport.json
 ```
 
 Retrieval returns metadata plus `report`; export writes the raw report JSON.
@@ -212,30 +202,34 @@ extraction snapshots, shared normalized evidence, context, stage and report IDs.
 Every command also works as `npm run pipeline -- <command> <args>` or
 `node src/pipeline/cli.js <command> <args>` when Node/npm are on PATH.
 
-## Browser workflow and PDF exports
+## Browser workflow and AASB PDF export
 
 The browser remains independent of storage details:
 
 ```text
 Browser upload/report UI
   ↓
-Express API
+Next.js
   ↓
-Pipeline / repository
+Express
+  ↓
+Upload
+  ↓
+Agent 1 extraction
+  ↓
+AASB S2 analysis
   ↓
 SQLite (canonical source)
   ↓
-Report retrieval
+AASB report UI
   ↓
 PDF renderer (on demand)
 ```
 
-The report page downloads the selected tab through the backend. AASB S2 and ESG
-are separate derived PDFs:
+The report page downloads the AASB report through the backend:
 
 ```text
 GET /api/companies/:companyId/runs/:runId/reports/aasb/pdf
-GET /api/companies/:companyId/runs/:runId/reports/esg/pdf
 ```
 
 PDFs are generated from stored typed report JSON using PDFKit. No Gemini call is
@@ -246,9 +240,9 @@ the pipeline run. Downloads use sanitized company-based filenames such as
 ## Pipeline and failure semantics
 
 ```text
-created → extracting → aasb_analysing → esg_analysing → completed
-                         │                  │
-                         └── handled error ─┴──→ failed
+created → extracting → aasb_analysing → completed
+                         │
+                         └── handled error → failed
 ```
 
 The existing `pipeline_runs.status` values are preserved (`extracting`, `analysing`,
@@ -257,13 +251,11 @@ the last active stage if the run fails.
 
 1. Validate company/year/document ownership; create the run and context record.
 2. Extract each selected PDF once and save that document's evidence snapshot.
-3. Normalize and persist the combined evidence exactly once for both generators.
-4. Generate the primary AASB draft and immediately save its immutable typed output.
-5. Generate the secondary ESG assessment from the same evidence; save it separately.
-6. Mark completed only after both outputs are stored.
+3. Normalize and persist the combined evidence once.
+4. Generate the AASB S2 draft and immediately save its immutable typed output.
+5. Mark completed after the AASB output is stored.
 
-If ESG fails, the AASB draft remains retrievable, the run is failed, and extraction
-snapshots/uploads remain. If AASB fails, ESG is not called. A handled error saves a
+An active run does not invoke the legacy ESG generator. A handled error saves a
 safe failure message and code, then rethrows the original error to the CLI. Gemini
 429/`RESOURCE_EXHAUSTED` failures are classified as `AI_QUOTA_EXHAUSTED`; other
 failures use `PROCESSING_FAILED`. The GET run response exposes only a structured
@@ -341,7 +333,7 @@ information is permitted. The output always requires professional confirmation a
 lists unassessed NGER, entity/investment, and Chapter 2M tests. It never returns
 `legallyRequired: true` or treats size thresholds as a complete statutory test.
 
-## Evidence and the secondary ESG report
+## Evidence and legacy compatibility
 
 The normalized snapshot and report evidence registers preserve evidence IDs, original
 document IDs, filenames, source type, page markers and separate pooled pillar pages.
@@ -351,14 +343,11 @@ statuses are downgraded to missing; low-confidence strong support is capped.
 Quotes still require human interpretation, and source accuracy is not independently
 verified. Missing evidence is not evidence of absent company practices.
 
-The ESG generator retains its nine established criteria and scoring. It has
-`reportType: ESG_READINESS`, `priority: secondary`, and `overallESGReadinessScore`.
-`overallESGScore` remains as a deprecated numeric alias. New ESG reports have no
-embedded `aasbS2` property. Historical JSON is never rewritten to remove old fields.
-
-Agent 1 still filters for climate relevance. This supports the primary product but
-can omit social evidence needed by the secondary ESG assessment. No OCR or broader
-extraction rewrite is included in this task.
+The former ESG generator, rubric, tests, SQLite rows and exported JSON remain as
+legacy compatibility surfaces. They are inactive and are not generated, retrieved
+or presented by the current application workflow. Historical JSON is never
+rewritten or deleted. Agent 1 filters for climate relevance because AASB S2 is the
+active product; no OCR or broader extraction rewrite is included.
 
 ## Database and backward compatibility
 
@@ -383,7 +372,7 @@ and keeps the original rows. The copied outputs are marked `legacy`. Their old e
 climate section is historical data, not a new primary AASB draft. Triggers reject
 updates/deletes of typed outputs. A second startup does not recopy or rewrite data.
 
-Use `getAasbS2Report(companyId, id)` and `getEsgReport(companyId, id)` for new work.
+Use `getAasbS2Report(companyId, id)` for the active product. `getEsgReport` remains available for legacy records.
 The old `getReport()` and CLI `report` only read the old `reports` table, for backward
 compatibility. A new `processCompany` return value uses `reportIds`/`outputs` instead
 of the previous single `id`/`report` fields; update clients accordingly.
@@ -409,7 +398,8 @@ storage/database/esg_reports.db
 
 The frontend never reads `storage/reports/*.json` directly and never accesses SQLite
 itself. The report API continues to expose the same response contract used by the
-React UI: `aasbS2Report` and `esgReport` are returned under the same run envelope,
+React UI: `aasbS2Report` is returned under the run envelope; legacy `esgReport` and
+`reportIds.esg` fields are returned as null for compatibility,
 with the same `presentation.executiveSummary`, `keyFindings` and `priorityActions`
 fields the dashboard expects.
 
@@ -426,14 +416,14 @@ Use a durable worker for long processing rather than holding an upload HTTP requ
 Repository company checks are not user authentication or tenant authorization.
 
 The primary screen should show AASB preparation status, missing disclosures, supporting
-quotes, human-review actions and run history. The broader ESG report is a secondary
-tab. Director/assurance/lodgement actions must remain external, never an automatic
+quotes and human-review actions. There is no active ESG tab.
+Director/assurance/lodgement actions must remain external, never an automatic
 "compliant" or "ready to lodge" badge.
 
 ## Standalone commands and tests
 
 `.\run-agent2.ps1` still generates the secondary ESG demo JSON. It does not save to
-SQLite or produce an AASB report. Use the full pipeline for both persisted outputs.
+SQLite or produce an AASB report. This is an inactive legacy command. Use the pipeline for the persisted AASB output.
 The original Agent 1 CLI remains available at `src/agent1/agent1.js` and saves its
 legacy classification/export. Importing `extractEvidence()` has no CLI side effects.
 
@@ -484,7 +474,7 @@ The detailed AASB request allows up to five minutes for generation; a client tim
 does not produce or persist a partial report.
 
 The shared live requester stops at 20 physical API attempts per process, including
-transport retries across extraction and both reports. It does not know usage from
+transport retries across extraction and AASB generation. It does not know usage from
 earlier processes, other applications or other keys on the project, so this is not
 a guarantee of remaining daily quota. Daily quota errors still stop immediately.
 Existing extraction checkpoints are unchanged and remain reusable.
@@ -527,7 +517,7 @@ An error containing `GenerateRequestsPerDayPerProjectPerModel-FreeTier` with lim
 that allowance. Google resets daily requests at midnight Pacific time; wait for
 the reset before retrying. You do not need to re-upload the PDF or replace the key.
 
-All live calls (Agent 1, AASB, ESG) share `src/llm/gemini.js` in one Node process.
+All active live calls (Agent 1 and AASB) share `src/llm/gemini.js` in one Node process.
 Provider quotas apply to project/model usage, including RPM, input TPM and daily
 requests; pacing does not create additional quota. See
 [Google's rate-limit documentation](https://ai.google.dev/gemini-api/docs/rate-limits).
@@ -567,7 +557,7 @@ and a subsequent successful run using the same stored documents. One test delibe
 makes SQLite's failed-status update throw; its expected diagnostic confirms that
 the original processing exception is preserved.
 
-## Verification and changed-file inventory for this course correction
+## Historical verification archive — inactive two-report architecture
 
 Phase 1 was completed and all 19 tests passed before Phase 2 implementation began.
 The final 28 tests passed. A live one-page PDF was extracted once, generated both
@@ -608,3 +598,60 @@ no embedded AASB section. Live testing did not process the user's full Coles rep
 No Express/React, paid service, package dependency or SQLite replacement was added.
 The existing untracked `Coles_Annual_Report_2026.pdf` is user data, not an implementation
 change. No commit, merge or push was performed.
+
+## Local verification and manual testing (AASB-only)
+
+All three package areas already have installed dependencies matching their lockfiles,
+including PDFKit. No dependency upgrade is needed for this change.
+
+Run the offline checks from the repository root:
+
+```powershell
+npm test
+node --test src/server/tests/reports.test.js
+npm --prefix src/frontend run typecheck
+npm --prefix src/frontend run build
+```
+
+Server tests use a disposable SQLite database seeded from a regression fixture; they
+do not add runs or documents to the local company database. Model tests use mocks.
+Stop the frontend dev server before building, because both use the same .next directory.
+Then use two terminals:
+
+```powershell
+# Terminal 1
+npm --prefix src/server run dev
+# Terminal 2
+npm --prefix src/frontend run dev
+```
+
+- Home: http://localhost:3000
+- Upload: http://localhost:3000/upload
+- API health: http://localhost:4000/api/ping
+- Regression report: http://localhost:3000/report/2/11
+- Regression API: http://localhost:4000/api/companies/2/runs/11
+- PDF: http://localhost:4000/api/companies/2/runs/11/reports/aasb/pdf
+
+The regression URLs require company 2 / run 11 in your local SQLite database.
+Nothing in application logic hard-codes that run. Opening these URLs uses no Gemini calls.
+Uploading and generating a new report does consume quota.
+
+Processing polls only while unfinished, cancels in-flight requests when leaving the
+page, and stops on completion or failure. AI_QUOTA_EXHAUSTED produces a safe retry-later
+message; saved uploads and extraction checkpoints remain. After quota resets, use the
+CLI process command for that company/year to reuse saved evidence without re-uploading.
+The browser has no resume button yet. Processing jobs do not automatically resume after
+a server restart; persisted progress is retained, but a new run must be started.
+
+PDF flow: SQLite → typed report repository → buildAasbPdfViewModel → PDFKit → HTTP.
+The view model translates statuses and field labels, consolidates actions by topic and
+priority, and summarises structured arrays as record counts instead of dumping JSON.
+All requirement-level assessments and concise source/page references remain in the PDF;
+full structured records and validated quotations remain unchanged in SQLite/JSON.
+Measured content blocks and a reserved footer margin prevent accidental footer pages.
+The web report also exposes expandable detail for all five AASB sections.
+No score, citation, stored report, or historical ESG row is rewritten for presentation.
+
+Deployment is still pending. Before public use, add authentication and company-level
+authorization, durable job execution/recovery, persistent SQLite storage and backups,
+production URL/CORS configuration, and an agreed Gemini quota/billing arrangement.

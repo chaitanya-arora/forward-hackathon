@@ -14,7 +14,6 @@ import { setReports } from "@/lib/report-store";
 const VISIBLE_STAGES: Array<{ stage: RunStage; label: string }> = [
   { stage: "extracting", label: "Reading documents" },
   { stage: "aasb_analysing", label: "Drafting the AASB S2 report" },
-  { stage: "esg_analysing", label: "Assessing ESG evidence" },
   { stage: "completed", label: "Done" },
 ];
 
@@ -27,6 +26,10 @@ export default function ProcessingPage() {
   useEffect(() => {
     if (!companyId || !runId) return;
     let cancelled = false;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    setStatus(null);
+    setError(null);
 
     // Poll every 3s. Gemini calls are rate-limited to roughly one per 15s
     // project-wide, so a real run with several documents can take a few
@@ -34,25 +37,29 @@ export default function ProcessingPage() {
     // a faked timer.
     const tick = async () => {
       try {
-        const next = await fetchRunStatus(Number(companyId), Number(runId));
+        const next = await fetchRunStatus(Number(companyId), Number(runId), controller.signal);
         if (cancelled) return;
         setStatus(next);
         if (next.stage === "failed") {
           setError(next.error?.message ?? "The analysis failed.");
-        } else if (next.done && next.aasbS2Report && next.esgReport) {
-          setReports({ aasbS2Report: next.aasbS2Report, esgReport: next.esgReport });
+          return;
+        } else if (next.done) {
+          if (!next.aasbS2Report) { setError("The completed run has no AASB report. Please check the run with the administrator."); return; }
+          setReports({ aasbS2Report: next.aasbS2Report });
           router.push(`/report/${companyId}/${runId}`);
+          return;
         }
+        timer = setTimeout(tick, 3000);
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Lost contact with the server.");
       }
     };
 
     void tick();
-    const id = setInterval(tick, 3000);
     return () => {
       cancelled = true;
-      clearInterval(id);
+      controller.abort();
+      clearTimeout(timer);
     };
   }, [companyId, runId, router]);
 
@@ -66,7 +73,7 @@ export default function ProcessingPage() {
       <main className="page" style={{ paddingTop: 28 }}>
         <p className="eyebrow rise">{error ? (status?.error?.code === "AI_QUOTA_EXHAUSTED" ? "Temporarily unavailable" : "Analysis failed") : "Step two of two"}</p>
         <h1 className="display display-l rise" style={{ ["--i" as string]: 1 }}>
-          {error ? (status?.error?.code === "AI_QUOTA_EXHAUSTED" ? "AI processing is temporarily unavailable" : "Something went wrong") : "Building both reports"}
+          {error ? (status?.error?.code === "AI_QUOTA_EXHAUSTED" ? "AI processing is temporarily unavailable" : "Something went wrong") : "Building the AASB S2 report"}
         </h1>
 
         {error ? (
@@ -77,7 +84,7 @@ export default function ProcessingPage() {
                 : error}
             </div>
             <Link href="/upload" className="btn" style={{ marginTop: 20 }}>
-              Try again
+              Return to upload
             </Link>
           </>
         ) : (
@@ -106,8 +113,7 @@ export default function ProcessingPage() {
             </div>
 
             <p className="note" style={{ marginTop: 22, maxWidth: "60ch" }}>
-              AASB S2 is drafted first, then the ESG assessment, both from the same extracted
-              evidence. Gemini requests are rate-limited, so a document with many pages can take a
+              AASB S2 is drafted from the extracted evidence. Gemini requests are rate-limited, so a document with many pages can take a
               few minutes — you can leave this page open, nothing is lost if you close it and come
               back to the report link.
             </p>

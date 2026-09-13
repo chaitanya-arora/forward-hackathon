@@ -25,8 +25,8 @@ export default function ReportPage() {
     fetchRunStatus(Number(companyId), Number(runId), controller.signal)
       .then((status) => {
         if (cancelled) return;
-        if (status.aasbS2Report && status.esgReport) {
-          const pair = { aasbS2Report: status.aasbS2Report, esgReport: status.esgReport };
+        if (status.aasbS2Report) {
+          const pair = { aasbS2Report: status.aasbS2Report };
 
           setLocalReports(pair);
           setState("ready");
@@ -60,7 +60,7 @@ export default function ReportPage() {
       </SiteHeader>
 
       <main className="page page-wide" style={{ paddingTop: 24 }}>
-        {state === "loading" && <p className="note" role="status">Loading reports…</p>}
+        {state === "loading" && <p className="note" role="status">Loading report…</p>}
 
         {state === "empty" && (
           <div style={{ paddingTop: 48, maxWidth: "54ch" }}>
@@ -90,7 +90,7 @@ export default function ReportPage() {
         )}
 
         {state === "ready" && reports && (
-          <AssessmentReport companyId={Number(companyId)} runId={Number(runId)} aasbS2Report={reports.aasbS2Report} esgReport={reports.esgReport} />
+          <AssessmentReport companyId={Number(companyId)} runId={Number(runId)} report={reports.aasbS2Report} />
         )}
       </main>
 

@@ -38,7 +38,7 @@ export default function UploadPage() {
   async function submit() {
     if (entries.length === 0) return;
     if (!companyName.trim()) {
-      setError("Enter the company name — both reports are prepared for a specific entity.");
+      setError("Enter the company name — the AASB S2 report is prepared for a specific entity.");
       return;
     }
     if (!/^\d{4}$/.test(reportYear)) {
@@ -126,7 +126,7 @@ export default function UploadPage() {
             )}
           </p>
           <p className="note" style={{ margin: 0 }}>
-            Any number of documents, up to 25&nbsp;MB each
+            Up to 20 documents, up to 25&nbsp;MB each
           </p>
           <input
             ref={inputRef}
@@ -213,7 +213,7 @@ export default function UploadPage() {
           }}
         >
           <button className="btn btn-primary" onClick={submit} disabled={entries.length === 0 || busy}>
-            {busy ? "Starting…" : "Generate both reports"}
+            {busy ? "Starting…" : "Generate AASB S2 report"}
           </button>
           <span className="note">
             {entries.length === 0
@@ -247,9 +247,8 @@ export default function UploadPage() {
             </p>
             <p className="guide-item">
               <span>
-                <b>Marking a document public or internal is optional</b> but improves the ESG report:
-                it can only flag a disclosure gap between what&rsquo;s public and what isn&rsquo;t if
-                it knows which is which.
+                <b>Marking a document public or internal is optional</b> and helps trace evidence
+                provenance during the AASB S2 review.
               </span>
             </p>
           </div>

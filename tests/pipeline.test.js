@@ -23,14 +23,13 @@ function examplePDF() {
   return Buffer.from(pdf);
 }
 
-test("stored uploads flow through both agents with ownership, provenance, history and failure retention", async () => {
+test("stored uploads flow through extraction and AASB analysis with ownership, provenance and failure retention", async () => {
   const directory = await mkdtemp(join(tmpdir(), "esg-pipeline-test-"));
   const databasePath = join(directory, "test.db");
   process.env.ESG_DB_PATH = databasePath;
   const { db } = await import("../src/database/db.js");
   const repo = await import("../src/database/repository.js");
   const { processCompany } = await import("../src/pipeline/processCompany.js");
-  const { rubric } = await import("../src/agent2/rubric.js");
   const { aasbRubric } = await import("../src/aasb/rubric.js");
   const { createGeminiRequester } = await import("../src/llm/gemini.js");
   try {
@@ -59,18 +58,6 @@ test("stored uploads flow through both agents with ownership, provenance, histor
       callOrder.push("extract");
       return { text: JSON.stringify({ pillar: "governance", confidence: 0.95, justification: "Board oversight" }) };
     } } } };
-    const agent2 = { client: { models: { async generateContent(request) {
-      callOrder.push("esg");
-      const evidence = JSON.parse(request.contents).evidence;
-      assert.equal(evidence[0].documentId, document.id);
-      assert.equal(evidence[0].source, "board.pdf");
-      assert.equal(evidence[0].sourceType, "public");
-      return { text: JSON.stringify({ assessments: rubric.map((r) => ({
-        criterionId: r.id, status: r.id === "governance.oversight" ? "partial" : "missing",
-        citations: r.id === "governance.oversight" ? [{ excerptId: evidence[0].excerpts[0].excerptId }] : [],
-        potentialInconsistency: false,
-      })) }) };
-    } } } };
     const aasb = { client: { models: { async generateContent(request) {
       callOrder.push("aasb");
       const evidence=JSON.parse(request.contents).evidence;
@@ -80,42 +67,28 @@ test("stored uploads flow through both agents with ownership, provenance, histor
         citations:r.id === "governance.responsibleBody" ? [{excerptId:evidence[0].excerpts[0].excerptId}] : [],
       }))})};
     } } } };
-    const result = await processCompany({ companyId: company.id, reportYear: "2025", documentIds: [document.id], reportingContext:{reportingPeriodStart:"2025-01-01"} }, { agent1, agent2, aasb });
-    assert.deepEqual(callOrder,["extract","aasb","esg"]);
-    assert.equal(result.outputs.esgReport.company, company.name);
-    assert.equal(result.outputs.esgReport.aasbS2,undefined);
+    const result = await processCompany({ companyId: company.id, reportYear: "2025", documentIds: [document.id], reportingContext:{reportingPeriodStart:"2025-01-01"} }, { agent1, aasb });
+    assert.deepEqual(callOrder,["extract","aasb"]);
+    assert.equal(result.outputs.esgReport, null);
     assert.equal(result.outputs.aasbS2Report.standard.version,"2024-09");
     assert.equal(repo.getRun(company.id, result.runId).status, "completed");
     assert.equal(repo.getRun(company.id, result.runId).documents[0].evidence.pillars.governance.raw_text_chunks.length, 1);
-    assert.deepEqual(repo.getEsgReport(company.id, result.reportIds.esg).report, result.outputs.esgReport);
     assert.deepEqual(repo.getAasbS2Report(company.id, result.reportIds.aasbS2).report, result.outputs.aasbS2Report);
     assert.ok(repo.getAasbS2Report(company.id,result.reportIds.aasbS2).report.presentation.executiveSummary);
-    assert.ok(repo.getEsgReport(company.id,result.reportIds.esg).report.presentation.executiveSummary);
     const exported=await exportCompletedReports(result,join(directory,"exports"));
-    assert.deepEqual((await readdir(dirname(exported.files.aasbS2Report))).sort(),["aasbS2Report.json","esgReport.json"]);
+    assert.deepEqual((await readdir(dirname(exported.files.aasbS2Report))).sort(),["aasbS2Report.json"]);
     for(const [key,path] of Object.entries(exported.files)) {
       const saved=JSON.parse(await readFile(path,"utf8"));
       assert.deepEqual(saved,result.outputs[key]);
       assert.ok(saved.presentation);assert.equal(saved.schemaVersion,"2.0");
     }
-    assert.throws(() => repo.getEsgReport(other.id, result.reportIds.esg), /not found/);
     assert.throws(() => repo.getEsgReport(company.id, result.reportIds.aasbS2), /not found/);
     const snapshot=repo.getRun(company.id,result.runId).evidenceSnapshot;
     assert.deepEqual(result.outputs.aasbS2Report.evidenceRegister,snapshot.evidence);
-    assert.deepEqual(result.outputs.esgReport.governance.evidence[0],snapshot.evidence[0]);
     assert.deepEqual(snapshot.evidence[0].pages,[1]);
-    const badAgent2 = { client: { models: { async generateContent() { return { text: "invalid JSON" }; } } } };
-    await assert.rejects(processCompany({ companyId: company.id, reportYear: "2025", documentIds: [document.id] }, { agent1, agent2: badAgent2, aasb }), /invalid/);
-    const failed = repo.listRuns(company.id)[0];
-    assert.equal(failed.status, "failed");
-    assert.equal(repo.getRun(company.id, failed.id).reportId, null);
-    assert.ok(repo.getRun(company.id,failed.id).reportIds.aasbS2);
-    assert.equal(repo.getRun(company.id,failed.id).reportIds.esg,null);
-    assert.ok(failed.finished_at);
-    assert.ok(repo.getRun(company.id, failed.id).documents[0].evidence);
-    assert.equal(db.prepare("SELECT count(*) AS n FROM report_outputs").get().n, 3);
+    assert.equal(db.prepare("SELECT count(*) AS n FROM report_outputs").get().n, 1);
     const badAasb = {client:{models:{async generateContent(){throw Error("AASB provider failed");}}}};
-    await assert.rejects(processCompany({companyId:company.id,reportYear:"2025",documentIds:[document.id]}, {agent1,agent2,aasb:badAasb}), /AASB provider failed/);
+    await assert.rejects(processCompany({companyId:company.id,reportYear:"2025",documentIds:[document.id]}, {agent1,aasb:badAasb}), /AASB provider failed/);
     const aasbFailure=repo.listRuns(company.id)[0];
     assert.equal(aasbFailure.status,"failed");
     assert.equal(repo.getRun(company.id,aasbFailure.id).reportIds.aasbS2,null);
@@ -133,7 +106,7 @@ test("stored uploads flow through both agents with ownership, provenance, histor
       return {text:JSON.stringify({pillar:"governance",confidence:0.95,justification:"Board oversight"})};
     }}}};
     await assert.rejects(processCompany({companyId:company.id,reportYear:"2025",documentIds:[document.id,second.id]},
-      {agent1:limitedAgent1,agent2,aasb}),e=>e===quotaError);
+      {agent1:limitedAgent1,aasb}),e=>e===quotaError);
     assert.deepEqual(starts,[0,15000,30000,45000]);
     const quotaRun=repo.getRun(company.id,repo.listRuns(company.id)[0].id);
     assert.equal(quotaRun.status,"failed");
@@ -143,11 +116,10 @@ test("stored uploads flow through both agents with ownership, provenance, histor
     assert.ok(repo.getDocument(company.id,second.id,true).content.length);
     allow=true;
     const retry=await processCompany({companyId:company.id,reportYear:"2025",documentIds:[document.id,second.id]},
-      {agent1:limitedAgent1,agent2,aasb});
+      {agent1:limitedAgent1,aasb});
     assert.equal(retry.status,"completed");
     assert.notEqual(retry.runId,quotaRun.id);
     assert.ok(repo.getAasbS2Report(company.id,retry.reportIds.aasbS2));
-    assert.ok(repo.getEsgReport(company.id,retry.reportIds.esg));
 
     // If SQLite cannot save failure status, retain the actual processing exception.
     const originalError=Object.freeze(new Error("Original failure"));
@@ -161,7 +133,7 @@ test("stored uploads flow through both agents with ownership, provenance, histor
     db.close();
     const reopened = new Database(databasePath, { readonly: true });
     assert.deepEqual(reopened.prepare("SELECT content FROM documents WHERE id=?").get(document.id).content, content);
-    assert.deepEqual(JSON.parse(reopened.prepare("SELECT report_json FROM report_outputs WHERE id=?").get(result.reportIds.esg).report_json), result.outputs.esgReport);
+    assert.deepEqual(JSON.parse(reopened.prepare("SELECT report_json FROM report_outputs WHERE id=?").get(result.reportIds.aasbS2).report_json), result.outputs.aasbS2Report);
     reopened.close();
   } finally {
     if (db.open) db.close();

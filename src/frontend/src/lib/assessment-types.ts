@@ -1,10 +1,4 @@
-/**
- * Types for the real backend output — src/aasb/generateAasbS2Report.js and
- * src/agent2/generateESGReport.js. These are genuinely two independent
- * reports, not one document with two sections: different rubrics, different
- * status vocabularies (5-state for AASB, 3-state for ESG), generated and
- * stored separately.
- */
+/** Active AASB report types, with inactive ESG types retained for compatibility. */
 
 export const AASB_STATUSES = ["present", "partial", "missing", "not_applicable", "requires_human_judgement"] as const;
 export type AasbStatus = (typeof AASB_STATUSES)[number];
@@ -15,6 +9,8 @@ export type EsgStatus = (typeof ESG_STATUSES)[number];
 export interface Citation {
   evidenceId: string;
   quote: string;
+  source?: string | null;
+  pages?: number[];
 }
 
 export interface EvidenceItem {
@@ -31,6 +27,7 @@ export interface EvidenceItem {
 }
 
 export interface AasbCriterion {
+  completenessStatus?: string;
   id: string;
   section: string;
   key: string;
@@ -153,7 +150,7 @@ export const AASB_SECTION_KEYS = [
   "generalRequirements",
 ] as const;
 
-export type RunStage = "extracting" | "aasb_analysing" | "esg_analysing" | "completed" | "failed";
+export type RunStage = "extracting" | "aasb_analysing" | "completed" | "failed";
 
 export interface RunStatus {
   companyId: number;
@@ -162,7 +159,7 @@ export interface RunStatus {
   stageLabel: string;
   done: boolean;
   error: { code: "AI_QUOTA_EXHAUSTED" | "PROCESSING_FAILED"; message: string } | null;
-  reportIds: { aasbS2: number | null; esg: number | null };
+  reportIds: { aasbS2: number | null; esg?: number | null };
   aasbS2Report: AasbS2Report | null;
-  esgReport: EsgReport | null;
+  esgReport?: unknown;
 }

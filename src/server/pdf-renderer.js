@@ -1,137 +1,98 @@
 import PDFDocument from "pdfkit";
+import { buildAasbPdfViewModel } from "./aasb-pdf-view-model.js";
 
-const PAGE = { margin: 54 };
-
-function text(value, fallback = "Not available") {
-  if (value === null || value === undefined || value === "") return fallback;
-  return String(value);
+const PAGE = { top: 54, bottom: 62, left: 54, right: 54 };
+const WIDTH = 487.28;
+function space(doc, height) {
+  if (doc.y + height > doc.page.height - PAGE.bottom) doc.addPage();
+  doc.x = PAGE.left;
 }
-
-function list(value) {
-  return Array.isArray(value) ? value : [];
+function text(doc, value, size = 10, bold = false, after = 5) {
+  doc.font(bold ? "Helvetica-Bold" : "Helvetica").fontSize(size).fillColor(bold ? "#17324d" : "#344957");
+  doc.text(String(value), PAGE.left, doc.y, { width: WIDTH, lineGap: 2 });
+  doc.y += after;
 }
-
-function score(report) {
-  return report.reportType === "AASB_S2_DRAFT"
-    ? report.presentation?.executiveSummary?.readinessScore ?? report.aasbS2ReadinessScore
-    : report.presentation?.executiveSummary?.readinessScore ?? report.overallESGReadinessScore ?? report.overallESGScore;
-}
-
-function addHeader(document, report, label) {
-  document.fillColor("#17324d").fontSize(9).text("FORWARD / READINESS ASSESSMENT", PAGE.margin, 34, { characterSpacing: 1.2 });
-  document.moveTo(PAGE.margin, 48).lineTo(558, 48).strokeColor("#b8c5ce").stroke();
-  document.fillColor("#17324d").fontSize(24).font("Helvetica-Bold").text(label, PAGE.margin, 78);
-  document.font("Helvetica").fillColor("#243746").fontSize(14).text(text(report.company), PAGE.margin, 112);
-  document.fillColor("#5c6d78").fontSize(10).text(
-    report.reportType === "AASB_S2_DRAFT"
-      ? `Reporting period: ${text(report.reportingPeriod?.year)} | Status: ${text(report.status)}`
-      : `Reporting year: ${text(report.reportYear)} | Evidence-readiness assessment`,
-    PAGE.margin,
-    136,
-  );
-  document.y = 172;
-}
-
-function heading(document, title) {
-  document.moveDown(0.8);
-  document.fillColor("#17324d").font("Helvetica-Bold").fontSize(15).text(title, { continued: false });
-  document.moveDown(0.25);
-  document.font("Helvetica").fillColor("#243746").fontSize(10);
-}
-
-function paragraph(document, value) {
-  document.font("Helvetica").fillColor("#243746").fontSize(10).text(text(value), { lineGap: 3 });
-  document.moveDown(0.35);
-}
-
-function bullets(document, values) {
-  for (const value of list(values)) {
-    document.font("Helvetica").fontSize(10).fillColor("#243746").text(`- ${text(value)}`, { indent: 10, lineGap: 2 });
-  }
-  document.moveDown(0.25);
-}
-
-function addPresentation(document, report) {
-  const presentation = report.presentation ?? {};
-  const summary = presentation.executiveSummary ?? {};
-  const readiness = score(report);
-  heading(document, "Executive summary");
-  document.font("Helvetica-Bold").fontSize(18).fillColor("#17324d").text(readiness == null ? "Readiness: not scored" : `Readiness: ${readiness}/100`);
-  document.moveDown(0.25);
-  paragraph(document, summary.headline ?? summary.summary ?? report.executiveSummary);
-  paragraph(document, summary.summary ?? report.executiveSummary);
-  paragraph(document, summary.scoreDisclaimer ?? report.methodology?.scoreMeaning);
-
-  heading(document, "Key findings");
-  const findings = list(presentation.keyFindings);
-  findings.length
-    ? findings.forEach((finding) => paragraph(document, `${text(finding.title)}: ${text(finding.summary)}`))
-    : paragraph(document, "No key findings were identified from the supplied documents.");
-
-  heading(document, "Priority actions");
-  const actions = list(presentation.priorityActions);
-  actions.length
-    ? actions.forEach((action) => paragraph(document, `${text(action.title)}: ${text(action.description)}`))
-    : paragraph(document, "No priority actions were identified from the supplied documents.");
-}
-
-function addAasbDetails(document, report) {
-  heading(document, "AASB S2 assessment");
-  paragraph(document, `Standard: ${text(report.standard?.name)} | Version: ${text(report.standard?.version)} | Methodology: ${text(report.methodology?.version)}`);
-  paragraph(document, `Readiness status: ${text(report.status)}. This is an AI-assisted preparation draft and requires management, director and assurance review.`);
-  const sections = [
-    ["Governance", report.governance],
-    ["Strategy", report.strategy],
-    ["Risk management", report.riskManagement],
-    ["Metrics and targets", report.metricsAndTargets],
-    ["General requirements", report.generalRequirements],
-  ];
-  for (const [name, section] of sections) {
-    if (!section) continue;
-    document.font("Helvetica-Bold").fontSize(11).fillColor("#17324d").text(`${name}: ${text(section.overallStatus)}`);
-    const criteria = list(section.criteria);
-    for (const criterion of criteria.slice(0, 18)) {
-      paragraph(document, `${text(criterion.key ?? criterion.id)} [${text(criterion.status)}] - ${text(criterion.finding ?? criterion.description)}`);
-    }
-  }
-  heading(document, "Review and assurance");
-  bullets(document, report.assuranceReadiness?.issues);
-  bullets(document, report.warnings);
-  heading(document, "Major evidence gaps");
-  bullets(document, list(report.missingDisclosures).map((gap) => `${text(gap.criterionId)}: ${list(gap.requiredInformation).join(" ")}`));
-}
-
-function addEsgDetails(document, report) {
-  heading(document, "ESG evidence readiness");
-  paragraph(document, report.methodology?.scoreMeaning ?? "This score reflects evidence readiness, not company ESG performance or compliance.");
-  for (const [name, section] of [["Environmental", report.environmental], ["Social", report.social], ["Governance", report.governance]]) {
-    if (!section) continue;
-    document.font("Helvetica-Bold").fontSize(11).fillColor("#17324d").text(`${name}: ${text(section.score)}/100 (${text(section.status)})`);
-    bullets(document, list(section.gaps).map((gap) => `${text(gap.criterionId)}: ${text(gap.message)}`));
-  }
-  heading(document, "Follow-up and limitations");
-  bullets(document, report.warnings);
-  paragraph(document, "This is an evidence-readiness assessment. It does not rate company ESG performance and requires human review of source material and conclusions.");
+function heading(doc, value) { space(doc, 62); text(doc, value, 16, true, 9); }
+function block(doc, lines) {
+  const height = lines.reduce((total, [value, size = 10, bold = false, after = 5]) => {
+    doc.font(bold ? "Helvetica-Bold" : "Helvetica").fontSize(size);
+    return total + doc.heightOfString(String(value), { width: WIDTH, lineGap: 2 }) + after;
+  }, 0);
+  space(doc, Math.min(height, doc.page.height - PAGE.top - PAGE.bottom));
+  for (const line of lines) text(doc, ...line);
 }
 
 export function renderReportPdf(report) {
-  const document = new PDFDocument({ size: "A4", margins: PAGE, bufferPages: true });
+  if (report?.reportType !== "AASB_S2_DRAFT") throw new Error("Only AASB S2 reports can be exported.");
+  const view = buildAasbPdfViewModel(report);
+  const doc = new PDFDocument({ size: "A4", margins: PAGE, bufferPages: true });
   const chunks = [];
-  document.on("data", (chunk) => chunks.push(chunk));
-  const result = new Promise((resolve, reject) => {
-    document.on("end", () => resolve(Buffer.concat(chunks)));
-    document.on("error", reject);
-  });
-  const label = report.reportType === "AASB_S2_DRAFT" ? "AASB S2 readiness report" : "ESG readiness report";
-  addHeader(document, report, label);
-  addPresentation(document, report);
-  if (report.reportType === "AASB_S2_DRAFT") addAasbDetails(document, report);
-  else addEsgDetails(document, report);
-  const pageRange = document.bufferedPageRange();
-  for (let page = pageRange.start; page < pageRange.start + pageRange.count; page += 1) {
-    document.switchToPage(page);
-    document.fontSize(8).fillColor("#5c6d78").text(`Page ${page - pageRange.start + 1} | AI-assisted draft. Source evidence, applicability, materiality and all conclusions require human review.`, PAGE.margin, 770, { width: 488, align: "center" });
+  doc.on("data", chunk => chunks.push(chunk));
+  const result = new Promise((resolve, reject) => { doc.on("end", () => resolve(Buffer.concat(chunks))); doc.on("error", reject); });
+  text(doc, "FORWARD / AASB S2 READINESS", 9, true, 12);
+  text(doc, "AASB S2 readiness report", 24, true);
+  text(doc, view.header.company, 16, true);
+  text(doc, `${view.header.standard} | ${view.header.standardVersion} | Reporting period: ${view.header.reportingPeriod}`, 9, false, 12);
+  heading(doc, "Executive summary");
+  text(doc, view.executiveSummary.readinessScore == null ? "Readiness unavailable" : `${view.executiveSummary.readinessScore}/100 Readiness`, 24, true);
+  text(doc, view.executiveSummary.headline, 11, true);
+  text(doc, view.executiveSummary.summary, 9);
+  text(doc, view.executiveSummary.disclaimer, 8, false, 10);
+  heading(doc, "Section readiness overview");
+  for (const section of view.sectionSummary) {
+    block(doc, [[`${section.label}: ${section.supported} complete / ${section.unresolved} unresolved / ${section.total} checks`, 9, false, 4]]);
   }
-  document.end();
+  doc.y += 5;
+  heading(doc, "Key findings");
+  for (const finding of view.keyFindings) block(doc, [[finding.title, 10, true, 2], [finding.summary, 9, false, 6]]);
+  if (!view.keyFindings.length) text(doc, "No key findings were identified from the supplied evidence.");
+
+  doc.addPage();
+  heading(doc, "Priority actions");
+  text(doc, "Related follow-ups are grouped below, highest priority first. Each description is a representative next step; the detailed assessment retains requirement-level follow-ups.", 9, false, 9);
+  for (const action of view.priorityActions) block(doc, [
+    [`${action.title} (${action.priority} priority; ${action.count} related ${action.count === 1 ? "item" : "items"})`, 10, true, 2],
+    [action.description, 9, false, 7],
+  ]);
+  if (!view.priorityActions.length) text(doc, "No priority actions identified in the stored assessment.");
+  heading(doc, "Major evidence gaps");
+  for (const gap of view.majorEvidenceGaps) block(doc, [[gap.title, 10, true, 2], [gap.detail, 9, false, 5]]);
+  if (!view.majorEvidenceGaps.length) text(doc, "No missing disclosures recorded; review unresolved judgements in the detailed assessment.", 9);
+  heading(doc, "Review and assurance requirements");
+  for (const item of view.reviewAndAssurance) block(doc, [[item, 9, false, 5]]);
+  if (!view.reviewAndAssurance.length) text(doc, "No additional review notes recorded. This remains a draft evidence-readiness assessment.", 9);
+
+  doc.addPage();
+  for (const section of view.detailedSections) {
+    heading(doc, section.label);
+    for (const criterion of section.criteria) {
+      block(doc, [
+        [criterion.title, 11, true, 3],
+        [`Assessment: ${criterion.status}`, 9, true, 3],
+        [criterion.finding, 9, false, 4],
+        ...(criterion.supportingValues.length ? [[`Supporting values: ${criterion.supportingValues.join("; ")}`, 9, false, 4]] : []),
+        ...(criterion.requiredInformation.length ? [[`Follow-up: ${criterion.requiredInformation.join(" ")}`, 9, false, 4]] : []),
+        ...(criterion.references.length ? [[`Standard reference: ${criterion.references.join(", ")}`, 8, false, 3]] : []),
+        ...(criterion.sources.length ? [[`Evidence: ${criterion.sources.join("; ")}`, 8, false, 3]] : []),
+        ["", 8, false, 8],
+      ]);
+    }
+    if (!section.criteria.length) text(doc, "No detailed criteria recorded for this section.");
+    doc.y += 8;
+  }
+  const range = doc.bufferedPageRange();
+  for (let i = 0; i < range.count; i++) {
+    doc.switchToPage(range.start + i);
+    // Footer is outside the body margin. Disable wrapping so PDFKit cannot
+    // create a new page while decorating already buffered pages.
+    const bodyBottom = doc.page.margins.bottom;
+    doc.page.margins.bottom = 0;
+    doc.font("Helvetica").fontSize(8).fillColor("#5c6d78").text(
+      `Forward | Draft evidence readiness | Page ${i + 1} of ${range.count}`,
+      PAGE.left, doc.page.height - 34, { width: WIDTH, align: "center", lineBreak: false },
+    );
+    doc.page.margins.bottom = bodyBottom;
+  }
+  doc.end();
   return result;
 }

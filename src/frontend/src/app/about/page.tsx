@@ -7,7 +7,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
   AlertTriangleIcon,
-  BarChartIcon,
   CheckCircleIcon,
   ClockIcon,
   EyeOffIcon,
@@ -18,7 +17,7 @@ import {
   XCircleIcon,
 } from "@/components/icons";
 import { PILLAR_META } from "@/lib/pillar-meta";
-import { AASB_AUDIENCE, AASB_INTRO, ESG_AUDIENCE, ESG_INTRO } from "@/lib/report-copy";
+import { AASB_AUDIENCE, AASB_INTRO } from "@/lib/report-copy";
 
 const PILLAR_SUMMARIES: Record<(typeof AASB_SECTION_KEYS)[number], string> = {
   governance:
@@ -71,7 +70,7 @@ const STEPS = [
   },
   {
     h: "Each status carries a fixed weight.",
-    p: "Present counts fully, Partial counts at half, Missing counts as zero: the same weights published in every report's own methodology section, not adjusted per company.",
+    p: "Complete counts as 1, evidence requiring judgement as 0.75, partial as 0.5, human confirmation as 0.25, and missing as zero. These fixed weights are published in the report methodology.",
   },
   {
     h: "The overall score is the weighted average across every applicable criterion.",
@@ -83,19 +82,19 @@ const PRIVACY_ITEMS: DisclosureItem[] = [
   {
     title: "Documents are stored, not discarded",
     teaser: "Uploaded files and the reports built from them are saved to a database.",
-    body: "Each file you upload is saved as-is in a database, tied to the company and reporting year you gave it, and deduplicated by content, so uploading the same file twice doesn't create two copies. Reports generated from it are stored the same way and can be reopened using their company and run link, which is why a report keeps working if you reload the page or come back later. The example report linked from this site is served from a saved export rather than generated live.",
+    body: "Each file you upload is saved as-is in a database, tied to the company and reporting year you gave it, and deduplicated by content, so uploading the same file twice doesn't create two copies. Reports generated from it are stored the same way and can be reopened using their company and run link, which is why a report keeps working if you reload the page or come back later. Existing reports are retrieved from SQLite without regenerating them.",
     Icon: LockIcon,
   },
   {
     title: "Document text reaches Google's Gemini API",
     teaser: "Gemini reads your documents to produce the assessment.",
-    body: "Generating a new assessment sends extracted document text to Google's Gemini API, matched against each AASB S2 and ESG criterion. Opening an existing report only retrieves what was already saved; it does not send anything to Gemini again.",
+    body: "Generating a new assessment sends extracted document text to Google's Gemini API, matched against each AASB S2 criterion. Opening an existing report only retrieves what was already saved; it does not send anything to Gemini again.",
     Icon: SendIcon,
   },
   {
     title: "Run progress is tracked in the same database",
     teaser: "Not an in-memory job queue: the stage is written down as it happens.",
-    body: "While a report is generating, its stage (extracting, analysing AASB S2, analysing ESG, completed) is recorded in the database so your browser can poll for it. That means it survives a server restart, unlike a purely in-memory job, and nothing about a finished run is automatically cleared away afterward.",
+    body: "While a report is generating, its stage (extracting, analysing AASB S2, completed) is recorded in the database so your browser can poll for it. Saved progress and evidence survive a restart. An interrupted analysis needs a new run; it does not automatically resume. Finished runs remain available.",
     Icon: ClockIcon,
   },
   {
@@ -140,8 +139,7 @@ export default function AboutPage() {
             <h2>What you get</h2>
           </div>
           <p className="lede rise" style={{ ["--i" as string]: 4, marginBottom: 28, fontSize: 15.5 }}>
-            One upload produces two separate reports. They use different rubrics, different status
-            vocabularies, and are written for different readers.
+            One upload produces a structured AASB S2 readiness assessment for management, directors and assurance review.
           </p>
 
           <div className="report-kind-grid rise" style={{ ["--i" as string]: 5 }}>
@@ -159,22 +157,6 @@ export default function AboutPage() {
                 </p>
               </div>
               <p className="report-kind-body">{AASB_INTRO}</p>
-            </div>
-
-            <div className="panel report-kind-card">
-              <div className="report-kind-head">
-                <span className="report-kind-icon">
-                  <BarChartIcon />
-                </span>
-                <h3>ESG Evidence Readiness</h3>
-              </div>
-              <div>
-                <span className="report-explainer-label">Who it&rsquo;s for</span>
-                <p className="report-audience" style={{ marginTop: 0 }}>
-                  {ESG_AUDIENCE}
-                </p>
-              </div>
-              <p className="report-kind-body">{ESG_INTRO}</p>
             </div>
           </div>
         </section>

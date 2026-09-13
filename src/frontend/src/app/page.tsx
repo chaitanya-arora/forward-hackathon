@@ -13,11 +13,11 @@ const PREVIEW_PILLARS = [
 const STEPS = [
   {
     h: "Upload what you already have",
-    p: "Annual reports, board policies, internal memos — any mix, in any order. There is nothing to fill in and no questionnaire to work through.",
+    p: "Annual reports, board policies, internal memos — any mix, in any order. Provide the company and reporting year, then select your PDF documents.",
   },
   {
-    h: "Every document strengthens the assessment",
-    p: "Evidence is pooled across everything you provide. More material means a more complete report.",
+    h: "Bring the relevant evidence together",
+    p: "Evidence is pooled across everything you provide. Relevant material can address gaps; completeness still depends on what it supports.",
   },
   {
     h: "Nothing in the report is unsourced",
@@ -38,14 +38,13 @@ export default function LandingPage() {
         <div className="hero">
           <div>
             <p className="eyebrow rise" style={{ ["--i" as string]: 0 }}>
-              Your documents in · Official report out
+              Your documents in · AASB S2 readiness out
             </p>
             <h1 className="display display-xl rise" style={{ ["--i" as string]: 1 }}>
               <span className="title-dim">Your Company,</span> GreenScreened
             </h1>
             <p className="lede rise" style={{ ["--i" as string]: 2, marginTop: 22 }}>
-              Most companies without a sustainability team already hold the evidence an AASB S2 or
-              TCFD assessment needs. It is just scattered across files nobody has read together.
+              Company documents can hold evidence relevant to an AASB S2 readiness assessment. It is just scattered across files nobody has read together.
               GreenScreened reads whatever you have and returns a cited report — every claim traced to
               the document and page it came from.
             </p>
@@ -64,7 +63,7 @@ export default function LandingPage() {
 
           <div className="fade" style={{ ["--i" as string]: 4 }}>
             <div className="proof" aria-hidden="true">
-              <p className="proof-kicker">Climate disclosure readiness · AASB S2 / TCFD</p>
+              <p className="proof-kicker">Climate disclosure readiness · AASB S2</p>
               <p className="proof-company">Quality Holdings Resources</p>
               <p className="proof-meta">Prepared from 2 documents provided by the company</p>
 

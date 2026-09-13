@@ -2,22 +2,21 @@
 
 import { useState } from "react";
 import { InfoIcon } from "@/components/icons";
-import type { AasbS2Report, EsgReport } from "@/lib/assessment-types";
-import { AASB_AUDIENCE, AASB_INTRO, ESG_AUDIENCE, ESG_INTRO } from "@/lib/report-copy";
+import type { AasbS2Report } from "@/lib/assessment-types";
+import { AASB_SECTION_KEYS, AASB_SECTION_LABELS } from "@/lib/assessment-types";
+import { AASB_AUDIENCE, AASB_INTRO } from "@/lib/report-copy";
 import { readinessTone } from "@/lib/readiness";
 import { downloadReportPdf } from "@/lib/api";
 
-export function AssessmentReport({ companyId, runId, aasbS2Report, esgReport }: { companyId: number; runId: number; aasbS2Report: AasbS2Report; esgReport: EsgReport }) {
-  const [view, setView] = useState<"aasb" | "esg">("aasb");
+export function AssessmentReport({ companyId, runId, report }: { companyId: number; runId: number; report: AasbS2Report }) {
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
-  const selected = view === "aasb" ? aasbS2Report : esgReport;
 
   async function exportPdf() {
     setDownloading(true);
     setDownloadError(null);
     try {
-      const result = await downloadReportPdf(companyId, runId, view);
+      const result = await downloadReportPdf(companyId, runId);
       const url = URL.createObjectURL(result.blob);
       const link = document.createElement("a");
       link.href = url;
@@ -34,53 +33,71 @@ export function AssessmentReport({ companyId, runId, aasbS2Report, esgReport }: 
   return (
     <div className="report-page">
       <div className="report-hero rise">
-        <p className="eyebrow">Climate &amp; ESG Readiness Assessment</p>
-        <h1 className="display display-l" style={{ marginTop: 8 }}>{selected.company}</h1>
+        <p className="eyebrow">AASB S2 Climate Readiness</p>
+        <h1 className="display display-l" style={{ marginTop: 8 }}>{report.company}</h1>
         <p className="lede" style={{ marginTop: 10, fontSize: 15.5 }}>
-          {view === "aasb"
-            ? "AASB S2 climate disclosure draft, reporting year " + (aasbS2Report.reportingPeriod.year ?? "unconfirmed")
-            : "ESG evidence-readiness assessment"}
+          AASB S2 climate disclosure draft, reporting year {report.reportingPeriod.year ?? "unconfirmed"}
         </p>
       </div>
 
       <div className="report-controls">
-        <div className="view-toggle" role="tablist" aria-label="Report type">
-          {(["aasb", "esg"] as const).map((tab) => (
-            <button
-              key={tab}
-              id={"tab-" + tab}
-              role="tab"
-              aria-selected={view === tab}
-              aria-controls="report-summary"
-              className={view === tab ? "is-active" : ""}
-              onClick={() => setView(tab)}
-            >
-              {tab === "aasb" ? "AASB S2" : "ESG"}
-            </button>
-          ))}
-        </div>
         <button className="btn btn-primary" onClick={exportPdf} disabled={downloading}>
-          {downloading ? "Preparing PDF…" : `Download ${view === "aasb" ? "AASB S2" : "ESG"} PDF`}
+          {downloading ? "Preparing PDF…" : "Download AASB S2 PDF"}
         </button>
       </div>
       {downloadError && <p className="alert" role="alert">{downloadError}</p>}
 
-      <ReportSummary key={view} view={view} report={selected} />
+      <ReportSummary report={report} />
+      <DetailedAssessment report={report} />
     </div>
   );
 }
 
-function ReportSummary({ view, report }: { view: "aasb" | "esg"; report: AasbS2Report | EsgReport }) {
+const assessmentLabels: Record<string, string> = {
+  complete: "Supported", present: "Supported", partial: "Partial evidence",
+  missing: "Evidence missing", not_applicable: "Not applicable",
+  requires_human_judgement: "Human review required",
+  evidence_found_requires_judgement: "Human review required",
+  requires_human_confirmation: "Human confirmation required",
+};
+function readableDetail(value: string) {
+  return value.split(/\s+Extracted:/i)[0].replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
+}
+function DetailedAssessment({ report }: { report: AasbS2Report }) {
+  return <section className="report-summary-section" aria-label="Detailed AASB assessment">
+    <h2>Detailed AASB assessment</h2>
+    <p className="note">Open a section to review its requirements, evidence and follow-ups. Supporting values remain in the full stored report and the PDF.</p>
+    {AASB_SECTION_KEYS.map(key => <details key={key} style={{ marginTop: 20 }}>
+      <summary style={{ cursor: "pointer", fontWeight: 600 }}>{AASB_SECTION_LABELS[key]}</summary>
+      <ul className="summary-list">
+        {(Array.isArray(report[key]?.criteria) ? report[key].criteria : []).map(criterion => <li key={criterion.id}>
+          <strong>{criterion.description}</strong>
+          <p className="note">{assessmentLabels[criterion.completenessStatus ?? criterion.status] ?? "Review required"}</p>
+          <p>{typeof criterion.finding === "string" ? readableDetail(criterion.finding) : "Review the supporting evidence."}</p>
+          {Array.isArray(criterion.requiredInformation) && criterion.requiredInformation.length > 0 && <p>Follow-up: {criterion.requiredInformation.filter(v => typeof v === "string").map(readableDetail).join(" ")}</p>}
+          {criterion.reference && <p className="note">Standard reference: {criterion.reference}</p>}
+          {Array.isArray(criterion.citations) && criterion.citations.length > 0 && <details>
+            <summary>Supporting quotations ({criterion.citations.length})</summary>
+            {criterion.citations.map((citation, index) => <blockquote key={index}>
+              <p>{citation.quote}</p>
+              <cite className="note">{citation.source ?? citation.evidenceId}{citation.pages?.length ? `, page ${citation.pages.join(", ")}` : ""}</cite>
+            </blockquote>)}
+          </details>}
+        </li>)}
+      </ul>
+    </details>)}
+  </section>;
+}
+
+function ReportSummary({ report }: { report: AasbS2Report }) {
   const { executiveSummary: summary, keyFindings, priorityActions } = report.presentation;
   const [showAllActions, setShowAllActions] = useState(false);
   const actions = showAllActions ? priorityActions : priorityActions.slice(0, 5);
-  const audience = view === "aasb" ? AASB_AUDIENCE : ESG_AUDIENCE;
-  const intro = view === "aasb" ? AASB_INTRO : ESG_INTRO;
 
   return (
-    <section id="report-summary" role="tabpanel" aria-labelledby={"tab-" + view} className="report-summary-section">
+    <section id="report-summary" className="report-summary-section">
       <div className="section-head">
-        <h2>{view === "aasb" ? "AASB S2 Climate Readiness" : "ESG Evidence Readiness"}</h2>
+        <h2>AASB S2 Climate Readiness</h2>
       </div>
 
       <div className="callout">
@@ -90,9 +107,7 @@ function ReportSummary({ view, report }: { view: "aasb" | "esg"; report: AasbS2R
         <div>
           <p className="callout-label">About this assessment</p>
           <p>
-            {view === "aasb"
-              ? "A draft for management, director and assurance review. It assesses disclosure evidence and preparation needs; it does not certify compliance or approval for lodgement."
-              : "An assessment of the evidence supporting environmental, social and governance disclosures. It does not rate company ESG performance."}
+            A draft for management, director and assurance review. It assesses disclosure evidence and preparation needs; it does not certify compliance or approval for lodgement.
           </p>
         </div>
       </div>
@@ -103,12 +118,12 @@ function ReportSummary({ view, report }: { view: "aasb" | "esg"; report: AasbS2R
         </span>
         <div>
           <p className="callout-label">Who this report is for</p>
-          <p>{audience}</p>
+          <p>{AASB_AUDIENCE}</p>
         </div>
       </div>
 
       <p className="lede" style={{ marginTop: 24, fontSize: 15.5 }}>
-        {intro}
+        {AASB_INTRO}
       </p>
 
       <h3 className="subhead">Executive summary</h3>

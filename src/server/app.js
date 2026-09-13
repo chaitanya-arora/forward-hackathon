@@ -2,20 +2,20 @@ import cors from "cors";
 import express from "express";
 import multer from "multer";
 import { createRepositoryReportProvider, getRepositoryRun, ReportError, validRunIds } from "./report-provider.js";
-import { getAasbS2Report, getEsgReport, getRun } from "../database/repository.js";
+import { getAasbS2Report, getRun } from "../database/repository.js";
 import { renderReportPdf } from "./pdf-renderer.js";
 
-function downloadName(company, type) {
+function downloadName(company) {
   const safeCompany = String(company).normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/[\s_-]+/g, "-").toLowerCase() || "company";
-  return `${safeCompany}-${type === "aasb" ? "aasb-s2-readiness" : "esg-readiness"}-report.pdf`;
+  return `${safeCompany}-aasb-s2-readiness-report.pdf`;
 }
 
-export function createApp({ reportProvider = createRepositoryReportProvider(), corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000", pdfRenderer = renderReportPdf } = {}) {
+export function createApp({ reportProvider = createRepositoryReportProvider(), corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:3000", pdfRenderer = renderReportPdf, processRunner } = {}) {
   const app = express();
   const liveRuns = new Set();
   const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024, files: 20 } });
 
-  app.use(cors({ origin: corsOrigin.split(",").map((s) => s.trim()) }));
+  app.use(cors({ origin: corsOrigin.split(",").map((s) => s.trim()), exposedHeaders: ["Content-Disposition"] }));
   app.use(express.json());
 
   app.get("/api/ping", (_req, res) => {
@@ -42,7 +42,7 @@ export function createApp({ reportProvider = createRepositoryReportProvider(), c
       const sourceTypes = Array.isArray(rawSourceTypes) ? rawSourceTypes : rawSourceTypes ? [rawSourceTypes] : [];
 
       const { createCompany, storeDocument } = await import("../database/repository.js");
-      const { processCompany } = await import("../pipeline/processCompany.js");
+      const { processCompany } = processRunner ? { processCompany: processRunner } : await import("../pipeline/processCompany.js");
       const company = createCompany(companyName);
       const documentIds = files.map((file, i) => {
         const sourceType = ["public", "internal", "unknown"].includes(sourceTypes[i]) ? sourceTypes[i] : "unknown";
@@ -98,17 +98,17 @@ export function createApp({ reportProvider = createRepositoryReportProvider(), c
     if (!/^\d+$/.test(req.params.companyId) || !/^\d+$/.test(req.params.runId) || !validRunIds(companyId, runId)) {
       return res.status(404).json({ error: "Run not found." });
     }
-    if (!["aasb", "esg"].includes(reportType)) return res.status(404).json({ error: "Report type not found." });
+    if (reportType !== "aasb") return res.status(404).json({ error: "Report type not found." });
     try {
       let run;
       try { run = getRun(companyId, runId); }
       catch { throw new ReportError(404, "Run not found."); }
       if (run.status !== "completed") return res.status(404).json({ error: "Report is not available for this run." });
-      const reportId = reportType === "aasb" ? run.reportIds.aasbS2 : run.reportIds.esg;
+      const reportId = run.reportIds.aasbS2;
       if (!reportId) return res.status(404).json({ error: "Report is not available for this run." });
-      const report = (reportType === "aasb" ? getAasbS2Report : getEsgReport)(companyId, reportId).report;
+      const report = getAasbS2Report(companyId, reportId).report;
       const pdf = await pdfRenderer(report);
-      res.set({ "Content-Type": "application/pdf", "Content-Length": pdf.length, "Content-Disposition": `attachment; filename="${downloadName(report.company, reportType)}"`, "Cache-Control": "no-store" });
+      res.set({ "Content-Type": "application/pdf", "Content-Length": pdf.length, "Content-Disposition": `attachment; filename="${downloadName(report.company)}"`, "Cache-Control": "no-store" });
       return res.send(pdf);
     } catch (error) {
       if (error?.status !== 404) console.error(`[server] PDF render failed for ${companyId}/${runId}/${reportType}:`, error?.message);
