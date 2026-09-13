@@ -7,16 +7,9 @@ import { AssessmentReport } from "@/components/AssessmentReport";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { fetchRunStatus } from "@/lib/api";
-import { getReports, setReports, type ReportPair } from "@/lib/report-store";
+import { type ReportPair } from "@/lib/report-store";
 
-/**
- * Tries the fast path first — the in-tab store, set by the processing page
- * right after the run completed — and falls back to a real fetch from the
- * server otherwise (a reload, or opening this exact link fresh). The backend
- * persists both reports in SQLite, so unlike the earlier fully-ephemeral
- * design, this link keeps working after a reload; there just isn't a company
- * or report *listing* UI yet, so you need the link itself.
- */
+// Every report URL loads its own validated response from Express.
 export default function ReportPage() {
   const { companyId, runId } = useParams<{ companyId: string; runId: string }>();
   const [reports, setLocalReports] = useState<ReportPair | null>(null);
@@ -24,22 +17,22 @@ export default function ReportPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const cached = getReports();
-    if (cached) {
-      setLocalReports(cached);
-      setState("ready");
-      return;
-    }
-
+    setState("loading");
+    setLocalReports(null);
+    setError("");
     let cancelled = false;
-    fetchRunStatus(Number(companyId), Number(runId))
+    const controller = new AbortController();
+    fetchRunStatus(Number(companyId), Number(runId), controller.signal)
       .then((status) => {
         if (cancelled) return;
         if (status.aasbS2Report && status.esgReport) {
           const pair = { aasbS2Report: status.aasbS2Report, esgReport: status.esgReport };
-          setReports(pair);
+
           setLocalReports(pair);
           setState("ready");
+        } else if (status.stage === "failed") {
+          setError("Report processing failed. Saved evidence is retained.");
+          setState("error");
         } else {
           setState("empty");
         }
@@ -51,6 +44,7 @@ export default function ReportPage() {
       });
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [companyId, runId]);
 
@@ -66,15 +60,15 @@ export default function ReportPage() {
       </SiteHeader>
 
       <main className="page page-wide" style={{ paddingTop: 24 }}>
-        {state === "loading" && <p className="note">Loading…</p>}
+        {state === "loading" && <p className="note" role="status">Loading reports…</p>}
 
         {state === "empty" && (
           <div style={{ paddingTop: 48, maxWidth: "54ch" }}>
             <h1 style={{ fontFamily: "var(--serif)", fontSize: 30, fontWeight: 600, margin: "0 0 12px" }}>
-              This run isn&rsquo;t finished yet
+              Reports are not available for this run
             </h1>
             <p className="note" style={{ fontSize: 15, marginBottom: 24 }}>
-              Go back to the processing page for this run, or start a new one.
+              The run may still be processing, or one of its reports is missing. Check its processing status before starting again.
             </p>
             <Link href="/upload" className="btn btn-primary">
               Generate a report
@@ -87,7 +81,8 @@ export default function ReportPage() {
             <h1 style={{ fontFamily: "var(--serif)", fontSize: 30, fontWeight: 600, margin: "0 0 12px" }}>
               Couldn&rsquo;t load this report
             </h1>
-            <p className="note" style={{ fontSize: 15, marginBottom: 24 }}>{error}</p>
+            <p className="note" role="alert" style={{ fontSize: 15, marginBottom: 24 }}>{error}</p>
+            <button className="btn" onClick={() => window.location.reload()}>Retry</button>
             <Link href="/upload" className="btn btn-primary">
               Generate a report
             </Link>

@@ -1,10 +1,9 @@
 /* ---------------------------------------------------------------------------
    The report view — integrated into the site rather than a flat page
-   mimicking a PDF. On-screen this is a summary only: which framework, who
-   it's for, and three sections the backend will populate (business
-   engagement summary, key findings, priority actions). The full
-   evidence-level document is a separate PDF the backend produces and links
-   to; this page never renders it directly.
+   mimicking a PDF. On-screen this is a summary: which framework, who it's
+   for, and the backend's own presentation data (executive summary, key
+   findings, priority actions). PDF export is a separate, not-yet-built
+   backend feature; this page never renders the full evidence-level document.
    --------------------------------------------------------------------------- */
 
 .report-page { padding-top: 8px; padding-bottom: 64px; }
@@ -72,39 +71,38 @@
   color: var(--ink);
 }
 
-/* --- placeholders: sections the backend hasn't populated yet -------------- */
-
-.placeholder-panel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  border: 1.5px dashed var(--rule-strong);
-  border-radius: 12px;
-  background: var(--surface);
-  padding: 18px 22px;
-}
-
-.placeholder-panel p {
+/* Reused wherever a report type is introduced: this page's callout and the
+   About page's "What you get" cards. */
+.report-explainer-label {
+  display: block;
   font-family: var(--sans);
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--ink-faint);
-  font-style: italic;
-  margin: 0;
-  max-width: 56ch;
-}
-
-.placeholder-tag {
-  font-family: var(--sans);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  border: 1px solid var(--rule-strong);
-  border-radius: 999px;
-  padding: 4px 10px;
-  white-space: nowrap;
+  margin: 0 0 6px;
 }
+
+.report-audience {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 14px 0 0;
+}
+
+/* Only the overall readiness score uses a readiness colour. */
+.readiness-overview { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 28px; align-items: start; }
+.readiness-score { border: 2px solid currentColor; border-radius: 50%; width: 126px; height: 126px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.readiness-score strong { font-size: 32px; line-height: 1.2; }
+.readiness-score small { font-size: 14px; font-weight: 500; }
+.readiness-score span { font-size: 13px; margin-top: 5px; }
+.readiness-green { color: var(--strong); background: var(--strong-bg); }
+.readiness-amber { color: var(--partial); background: var(--partial-bg); }
+.readiness-red { color: var(--missing); background: var(--missing-bg); }
+.readiness-neutral { color: var(--neutral); background: var(--neutral-bg); }
+.summary-headline { font-size: 20px; margin: 0 0 12px; }
+.score-disclaimer { margin-top: 16px; }
+.summary-list p { margin: 4px 0 10px; }
+@media (max-width: 600px) { .readiness-overview { grid-template-columns: 1fr; gap: 20px; } }

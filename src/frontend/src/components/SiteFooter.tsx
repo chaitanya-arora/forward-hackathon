@@ -9,8 +9,7 @@ export function SiteFooter() {
     <footer className="footer no-print">
       <p className="footer-brand">GreenScreened · Climate disclosure readiness</p>
       <p className="footer-note note">
-        Every generated report is saved and keeps working at its own link — not just a
-        browser-tab session.
+        Reports are retained by the backend. Keep the report link to return to this assessment.
       </p>
     </footer>
   );

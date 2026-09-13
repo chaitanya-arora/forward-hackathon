@@ -83,13 +83,13 @@ const PRIVACY_ITEMS: DisclosureItem[] = [
   {
     title: "Documents are stored, not discarded",
     teaser: "Uploaded files and the reports built from them are saved to a database.",
-    body: "Each file you upload is saved as-is in a database, tied to the company and reporting year you gave it, and deduplicated by content, so uploading the same file twice doesn't create two copies. The AASB S2 and ESG reports generated from it are stored the same way, which is why a report's link keeps working if you reload the page or come back later. Nothing here is held in memory only or thrown away after use.",
+    body: "Each file you upload is saved as-is in a database, tied to the company and reporting year you gave it, and deduplicated by content, so uploading the same file twice doesn't create two copies. Reports generated from it are stored the same way and can be reopened using their company and run link, which is why a report keeps working if you reload the page or come back later. The example report linked from this site is served from a saved export rather than generated live.",
     Icon: LockIcon,
   },
   {
     title: "Document text reaches Google's Gemini API",
     teaser: "Gemini reads your documents to produce the assessment.",
-    body: "Your documents are read, matched against each AASB S2 and ESG criterion, and turned into the written assessment by Gemini, Google's model. That's the material fact about how this works: your content leaves this application to be processed by a third-party model.",
+    body: "Generating a new assessment sends extracted document text to Google's Gemini API, matched against each AASB S2 and ESG criterion. Opening an existing report only retrieves what was already saved; it does not send anything to Gemini again.",
     Icon: SendIcon,
   },
   {
