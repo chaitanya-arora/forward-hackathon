@@ -1,0 +1,3960 @@
+{
+  "aasbS2Report": {
+    "reportType": "AASB_S2_DRAFT",
+    "priority": "primary",
+    "status": "draft_for_management_director_and_assurance_review",
+    "company": "Coles",
+    "reportingPeriod": {
+      "year": "2026",
+      "startDate": "2025-01-01",
+      "endDate": "2025-12-31"
+    },
+    "standard": {
+      "name": "AASB S2 Climate-related Disclosures",
+      "version": "2024-09",
+      "reportingPeriodStart": "2025-01-01",
+      "earlyAmendmentAdoption": false,
+      "operativeFrom": "2025-01-01",
+      "source": "https://standards.aasb.gov.au/aasb-s2-sep-2024",
+      "selectionBasis": "reporting_period_start_and_explicit_early_adoption_input",
+      "amendmentReview": null
+    },
+    "reportingApplicability": {
+      "assessment": "unknown",
+      "basis": [],
+      "sizeInputs": {
+        "revenueAud": null,
+        "assetsAud": null,
+        "employees": null
+      },
+      "missingSizeInputs": [
+        "revenueAud",
+        "assetsAud",
+        "employees"
+      ],
+      "applicableFrom": null,
+      "periodTiming": "unknown",
+      "otherTestsNotAssessed": [
+        "NGER status",
+        "entity type / investment entity criteria",
+        "Chapter 2M reporting obligation"
+      ],
+      "requiresProfessionalConfirmation": true,
+      "source": "https://www.asic.gov.au/regulatory-resources/sustainability-reporting/for-preparers-of-sustainability-reports/who-must-prepare-a-sustainability-report"
+    },
+    "aasbS2ReadinessScore": 100,
+    "executiveSummary": {
+      "assessment": "Evidence readiness only; draft for human review.",
+      "presentCriteria": 64,
+      "criteriaRequiringAction": 0,
+      "excludedCriteria": 0,
+      "totalCriteria": 64
+    },
+    "governance": {
+      "overallStatus": "present",
+      "criteria": [
+        {
+          "id": "governance.responsibleBody",
+          "section": "governance",
+          "key": "responsibleBody",
+          "description": "Responsible climate governance body or individuals",
+          "reference": "6(a)(i)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "Board committees with climate-related responsibilities"
+            },
+            {
+              "evidenceId": "e1",
+              "quote": "on the Board to oversee Coles' strategies"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Executive Sustainability Committee provides dedicated oversight"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "climate-related risks and opportunities and endorsing and overseeing progress"
+            },
+            {
+              "evidenceId": "e3",
+              "quote": "The role of the Board"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Governance Board oversight of climate"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.responsibilities",
+          "section": "governance",
+          "key": "responsibilities",
+          "description": "Documented climate responsibilities and mandates",
+          "reference": "6(a)(i)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "Board committees with climate-related responsibilities"
+            },
+            {
+              "evidenceId": "e1",
+              "quote": "on the Board to oversee Coles' strategies"
+            },
+            {
+              "evidenceId": "e1",
+              "quote": "Charter, the Board delegates all powers to manage the day-to-day business"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Executive Sustainability Committee provides dedicated oversight"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "climate-related risks and opportunities and endorsing and overseeing progress"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "with outcomes presented to management and ARC for oversight"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.competencies",
+          "section": "governance",
+          "key": "competencies",
+          "description": "Climate skills and competencies",
+          "reference": "6(a)(ii)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "Assessing the Board's climate skills and competencies"
+            },
+            {
+              "evidenceId": "e3",
+              "quote": "Directors received presentations in relation to the mandatory reporting requirements"
+            },
+            {
+              "evidenceId": "e4",
+              "quote": "Sustainability and Environment Expertise in managing and driving environmental management"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.informationFlow",
+          "section": "governance",
+          "key": "informationFlow",
+          "description": "How and how often climate information reaches the governing body",
+          "reference": "6(a)(iii)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "assumptions made to model and disclose such risks"
+            },
+            {
+              "evidenceId": "e1",
+              "quote": "Charter, the Board delegates all powers to manage the day-to-day business"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Executive Sustainability Committee provides dedicated oversight"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "cross-functional committee monitors Coles' ASRS reporting processes"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Group's approach to identifying, assessing and managing CRROs"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "monitored the Group's performance against its external climate-related targets"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.decisions",
+          "section": "governance",
+          "key": "decisions",
+          "description": "Climate considerations in strategy and major decisions",
+          "reference": "6(a)(iv)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e25",
+              "quote": "monitored the Group's performance against its external climate-related targets; and approved investment towards the management of certain climate-related risks"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.targetOversight",
+          "section": "governance",
+          "key": "targetOversight",
+          "description": "Oversight of climate targets and progress",
+          "reference": "6(a)(v)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "cross-functional committee monitors Coles' ASRS reporting processes"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "with outcomes presented to management and ARC for oversight"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "monitored the Group's performance against its external climate-related targets; and approved investment towards the management of certain climate-related risks"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.managementRole",
+          "section": "governance",
+          "key": "managementRole",
+          "description": "Management climate responsibilities",
+          "reference": "6(b)(i)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "on the Board to oversee Coles' strategies"
+            },
+            {
+              "evidenceId": "e1",
+              "quote": "Charter, the Board delegates all powers to manage the day-to-day business"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Executive Sustainability Committee provides dedicated oversight"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "climate-related risks and opportunities and endorsing and overseeing progress"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.controls",
+          "section": "governance",
+          "key": "controls",
+          "description": "Climate governance controls and procedures",
+          "reference": "6(b)(ii)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "Board committees with climate-related responsibilities"
+            },
+            {
+              "evidenceId": "e1",
+              "quote": "assumptions made to model and disclose such risks"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "climate-related risks and opportunities and endorsing and overseeing progress"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "supports the assessment and management of climate change risk"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Group's approach to identifying, assessing and managing CRROs"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "governance.remuneration",
+          "section": "governance",
+          "key": "remuneration",
+          "description": "Climate target links to remuneration, or explicit disclosure that none exist",
+          "reference": "6(a)(v)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "cross-functional committee monitors Coles' ASRS reporting processes"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Sustainability Performance Measure included in the MD & CEO's FY26 STI scorecard has a target weighting of 10%"
+            },
+            {
+              "evidenceId": "e5",
+              "quote": "Sustainability 10% 10% Threshold Achieved 5.0%"
+            },
+            {
+              "evidenceId": "e5",
+              "quote": "released the Group's first Climate Transition Plan, maintaining 100% renewable electricity sourcing"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        }
+      ]
+    },
+    "strategy": {
+      "overallStatus": "present",
+      "criteria": [
+        {
+          "id": "strategy.identifiedRisks",
+          "section": "strategy",
+          "key": "identifiedRisks",
+          "description": "Identified climate-related risks",
+          "reference": "10(a)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "the Group identified six climate-related risks and one climate-related opportunity"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "Physical risks Risk to the growth and/or production of agricultural raw materials"
+            },
+            {
+              "evidenceId": "e12",
+              "quote": "Energy system volatility, rising prices and supply disruptions"
+            },
+            {
+              "evidenceId": "e13",
+              "quote": "Changing policy, regulatory and legal requirements to decarbonise"
+            },
+            {
+              "evidenceId": "e14",
+              "quote": "Dependency on our third-party suppliers and logistics partners"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "Delayed adoption of low-emissions technology"
+            },
+            {
+              "evidenceId": "e16",
+              "quote": "Risk to the growth and/or production of agricultural raw materials"
+            },
+            {
+              "evidenceId": "e17",
+              "quote": "Changing climate conditions and more frequent extreme weather events"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.identifiedOpportunities",
+          "section": "strategy",
+          "key": "identifiedOpportunities",
+          "description": "Identified climate-related opportunities",
+          "reference": "10(a)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "the Group identified six climate-related risks and one climate-related opportunity"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "Offering more sustainable products to customers to meet changing customer preferences"
+            },
+            {
+              "evidenceId": "e18",
+              "quote": "Offering more sustainable products to customers to meet changing customer preferences"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.riskClassification",
+          "section": "strategy",
+          "key": "riskClassification",
+          "description": "Classification of climate risks as physical or transition",
+          "reference": "10(b)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "Physical risks Risks resulting from climate-related acute/event-driven weather impacts"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "Physical risks / Transition risks"
+            },
+            {
+              "evidenceId": "e12",
+              "quote": "Transition risk Energy system volatility"
+            },
+            {
+              "evidenceId": "e13",
+              "quote": "Transition risk Changing policy, regulatory and legal requirements"
+            },
+            {
+              "evidenceId": "e14",
+              "quote": "Transition risk Dependency on our third-party suppliers"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "Transition risk Delayed adoption of low-emissions technology"
+            },
+            {
+              "evidenceId": "e16",
+              "quote": "Physical risk Risk to the growth and/or production of agricultural raw materials"
+            },
+            {
+              "evidenceId": "e17",
+              "quote": "Physical risk Risk to the resilience of our store and supply chain operations"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.timeHorizons",
+          "section": "strategy",
+          "key": "timeHorizons",
+          "description": "Short, medium and long-term horizons for risks and opportunities",
+          "reference": "10(c)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "Short-term 0-4 years (FY30) Medium-term 4-10 years (FY36) Long-term 10-24 years (2050)"
+            },
+            {
+              "evidenceId": "e11",
+              "quote": "we also assessed whether the effects of each CRRO are expected to occur over the short, medium or long term"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.horizonDefinitions",
+          "section": "strategy",
+          "key": "horizonDefinitions",
+          "description": "Definitions of time horizons linked to planning",
+          "reference": "10(d)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "Aligns with our financial and capital planning horizon"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.businessModel",
+          "section": "strategy",
+          "key": "businessModel",
+          "description": "Current and anticipated effects on the business model",
+          "reference": "13",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e8",
+              "quote": "Coles is one of Australia's leading retailers"
+            },
+            {
+              "evidenceId": "e8",
+              "quote": "Key inputs to the business model include supplier partnerships"
+            },
+            {
+              "evidenceId": "e20",
+              "quote": "Transition risks are already influencing the Group's operations"
+            },
+            {
+              "evidenceId": "e21",
+              "quote": "It is likely that an increasing frequency and severity of extreme weather events"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.valueChain",
+          "section": "strategy",
+          "key": "valueChain",
+          "description": "Current and anticipated effects across the value chain",
+          "reference": "13",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e8",
+              "quote": "Key inputs to the business model include supplier partnerships"
+            },
+            {
+              "evidenceId": "e8",
+              "quote": "Our value chain The below diagram illustrates the key interactions"
+            },
+            {
+              "evidenceId": "e8",
+              "quote": "Suppliers and Business Partners | Direct Influence"
+            },
+            {
+              "evidenceId": "e8",
+              "quote": "and depend on to create, sell and deliver products and services to customers"
+            },
+            {
+              "evidenceId": "e14",
+              "quote": "More than 90% of the Group's total value chain emissions are indirect"
+            },
+            {
+              "evidenceId": "e20",
+              "quote": "Transition risks are already influencing the Group's operations"
+            },
+            {
+              "evidenceId": "e21",
+              "quote": "It is likely that an increasing frequency and severity of extreme weather events"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.responses",
+          "section": "strategy",
+          "key": "responses",
+          "description": "Climate strategy and decision-making responses",
+          "reference": "14(a)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e12",
+              "quote": "transitioning away from coal-fired baseload to a more decentralised mix of renewables"
+            },
+            {
+              "evidenceId": "e13",
+              "quote": "The Group continues to monitor emerging regulations"
+            },
+            {
+              "evidenceId": "e14",
+              "quote": "investing in supplier engagement and educational resources"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "where practical and commercially viable, transitioning from high to low GWP refrigerants"
+            },
+            {
+              "evidenceId": "e16",
+              "quote": "Group continues to work with suppliers to strengthen supply resilience"
+            },
+            {
+              "evidenceId": "e21",
+              "quote": "The Group's response to acute and chronic physical climate-related risks"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.transitionPlan",
+          "section": "strategy",
+          "key": "transitionPlan",
+          "description": "Transition plans, dependencies and assumptions where applicable",
+          "reference": "14(a)(iv)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e22",
+              "quote": "The Group's first Climate Transition Plan (CTP), released in August 2026"
+            },
+            {
+              "evidenceId": "e22",
+              "quote": "Key dependencies and limitations in relation to our CTP"
+            },
+            {
+              "evidenceId": "e22",
+              "quote": "Capital investment in support of transition planning"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.resourceAllocation",
+          "section": "strategy",
+          "key": "resourceAllocation",
+          "description": "Resource allocation and capital decisions for climate responses",
+          "reference": "14(b)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "the Group deployed approximately $112 million of separately identified capital expenditure"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "Capital expenditure of $109 million was incurred in FY26 on refrigeration assets"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "expects to incur capital expenditure of approximately $111 million in FY27"
+            },
+            {
+              "evidenceId": "e22",
+              "quote": "The Group is investing in capital projects that support our climate transition"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.currentFinancialEffects",
+          "section": "strategy",
+          "key": "currentFinancialEffects",
+          "description": "Current climate-related financial effects",
+          "reference": "15(a),16",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "the identified CRROs did not have a material impact on the Group's financial position"
+            },
+            {
+              "evidenceId": "e12",
+              "quote": "The exposure to energy cost volatility did not have a material impact"
+            },
+            {
+              "evidenceId": "e13",
+              "quote": "No material impact has been identified in FY26"
+            },
+            {
+              "evidenceId": "e14",
+              "quote": "No material impact has been identified in FY26"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "Capital expenditure of $109 million was incurred in FY26"
+            },
+            {
+              "evidenceId": "e16",
+              "quote": "Weather events did not have a material impact in FY26"
+            },
+            {
+              "evidenceId": "e17",
+              "quote": "Weather events did not have a material impact in FY26"
+            },
+            {
+              "evidenceId": "e18",
+              "quote": "The Group did not identify a material current financial effect"
+            },
+            {
+              "evidenceId": "e23",
+              "quote": "climate-related matters did not have a material impact on forecast cash flows"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.anticipatedFinancialEffects",
+          "section": "strategy",
+          "key": "anticipatedFinancialEffects",
+          "description": "Anticipated climate-related financial effects",
+          "reference": "15(b),16",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "the Group deployed approximately $112 million of separately identified capital expenditure"
+            },
+            {
+              "evidenceId": "e12",
+              "quote": "analysis indicates that the impact will not be material over the short- to medium-term"
+            },
+            {
+              "evidenceId": "e13",
+              "quote": "no indication that a carbon pricing scheme will be introduced"
+            },
+            {
+              "evidenceId": "e14",
+              "quote": "In the long term, effects may include structural increases in input costs"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "expenditure is expected to be approximately $115 million per annum in the short term"
+            },
+            {
+              "evidenceId": "e15",
+              "quote": "total capital expenditure relating to refrigeration assets is expected to average approximately $163 million per annum"
+            },
+            {
+              "evidenceId": "e16",
+              "quote": "no material impacts are expected in the short term"
+            },
+            {
+              "evidenceId": "e17",
+              "quote": "exposure to extreme weather events is expected to increase"
+            },
+            {
+              "evidenceId": "e18",
+              "quote": "Sustained demand for lower-carbon products may generate additional sales revenue"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.financialPlanning",
+          "section": "strategy",
+          "key": "financialPlanning",
+          "description": "Connections to financial planning and funding",
+          "reference": "16(c)-(d)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "Aligns with our financial and capital planning horizon"
+            },
+            {
+              "evidenceId": "e12",
+              "quote": "Certain operating costs associated with energy management and renewable energy initiatives"
+            },
+            {
+              "evidenceId": "e19",
+              "quote": "The Group's business model and financial processes, including funding and capital allocation"
+            },
+            {
+              "evidenceId": "e22",
+              "quote": "Annual capital and expenditure projections aligned with the decarbonisation plan"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "approved the Group's Corporate Plan and associated budget which included funding"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.resilience",
+          "section": "strategy",
+          "key": "resilience",
+          "description": "Climate resilience assessment and implications",
+          "reference": "22(a)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e19",
+              "quote": "the Group has used scenario analysis to evaluate how CRROs may affect the Group's strategy"
+            },
+            {
+              "evidenceId": "e19",
+              "quote": "The analysis indicates that the Group's strategy and business model are expected to remain broadly resilient"
+            },
+            {
+              "evidenceId": "e19",
+              "quote": "This resilience assessment reflects the Group's current view"
+            },
+            {
+              "evidenceId": "e19",
+              "quote": "Key areas of uncertainty include"
+            },
+            {
+              "evidenceId": "e20",
+              "quote": "Transition risks are already influencing the Group's operations"
+            },
+            {
+              "evidenceId": "e21",
+              "quote": "It is likely that an increasing frequency and severity of extreme weather events"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "strategy.scenarioAnalysis",
+          "section": "strategy",
+          "key": "scenarioAnalysis",
+          "description": "Scenario analysis inputs, assumptions, scenarios, timing and results",
+          "reference": "22(b),Aus22.1",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e10",
+              "quote": "we have chosen low- and high-end scenarios"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "Sustainability - Paris aligned (low-warming world) / Middle of the road / Fossil-fuelled development"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "Aligned with SSP2-4.5 Continuation of current social, economic and policy trends"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "Aligned with SSP5-8.5 Limited global action on climate change"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "The Group used ClimSystems to perform the modelling of climate data"
+            },
+            {
+              "evidenceId": "e11",
+              "quote": "the assessment of the anticipated effects of the Group's CRROs has been informed by a scenario aligned with SSP2-4.5"
+            },
+            {
+              "evidenceId": "e19",
+              "quote": "the Group has used scenario analysis to evaluate how CRROs may affect the Group's strategy"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        }
+      ]
+    },
+    "riskManagement": {
+      "overallStatus": "present",
+      "criteria": [
+        {
+          "id": "riskManagement.identification",
+          "section": "riskManagement",
+          "key": "identification",
+          "description": "Processes for identifying climate risks",
+          "reference": "25(a)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "The CRRO assessment process is iterative"
+            },
+            {
+              "evidenceId": "e9",
+              "quote": "Initial CRRO identification: the Group compiled an initial list of CRROs"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Coles conducts an annual CRRO assessment"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.assessment",
+          "section": "riskManagement",
+          "key": "assessment",
+          "description": "Climate risk assessment processes",
+          "reference": "25(a)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "CRRO validation and assessment: we validated the initial list of CRROs"
+            },
+            {
+              "evidenceId": "e9",
+              "quote": "we qualitatively assessed the likelihood and consequence of potential impacts"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "The identification, assessment and management of CRROs across our business model"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.prioritisation",
+          "section": "riskManagement",
+          "key": "prioritisation",
+          "description": "Prioritisation of climate risks relative to other risks",
+          "reference": "25(a)(iv)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "CRRO prioritisation: we prioritised our climate-related risks based on their risk rating"
+            },
+            {
+              "evidenceId": "e9",
+              "quote": "the Group identified six climate-related risks and one climate-related opportunity"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "The CRRO profile also supports the assessment and management of climate change risk"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Climate change can therefore amplify other existing risks"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.monitoring",
+          "section": "riskManagement",
+          "key": "monitoring",
+          "description": "Monitoring climate risks and changes to processes",
+          "reference": "25(a)(v)-(vi)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e24",
+              "quote": "Coles risk management process Supported by three lines of accountability"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "The Group's material climate change risk and related key risk indicators are reviewed annually"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "The Audit and Risk Committee and Board monitor the ongoing effectiveness of the risk management framework"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.inputs",
+          "section": "riskManagement",
+          "key": "inputs",
+          "description": "Data sources, inputs and parameters used in risk processes",
+          "reference": "25(a)(i)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "informed by external research, industry reports and prior year assessments"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "The Group used ClimSystems to perform the modelling of climate data"
+            },
+            {
+              "evidenceId": "e26",
+              "quote": "The Group engaged ClimSystems, a third-party provider specialising in climate risk assessment tools"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.scenarioUse",
+          "section": "riskManagement",
+          "key": "scenarioUse",
+          "description": "Whether and how scenario analysis informs climate risk identification",
+          "reference": "25(a)(ii)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "Using the outputs of the qualitative assessment, the Group undertook scenario analysis"
+            },
+            {
+              "evidenceId": "e10",
+              "quote": "The Group uses climate scenario analysis to inform the assessment"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.likelihoodMagnitude",
+          "section": "riskManagement",
+          "key": "likelihoodMagnitude",
+          "description": "Assessment of likelihood and magnitude of climate effects",
+          "reference": "25(a)(iii)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "we qualitatively assessed the likelihood and consequence of potential impacts for each climate-related risk"
+            },
+            {
+              "evidenceId": "e9",
+              "quote": "using the Coles Risk Standard criteria"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.opportunityProcesses",
+          "section": "riskManagement",
+          "key": "opportunityProcesses",
+          "description": "Processes for climate-related opportunities",
+          "reference": "25(b)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "plans in place to respond to climate-related opportunities"
+            },
+            {
+              "evidenceId": "e9",
+              "quote": "prioritised climate-related opportunities based on consideration of qualitative factors"
+            },
+            {
+              "evidenceId": "e18",
+              "quote": "The Group's Customer Insights and Commercial teams have resources and processes in place"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "riskManagement.enterpriseIntegration",
+          "section": "riskManagement",
+          "key": "enterpriseIntegration",
+          "description": "Integration of climate processes into enterprise risk management",
+          "reference": "25(c)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e25",
+              "quote": "The identification, assessment and management of CRROs across our business model and value chain is integrated within the Risk Standard"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "with both physical and transition climate-related risks being assessed using the same risk management process"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Group's approach to identifying, assessing and managing CRROs"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        }
+      ]
+    },
+    "metricsAndTargets": {
+      "overallStatus": "present",
+      "criteria": [
+        {
+          "id": "metricsAndTargets.scope1",
+          "section": "metricsAndTargets",
+          "key": "scope1",
+          "description": "Scope 1 GHG emissions with period, units and boundary",
+          "reference": "29(a)(i)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 1 GHG emissions tCO2-e Total 256,203"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 1, 2 and 3 emissions are reported during the period 1 July 2025 to 30 June 2026"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "Scope 1 and Scope 2 emissions are measured using relevant NGER methods and emissions factors"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.scope2",
+          "section": "metricsAndTargets",
+          "key": "scope2",
+          "description": "Scope 2 GHG emissions with period, units, boundary and location-based information",
+          "reference": "29(a)(i),(v)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 2 (location-based) GHG emissions tCO2-e Total 1,008,242"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 2 (market-based) GHG emissions tCO2-e Total 0"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "The Group's Scope 2 emissions are those associated with our electricity purchases"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.scope3",
+          "section": "metricsAndTargets",
+          "key": "scope3",
+          "description": "Scope 3 GHG emissions with period, units and boundary",
+          "reference": "29(a)(i),(vi)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 3 GHG emissions MtCO2-e Category 1 (Purchased goods and services) 15.93"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "Scope 3 emissions are the indirect GHG emissions associated with our value chain and make up more than 90%"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.methodology",
+          "section": "metricsAndTargets",
+          "key": "methodology",
+          "description": "Emissions measurement approach and methodology",
+          "reference": "29(a)(ii)-(iii)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "The Group adopts an operational control approach to set its boundary for emissions reporting"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "Scope 1 and Scope 2 emissions are measured using relevant NGER methods and emissions factors"
+            },
+            {
+              "evidenceId": "e31",
+              "quote": "Fuel emissions are calculated by multiplying the relevant quantity consumed by the applicable fuel-specific emission factor"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.assumptionsQuality",
+          "section": "metricsAndTargets",
+          "key": "assumptionsQuality",
+          "description": "Emissions assumptions, inputs and data quality",
+          "reference": "29(a)(iii),B38-B57",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e30",
+              "quote": "Where supplier-specific or activity-based data is not available, emissions are estimated using spend-based methodologies"
+            },
+            {
+              "evidenceId": "e31",
+              "quote": "Where year-end actual data is unavailable, estimated consumption is based on historical consumption patterns"
+            },
+            {
+              "evidenceId": "e32",
+              "quote": "Spend-based estimates are inherently uncertain"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.scope3Categories",
+          "section": "metricsAndTargets",
+          "key": "scope3Categories",
+          "description": "Scope 3 categories and measurement coverage",
+          "reference": "29(a)(vi)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Category 1 (Purchased goods and services) 15.93 ... Total 18.98"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "The Group has considered all 15 categories of Scope 3 emissions"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "Category 10, Category 13, and Category 14 are not applicable to the Group's Scope 3 boundary"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.transitionRiskExposure",
+          "section": "metricsAndTargets",
+          "key": "transitionRiskExposure",
+          "description": "Amounts and percentages of assets or activities exposed to transition risk",
+          "reference": "29(b)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e26",
+              "quote": "Supermarkets with natural refrigerants in use 16% (141)"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.physicalRiskExposure",
+          "section": "metricsAndTargets",
+          "key": "physicalRiskExposure",
+          "description": "Amounts and percentages of assets or activities exposed to physical risk",
+          "reference": "29(c)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e26",
+              "quote": "Supermarkets with a high hazard exposure 5% (40)"
+            },
+            {
+              "evidenceId": "e26",
+              "quote": "Liquor stores with a high hazard exposure 5% (47)"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.climateOpportunityExposure",
+          "section": "metricsAndTargets",
+          "key": "climateOpportunityExposure",
+          "description": "Amounts and percentages aligned with climate opportunities",
+          "reference": "29(d)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e26",
+              "quote": "The Group is currently unable to reliably determine the amount or percentage of sales attributable to lower-carbon products"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.capitalDeployment",
+          "section": "metricsAndTargets",
+          "key": "capitalDeployment",
+          "description": "Capital expenditure, financing or investment for climate risks and opportunities",
+          "reference": "29(e)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "the Group deployed approximately $112 million of separately identified capital expenditure"
+            },
+            {
+              "evidenceId": "e26",
+              "quote": "Separately identified capital expenditure, financing or investment deployed Climate-related risks and opportunities $112m"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.internalCarbonPrice",
+          "section": "metricsAndTargets",
+          "key": "internalCarbonPrice",
+          "description": "Whether carbon pricing is used; its application and price if used",
+          "reference": "29(f)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e26",
+              "quote": "application of an internal carbon price in selected areas, such as, energy and refrigeration-related projects"
+            },
+            {
+              "evidenceId": "e26",
+              "quote": "Years 1-3 (FY26-FY28) $56 ... Years >15 (FY41 onwards) $170"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.executiveRemuneration",
+          "section": "metricsAndTargets",
+          "key": "executiveRemuneration",
+          "description": "Whether and how executive remuneration considers climate, including relevant percentage",
+          "reference": "29(g)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Sustainability Performance Measure included in the MD & CEO's FY26 STI scorecard has a target weighting of 10%"
+            },
+            {
+              "evidenceId": "e5",
+              "quote": "Sustainability 10% 10% Threshold Achieved 5.0%"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.targets",
+          "section": "metricsAndTargets",
+          "key": "targets",
+          "description": "Climate-related targets and objectives",
+          "reference": "33(a)-(b)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "Deliver net zero Scope 1 and Scope 2 GHG emissions by 2050"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "Deliver 30.3% reduction in Scope 3 Forest, Land and Agriculture sector emissions by the end of FY30"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "Achieve Scope 3 supplier engagement target of 80% of suppliers by spend"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.basePeriods",
+          "section": "metricsAndTargets",
+          "key": "basePeriods",
+          "description": "Target base periods",
+          "reference": "33(e)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "The baseline year for this target is FY20"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "FY24 FLAG emissions were 9.89 Mt CO2-e"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.targetPeriods",
+          "section": "metricsAndTargets",
+          "key": "targetPeriods",
+          "description": "Periods over which targets apply",
+          "reference": "33(d)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "Long-term target to be achieved by 2050"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "Time horizon By end of FY30"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "Time horizon By FY29"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.milestones",
+          "section": "metricsAndTargets",
+          "key": "milestones",
+          "description": "Interim target milestones",
+          "reference": "33(f)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "Reduce combined Scope 1 and 2 GHG emissions by more than 75% (FY20 baseline year) by the end of FY30"
+            },
+            {
+              "evidenceId": "e27",
+              "quote": "Source and maintain 100% renewable electricity for the Group's operations from FY25"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.targetBasis",
+          "section": "metricsAndTargets",
+          "key": "targetBasis",
+          "description": "Whether targets are absolute or intensity-based",
+          "reference": "33(g)",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "Absolute/Intensity Absolute Gross/net Net GHG emissions target"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "Absolute/Intensity Absolute Gross/net Gross"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.progress",
+          "section": "metricsAndTargets",
+          "key": "progress",
+          "description": "Performance and progress against climate targets",
+          "reference": "35",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e28",
+              "quote": "During FY26, the Group achieved an 82.6% reduction in combined Scope 1 and Scope 2 GHG market-based emissions"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "approximately 46.9% of suppliers by spend have set Scope 1 and 2 science-based emissions targets"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "metricsAndTargets.targetMethods",
+          "section": "metricsAndTargets",
+          "key": "targetMethods",
+          "description": "Methods to set, validate, review and monitor targets",
+          "reference": "34",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "The FY30 target was developed using an absolute contraction approach and validated by the Science Based Targets initiative (SBTi)"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "Progress for Scope 1 and 2 GHG emissions is measured in absolute tCO2-e on at least an annual basis"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "Progress is measured by the percentage of suppliers, calculated by spend"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        }
+      ]
+    },
+    "generalRequirements": {
+      "overallStatus": "present",
+      "criteria": [
+        {
+          "id": "generalRequirements.materiality",
+          "section": "generalRequirements",
+          "key": "materiality",
+          "description": "Documented materiality assessment and its basis",
+          "reference": "D17-D19",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "These CRROs were assessed for quantitative materiality, consistent with the financial statements"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "the Group applied judgement in order to identify the climate-related risks and opportunities"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.fairPresentation",
+          "section": "generalRequirements",
+          "key": "fairPresentation",
+          "description": "Evidence sufficiency and fair-presentation review",
+          "reference": "D11-D16",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e7",
+              "quote": "This Sustainability Report has been prepared in accordance with Australian Sustainability Reporting Standards"
+            },
+            {
+              "evidenceId": "e34",
+              "quote": "We have conducted a review of the following information in the Sustainability Report of Coles Group Limited"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.reportingEntityConsistency",
+          "section": "generalRequirements",
+          "key": "reportingEntityConsistency",
+          "description": "Reporting-entity consistency with financial statements",
+          "reference": "D20",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "The reporting boundary for Scope 1 and Scope 2 emissions is consistent with the Group's financial reporting boundary"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "This Sustainability Report is prepared in respect of Coles Group Limited"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.connectedInformation",
+          "section": "generalRequirements",
+          "key": "connectedInformation",
+          "description": "Connections among climate-related disclosures",
+          "reference": "D21-D24",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e7",
+              "quote": "This Sustainability Report forms part of the Group's broader annual reporting suite"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.financialStatementConnections",
+          "section": "generalRequirements",
+          "key": "financialStatementConnections",
+          "description": "Connections to related financial statements",
+          "reference": "D21-D24",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e7",
+              "quote": "Climate-related risks and opportunities described in this report have been considered, where relevant, in the preparation of the Group's financial statements"
+            },
+            {
+              "evidenceId": "e23",
+              "quote": "Climate-related risks and opportunities were considered in assessing the recoverable amounts of the Group's CGUs"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.reportingPeriod",
+          "section": "generalRequirements",
+          "key": "reportingPeriod",
+          "description": "Reporting period and alignment of disclosure timing",
+          "reference": "D64-D69",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 1, 2 and 3 emissions are reported during the period 1 July 2025 to 30 June 2026"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "This Sustainability Report is prepared in respect of Coles Group Limited and the entities it controlled during the 52-week period ended 28 June 2026"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.judgements",
+          "section": "generalRequirements",
+          "key": "judgements",
+          "description": "Significant judgements and their basis",
+          "reference": "D74-D76",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e7",
+              "quote": "This Sustainability Report contains forward-looking statements"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "In preparing this Sustainability Report, the Group applied judgement"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.measurementUncertainty",
+          "section": "generalRequirements",
+          "key": "measurementUncertainty",
+          "description": "Measurement uncertainty and significant estimation assumptions",
+          "reference": "D77-D82",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e11",
+              "quote": "the Group acknowledges there is considerable uncertainty in estimating the potential financial impacts"
+            },
+            {
+              "evidenceId": "e30",
+              "quote": "whether measurement uncertainty was so high that quantitative information would not provide useful information"
+            },
+            {
+              "evidenceId": "e35",
+              "quote": "Greenhouse gas emissions quantification is subject to significant measurement uncertainty"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.comparatives",
+          "section": "generalRequirements",
+          "key": "comparatives",
+          "description": "Comparable prior-period information unless confirmed relief applies",
+          "reference": "D70-D71,C3",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e7",
+              "quote": "As this is the first year in which the Group has applied AASB S2, the Group has elected to apply the transition relief to not disclose comparative information"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.transitionReliefs",
+          "section": "generalRequirements",
+          "key": "transitionReliefs",
+          "description": "Disclosure of applicable transition reliefs and their basis",
+          "reference": "C3-C5",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e7",
+              "quote": "the Group has elected to apply the transition relief to not disclose comparative information in this report"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "The Group has also elected to early adopt AASB S2025-1 Amendments to Greenhouse Gas Emissions Disclosures"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.metricConsistency",
+          "section": "generalRequirements",
+          "key": "metricConsistency",
+          "description": "Consistency of metrics over time and explained changes",
+          "reference": "D51-D53",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e27",
+              "quote": "FY20 Scope 1 and Scope 2 emissions were recalculated in FY23 to reflect the sale of the Group's fuel and convenience retailing business"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "There were no changes to the target boundary, baseline year, or measurement methodology in the current reporting period"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        },
+        {
+          "id": "generalRequirements.metricSources",
+          "section": "generalRequirements",
+          "key": "metricSources",
+          "description": "Metric sources, definitions and methodologies",
+          "reference": "D49-D50",
+          "status": "present",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "The Group adopts an operational control approach to set its boundary for emissions reporting in accordance with the Greenhouse Gas Protocol"
+            },
+            {
+              "evidenceId": "e31",
+              "quote": "Emission factors for refrigerants are sourced principally from the Australian National Greenhouse Accounts Factors: 2025"
+            }
+          ],
+          "applicabilityBasis": null,
+          "finding": "Supporting disclosure evidence identified; substantive interpretation requires review.",
+          "requiredInformation": []
+        }
+      ]
+    },
+    "evidenceRegister": [
+      {
+        "id": "e1",
+        "text": "Board committees with climate-related responsibilities. The Board discharges its responsibility for oversight of climate strategy and climate-related risks and opportunities with the assistance of three standing committees.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "governance",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          61
+        ],
+        "pillarSourcePages": [
+          61,
+          62,
+          63,
+          82,
+          83,
+          84,
+          89,
+          90,
+          91,
+          106,
+          107
+        ]
+      },
+      {
+        "id": "e2",
+        "text": "Chief Commercial and Sustainability Officer oversees climate reporting and strategy. Table 5 summarises the Group's total absolute gross greenhouse gas emissions for FY26, comprising Scope 1, Scope 2 and Scope 3 emissions.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "governance",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          62,
+          63
+        ],
+        "pillarSourcePages": [
+          61,
+          62,
+          63,
+          82,
+          83,
+          84,
+          89,
+          90,
+          91,
+          106,
+          107
+        ]
+      },
+      {
+        "id": "e3",
+        "text": "The role of the Board. The Board provides leadership and approves the strategic direction and objectives of the Group.",
+        "confidence": 0.9,
+        "documentId": 2,
+        "category": null,
+        "pillar": "governance",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          82,
+          83,
+          84
+        ],
+        "pillarSourcePages": [
+          61,
+          62,
+          63,
+          82,
+          83,
+          84,
+          89,
+          90,
+          91,
+          106,
+          107
+        ]
+      },
+      {
+        "id": "e4",
+        "text": "Board skills and experience. Sustainability and Environment: Expertise in managing and driving environmental management and social responsibility initiatives and reporting.",
+        "confidence": 0.9,
+        "documentId": 2,
+        "category": null,
+        "pillar": "governance",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          89,
+          90,
+          91
+        ],
+        "pillarSourcePages": [
+          61,
+          62,
+          63,
+          82,
+          83,
+          84,
+          89,
+          90,
+          91,
+          106,
+          107
+        ]
+      },
+      {
+        "id": "e5",
+        "text": "Table 3: FY26 Performance measures for the MD & CEO. Sustainability 10% target weighting, Threshold Achieved, 5.0% actual STI outcome.",
+        "confidence": 0.85,
+        "documentId": 2,
+        "category": null,
+        "pillar": "governance",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          106,
+          107
+        ],
+        "pillarSourcePages": [
+          61,
+          62,
+          63,
+          82,
+          83,
+          84,
+          89,
+          90,
+          91,
+          106,
+          107
+        ]
+      },
+      {
+        "id": "e6",
+        "text": "External and strategic risks. Climate change and environment: Coles has a responsibility to reduce the effect of our operations on the environment.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          33,
+          34
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e7",
+        "text": "Sustainability Report prepared in accordance with Australian Sustainability Reporting Standards. As this is the first year in which the Group has applied AASB S2, the Group has elected to apply the transition relief to not disclose comparative information.",
+        "confidence": 0.88,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          40,
+          41,
+          42
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e8",
+        "text": "Business model. Coles is one of Australia's leading retailers. Our value chain diagram illustrates the key interactions across suppliers, operations and customers.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          43
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e9",
+        "text": "The CRRO assessment process is iterative: initial identification, validation and assessment, mitigation and response, and prioritisation, identifying six climate-related risks and one opportunity.",
+        "confidence": 0.85,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          44
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e10",
+        "text": "Climate scenario analysis using low-warming and high-warming scenarios: Sustainability - Paris aligned, Middle of the road, Fossil-fuelled development, modelled by ClimSystems.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          45,
+          46
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e11",
+        "text": "Scenario assumptions underpinning anticipated climate-related effects, informed by SSP2-4.5. The Group identified seven CRROs and deployed approximately $112 million of capital expenditure.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          47
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e12",
+        "text": "Transition risk: Energy system volatility, rising prices and supply disruptions. No material impact on the Group in FY26.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          48
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e13",
+        "text": "Transition risk: Changing policy, regulatory and legal requirements to decarbonise and manage climate risk, including a potential carbon price.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          49
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e14",
+        "text": "Transition risk: Dependency on our third-party suppliers and logistics partners to reduce emissions and adopt low-carbon practices.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          50
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e15",
+        "text": "Transition risk: Delayed adoption of low-emissions technology, including conversion of refrigeration and HVAC assets. Capital expenditure of $109 million incurred in FY26.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          51
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e16",
+        "text": "Physical risk: Risk to the growth and/or production of agricultural raw materials due to extreme weather events and climate conditions.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          52
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e17",
+        "text": "Physical risk: Risk to the resilience of our store and supply chain operations due to extreme weather events and climate conditions.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          53
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e18",
+        "text": "Opportunity: Offering more sustainable products to customers to meet changing customer preferences, such as plant-based protein alternatives.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          54
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e19",
+        "text": "Climate resilience: the Group's strategy and business model are expected to remain broadly resilient under both low- and high-warming scenarios.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          55
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e20",
+        "text": "Response to climate-related transition risks and opportunities under the low-warming scenario: reducing Scope 1 and 2 emissions through 100% renewable electricity.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          56
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e21",
+        "text": "Response to physical climate-related risks under the high-warming scenario: enhancing resilience of the agricultural supply base and operational footprint.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          57
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e22",
+        "text": "Transition planning and our Climate Transition Plan, released August 2026, sets out strategic approach to supporting lower-emissions and more resilient food systems.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          58
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e23",
+        "text": "Impairment of non-financial assets: climate-related risks and opportunities were considered in assessing recoverable amounts of the Group's CGUs, with no material impact identified.",
+        "confidence": 0.85,
+        "documentId": 2,
+        "category": null,
+        "pillar": "strategy",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          144,
+          145,
+          146
+        ],
+        "pillarSourcePages": [
+          33,
+          34,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          144,
+          145,
+          146
+        ]
+      },
+      {
+        "id": "e24",
+        "text": "Coles risk management process, supported by three lines of accountability, based on ISO 31000: Risk Management Guidelines.",
+        "confidence": 0.9,
+        "documentId": 2,
+        "category": null,
+        "pillar": "risk_management",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          30,
+          31,
+          32
+        ],
+        "pillarSourcePages": [
+          30,
+          31,
+          32,
+          59,
+          60
+        ]
+      },
+      {
+        "id": "e25",
+        "text": "Approach to risk management: Coles conducts an annual CRRO assessment. The Board oversees the Group's approach to identifying, assessing and managing CRROs.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "risk_management",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          59,
+          60
+        ],
+        "pillarSourcePages": [
+          30,
+          31,
+          32,
+          59,
+          60
+        ]
+      },
+      {
+        "id": "e26",
+        "text": "Cross-industry metrics: physical and transition risk exposure by site count and percentage. Capital deployment of $112m towards climate-related risks and opportunities, plus an internal carbon price schedule.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          64
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e27",
+        "text": "Climate-related target: Deliver net zero Scope 1 and Scope 2 GHG emissions by 2050, with an interim FY30 target of >=75% reduction from FY20 baseline, validated by SBTi.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          65,
+          66
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e28",
+        "text": "During FY26 the Group achieved an 82.6% reduction in combined Scope 1 and 2 market-based emissions relative to FY20. FLAG target: 30.3% reduction by end of FY30.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          67,
+          68
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e29",
+        "text": "Scope 3 supplier engagement target: 80% of suppliers by spend to have science-based emissions reduction targets by end of FY29. 46.9% achieved as at end of FY26.",
+        "confidence": 0.98,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          69,
+          70
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e30",
+        "text": "Basis of preparation, judgements and assumptions for emissions measurement. Scope 1 and 2 emissions measured using NGER methods; Scope 3 estimated using spend-based methodologies where activity data unavailable.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          71
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e31",
+        "text": "Table 9: Measurement approach, inputs and emissions factors for Scope 1 and 2 emissions reporting, sourced from the Australian National Greenhouse Accounts Factors 2025.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          72,
+          73
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e32",
+        "text": "Table 10: Measurement approach, emissions factors, inputs and assumptions for material Scope 3 categories, including data quality notes and limitations.",
+        "confidence": 0.95,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          74,
+          75
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e33",
+        "text": "Contractual instruments: LGC agreements with clean energy generators and retailers. Directors' Declaration confirming compliance with AASB S2 and the Corporations Act.",
+        "confidence": 0.9,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          76,
+          77
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e34",
+        "text": "Independent auditor's report to the members of Coles Group Limited: review and audit conclusions on selective sustainability information under ASSA 5010 and ASSA 5000.",
+        "confidence": 0.85,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          78,
+          79
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      },
+      {
+        "id": "e35",
+        "text": "Inherent limitations: climate-related risk management is an emerging area using developing and uncertain data and methodologies; GHG emissions quantification is subject to significant measurement uncertainty.",
+        "confidence": 0.8,
+        "documentId": 2,
+        "category": null,
+        "pillar": "metrics_targets",
+        "source": "Coles_Annual_Report_2026.pdf",
+        "sourceType": "public",
+        "pages": [
+          80,
+          81
+        ],
+        "pillarSourcePages": [
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81
+        ]
+      }
+    ],
+    "missingDisclosures": [],
+    "priorityActions": [],
+    "assuranceReadiness": {
+      "status": "requires_external_assurance_review",
+      "issues": [
+        "Evidence provenance and estimates require human verification.",
+        "The applicable review/audit timetable and engagement scope must be confirmed externally.",
+        "0 criteria require additional evidence or judgement."
+      ]
+    },
+    "directorsDeclaration": {
+      "requiredForStatutoryReport": true,
+      "status": "human_action_required",
+      "generatedOrApprovedBySystem": false,
+      "note": "A statutory directors' declaration is a separate director process; no declaration text or signature is generated."
+    },
+    "lodgement": {
+      "lodgementReady": false,
+      "requiresExternalProcess": true,
+      "notes": [
+        "Climate statements, notes, directors' declaration, applicable assurance and ASIC lodgement require separate human/external processes."
+      ]
+    },
+    "methodology": {
+      "version": "aasb-readiness-1",
+      "scoreMeaning": "Evidence readiness, not legal compliance",
+      "weights": {
+        "present": 1,
+        "partial": 0.5,
+        "missing": 0,
+        "requires_human_judgement": 0
+      },
+      "excludedStatus": "not_applicable",
+      "scoredCriterionCount": 64,
+      "limitations": "Granular preparation checklist, not an exhaustive legal test. No unreserved compliance conclusion; no automatic assurance or director approval.",
+      "source": "https://standards.aasb.gov.au/aasb-s2-sep-2024",
+      "humanInputs": {
+        "reportingPeriodStart": "2025-01-01",
+        "reportingPeriodEnd": "2025-12-31",
+        "earlyAdoptionOf2025Amendments": false,
+        "firstAnnualPeriodApplyingAasbS2": null,
+        "useScope3FirstYearRelief": false,
+        "companySize": {
+          "revenueAud": null,
+          "assetsAud": null,
+          "employees": null
+        },
+        "confirmedNotApplicable": {}
+      }
+    },
+    "warnings": [
+      "Agent 1 filters for climate relevance; missing ESG evidence may reflect extraction coverage.",
+      "AI-assisted draft only; not legal, audit or assurance advice and not ready for ASIC lodgement.",
+      "First-year transition relief eligibility is unknown; no relief was automatically applied."
+    ]
+  },
+  "esgReport": {
+    "reportType": "ESG_READINESS",
+    "priority": "secondary",
+    "company": "Coles",
+    "reportYear": "2026",
+    "executiveSummary": "Supplied evidence readiness: environmental 83/100, social 83/100, governance 100/100. Missing evidence does not establish absent company practices.",
+    "overallESGReadinessScore": 89,
+    "overallESGScore": 89,
+    "environmental": {
+      "score": 83,
+      "status": "partial",
+      "strengths": [
+        {
+          "criterionId": "environmental.emissionsEnergy",
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Table 5 summarises the Group's total absolute gross greenhouse gas emissions for FY26"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 3 GHG emissions MtCO2-e Category 1 (Purchased goods and services) 15.93"
+            }
+          ]
+        },
+        {
+          "criterionId": "environmental.transition",
+          "citations": [
+            {
+              "evidenceId": "e22",
+              "quote": "The Group's first Climate Transition Plan, released in August 2026"
+            },
+            {
+              "evidenceId": "e27",
+              "quote": "Deliver net zero Scope 1 and Scope 2 GHG emissions by 2050"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "the Group achieved an 82.6% reduction in combined Scope 1 and Scope 2 GHG market-based emissions"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "approximately 46.9% of suppliers by spend have set Scope 1 and 2 science-based emissions targets"
+            }
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "criterionId": "environmental.resources",
+          "type": "insufficient_evidence",
+          "message": "Waste, water or biodiversity impacts and management: requires review or additional disclosure."
+        }
+      ],
+      "recommendations": [
+        "Collect or strengthen evidence for: Waste, water or biodiversity impacts and management."
+      ],
+      "evidence": [
+        {
+          "id": "e2",
+          "text": "Chief Commercial and Sustainability Officer oversees climate reporting and strategy. Table 5 summarises the Group's total absolute gross greenhouse gas emissions for FY26.",
+          "confidence": 0.95,
+          "documentId": 2,
+          "category": null,
+          "pillar": "governance",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            62,
+            63
+          ],
+          "pillarSourcePages": [
+            61,
+            62,
+            63,
+            82,
+            83,
+            84,
+            89,
+            90,
+            91,
+            106,
+            107
+          ]
+        },
+        {
+          "id": "e5",
+          "text": "Table 3: FY26 Performance measures for the MD & CEO. Sustainability 10% target weighting, Threshold Achieved, 5.0% actual STI outcome.",
+          "confidence": 0.85,
+          "documentId": 2,
+          "category": null,
+          "pillar": "governance",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            106,
+            107
+          ],
+          "pillarSourcePages": [
+            61,
+            62,
+            63,
+            82,
+            83,
+            84,
+            89,
+            90,
+            91,
+            106,
+            107
+          ]
+        },
+        {
+          "id": "e6",
+          "text": "External and strategic risks. Climate change and environment: Coles has a responsibility to reduce the effect of our operations on the environment.",
+          "confidence": 0.95,
+          "documentId": 2,
+          "category": null,
+          "pillar": "strategy",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            33,
+            34
+          ],
+          "pillarSourcePages": [
+            33,
+            34,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            144,
+            145,
+            146
+          ]
+        },
+        {
+          "id": "e7",
+          "text": "Sustainability Report prepared in accordance with Australian Sustainability Reporting Standards. Strategy is built around Climate, Nature and Circularity.",
+          "confidence": 0.88,
+          "documentId": 2,
+          "category": null,
+          "pillar": "strategy",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            40,
+            41,
+            42
+          ],
+          "pillarSourcePages": [
+            33,
+            34,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            144,
+            145,
+            146
+          ]
+        },
+        {
+          "id": "e22",
+          "text": "Transition planning and our Climate Transition Plan, released August 2026, sets out strategic approach to supporting lower-emissions and more resilient food systems.",
+          "confidence": 0.95,
+          "documentId": 2,
+          "category": null,
+          "pillar": "strategy",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            58
+          ],
+          "pillarSourcePages": [
+            33,
+            34,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            144,
+            145,
+            146
+          ]
+        },
+        {
+          "id": "e27",
+          "text": "Climate-related target: Deliver net zero Scope 1 and Scope 2 GHG emissions by 2050, with an interim FY30 target of >=75% reduction from FY20 baseline, validated by SBTi.",
+          "confidence": 0.98,
+          "documentId": 2,
+          "category": null,
+          "pillar": "metrics_targets",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            65,
+            66
+          ],
+          "pillarSourcePages": [
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81
+          ]
+        },
+        {
+          "id": "e28",
+          "text": "During FY26 the Group achieved an 82.6% reduction in combined Scope 1 and 2 market-based emissions relative to FY20. FLAG target: 30.3% reduction by end of FY30.",
+          "confidence": 0.98,
+          "documentId": 2,
+          "category": null,
+          "pillar": "metrics_targets",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            67,
+            68
+          ],
+          "pillarSourcePages": [
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81
+          ]
+        },
+        {
+          "id": "e29",
+          "text": "Scope 3 supplier engagement target: 80% of suppliers by spend to have science-based emissions reduction targets by end of FY29. 46.9% achieved as at end of FY26.",
+          "confidence": 0.98,
+          "documentId": 2,
+          "category": null,
+          "pillar": "metrics_targets",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            69,
+            70
+          ],
+          "pillarSourcePages": [
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "id": "environmental.emissionsEnergy",
+          "section": "environmental",
+          "key": "emissionsEnergy",
+          "description": "Emissions and energy measurements with period and boundary",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e2",
+              "quote": "Table 5 summarises the Group's total absolute gross greenhouse gas emissions for FY26"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Scope 3 GHG emissions MtCO2-e Category 1 (Purchased goods and services) 15.93"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Emissions and energy measurements with period and boundary."
+        },
+        {
+          "id": "environmental.resources",
+          "section": "environmental",
+          "key": "resources",
+          "description": "Waste, water or biodiversity impacts and management",
+          "status": "partial",
+          "gapType": "insufficient_evidence",
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "progressing towards our FY30 packaging targets"
+            },
+            {
+              "evidenceId": "e6",
+              "quote": "changes in the natural environment including through biodiversity loss and water scarcity"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "reducing waste in our operations, keeping materials in use for longer"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Waste, water or biodiversity impacts and management."
+        },
+        {
+          "id": "environmental.transition",
+          "section": "environmental",
+          "key": "transition",
+          "description": "Environmental targets, accountable plans and progress",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e22",
+              "quote": "The Group's first Climate Transition Plan, released in August 2026"
+            },
+            {
+              "evidenceId": "e27",
+              "quote": "Deliver net zero Scope 1 and Scope 2 GHG emissions by 2050"
+            },
+            {
+              "evidenceId": "e28",
+              "quote": "the Group achieved an 82.6% reduction in combined Scope 1 and Scope 2 GHG market-based emissions"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "approximately 46.9% of suppliers by spend have set Scope 1 and 2 science-based emissions targets"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Environmental targets, accountable plans and progress."
+        }
+      ]
+    },
+    "social": {
+      "score": 83,
+      "status": "partial",
+      "strengths": [
+        {
+          "criterionId": "social.safety",
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "Safety Index - with TRIFR gateway 10% 10% Index 11.3% above target"
+            },
+            {
+              "evidenceId": "e5",
+              "quote": "Group TRIFR for FY26 improved by 8.8% on the final FY25 TRIFR"
+            }
+          ]
+        },
+        {
+          "criterionId": "social.valueChain",
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "The Board considered the Federal Court decisions delivered during the year"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "commitment to human rights, enabling and developing our team, diversity and inclusion"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "science-based emissions reduction targets"
+            }
+          ]
+        }
+      ],
+      "gaps": [
+        {
+          "criterionId": "social.workforce",
+          "type": "insufficient_evidence",
+          "message": "Workforce wellbeing, diversity or training with outcomes: requires review or additional disclosure."
+        }
+      ],
+      "recommendations": [
+        "Collect or strengthen evidence for: Workforce wellbeing, diversity or training with outcomes."
+      ],
+      "evidence": [
+        {
+          "id": "e5",
+          "text": "Table 3: FY26 Performance measures for the MD & CEO. Safety Index 11.3% ahead of target; TRIFR improved 8.8% on FY25.",
+          "confidence": 0.85,
+          "documentId": 2,
+          "category": null,
+          "pillar": "governance",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            106,
+            107
+          ],
+          "pillarSourcePages": [
+            61,
+            62,
+            63,
+            82,
+            83,
+            84,
+            89,
+            90,
+            91,
+            106,
+            107
+          ]
+        },
+        {
+          "id": "e7",
+          "text": "Sustainability Report: strategic pillars underpinned by commitment to human rights, developing teams, diversity and inclusion, health, safety and wellbeing.",
+          "confidence": 0.88,
+          "documentId": 2,
+          "category": null,
+          "pillar": "strategy",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            40,
+            41,
+            42
+          ],
+          "pillarSourcePages": [
+            33,
+            34,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            144,
+            145,
+            146
+          ]
+        },
+        {
+          "id": "e29",
+          "text": "Scope 3 supplier engagement target: 80% of suppliers by spend to have science-based emissions reduction targets by end of FY29.",
+          "confidence": 0.98,
+          "documentId": 2,
+          "category": null,
+          "pillar": "metrics_targets",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            69,
+            70
+          ],
+          "pillarSourcePages": [
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "id": "social.workforce",
+          "section": "social",
+          "key": "workforce",
+          "description": "Workforce wellbeing, diversity or training with outcomes",
+          "status": "partial",
+          "gapType": "insufficient_evidence",
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "Safety Index outcomes for hazard observations, mental health outcomes, safety training"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "enabling and developing our team, diversity and inclusion, health, safety and wellbeing"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Workforce wellbeing, diversity or training with outcomes."
+        },
+        {
+          "id": "social.safety",
+          "section": "social",
+          "key": "safety",
+          "description": "Workplace safety processes and measured outcomes",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "Safety Index - with TRIFR gateway 10% 10% Index 11.3% above target"
+            },
+            {
+              "evidenceId": "e5",
+              "quote": "Group TRIFR for FY26 improved by 8.8% on the final FY25 TRIFR"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Workplace safety processes and measured outcomes."
+        },
+        {
+          "id": "social.valueChain",
+          "section": "social",
+          "key": "valueChain",
+          "description": "Human rights, supply chain or community impact processes and outcomes",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "reduction for the MD & CEO related to historical pay arrangements and ticketing representations"
+            },
+            {
+              "evidenceId": "e7",
+              "quote": "commitment to human rights, enabling and developing our team"
+            },
+            {
+              "evidenceId": "e29",
+              "quote": "meaningful engagement and collaboration with our suppliers"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Human rights, supply chain or community impact processes and outcomes."
+        }
+      ]
+    },
+    "governance": {
+      "score": 100,
+      "status": "strong",
+      "strengths": [
+        {
+          "criterionId": "governance.oversight",
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "Board committees with climate-related responsibilities"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Executive Sustainability Committee provides dedicated oversight"
+            }
+          ]
+        },
+        {
+          "criterionId": "governance.ethics",
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "the Board determined to use their overall discretion to reduce the calculated FY26 STI individual outcomes"
+            }
+          ]
+        },
+        {
+          "criterionId": "governance.risk",
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "The CRRO assessment process is iterative"
+            },
+            {
+              "evidenceId": "e24",
+              "quote": "Coles risk management process, supported by three lines of accountability"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Coles conducts an annual CRRO assessment"
+            }
+          ]
+        }
+      ],
+      "gaps": [],
+      "recommendations": [],
+      "evidence": [
+        {
+          "id": "e1",
+          "text": "Board committees with climate-related responsibilities. The Board discharges its responsibility for oversight of climate strategy with the assistance of three standing committees.",
+          "confidence": 0.98,
+          "documentId": 2,
+          "category": null,
+          "pillar": "governance",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            61
+          ],
+          "pillarSourcePages": [
+            61,
+            62,
+            63,
+            82,
+            83,
+            84,
+            89,
+            90,
+            91,
+            106,
+            107
+          ]
+        },
+        {
+          "id": "e2",
+          "text": "Chief Commercial and Sustainability Officer oversees climate reporting and strategy. Executive Sustainability Committee provides dedicated oversight.",
+          "confidence": 0.95,
+          "documentId": 2,
+          "category": null,
+          "pillar": "governance",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            62,
+            63
+          ],
+          "pillarSourcePages": [
+            61,
+            62,
+            63,
+            82,
+            83,
+            84,
+            89,
+            90,
+            91,
+            106,
+            107
+          ]
+        },
+        {
+          "id": "e5",
+          "text": "Table 3: FY26 Performance measures for the MD & CEO, including Board discretion applied to reduce STI outcomes following Federal Court matters.",
+          "confidence": 0.85,
+          "documentId": 2,
+          "category": null,
+          "pillar": "governance",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            106,
+            107
+          ],
+          "pillarSourcePages": [
+            61,
+            62,
+            63,
+            82,
+            83,
+            84,
+            89,
+            90,
+            91,
+            106,
+            107
+          ]
+        },
+        {
+          "id": "e9",
+          "text": "The CRRO assessment process is iterative: initial identification, validation and assessment, mitigation and response, and prioritisation.",
+          "confidence": 0.85,
+          "documentId": 2,
+          "category": null,
+          "pillar": "strategy",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            44
+          ],
+          "pillarSourcePages": [
+            33,
+            34,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            144,
+            145,
+            146
+          ]
+        },
+        {
+          "id": "e24",
+          "text": "Coles risk management process, supported by three lines of accountability, based on ISO 31000: Risk Management Guidelines.",
+          "confidence": 0.9,
+          "documentId": 2,
+          "category": null,
+          "pillar": "risk_management",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            30,
+            31,
+            32
+          ],
+          "pillarSourcePages": [
+            30,
+            31,
+            32,
+            59,
+            60
+          ]
+        },
+        {
+          "id": "e25",
+          "text": "Approach to risk management: Coles conducts an annual CRRO assessment. The Board oversees the Group's approach to identifying, assessing and managing CRROs.",
+          "confidence": 0.95,
+          "documentId": 2,
+          "category": null,
+          "pillar": "risk_management",
+          "source": "Coles_Annual_Report_2026.pdf",
+          "sourceType": "public",
+          "pages": [
+            59,
+            60
+          ],
+          "pillarSourcePages": [
+            30,
+            31,
+            32,
+            59,
+            60
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "id": "governance.oversight",
+          "section": "governance",
+          "key": "oversight",
+          "description": "Board and executive ESG responsibilities and review processes",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e1",
+              "quote": "Board committees with climate-related responsibilities"
+            },
+            {
+              "evidenceId": "e2",
+              "quote": "Executive Sustainability Committee provides dedicated oversight"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Board and executive ESG responsibilities and review processes."
+        },
+        {
+          "id": "governance.ethics",
+          "section": "governance",
+          "key": "ethics",
+          "description": "Ethics, compliance and reporting mechanisms",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e5",
+              "quote": "the Board determined to use their overall discretion to reduce the calculated FY26 STI individual outcomes"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Ethics, compliance and reporting mechanisms."
+        },
+        {
+          "id": "governance.risk",
+          "section": "governance",
+          "key": "risk",
+          "description": "Risk identification, management and accountability",
+          "status": "strong",
+          "gapType": null,
+          "citations": [
+            {
+              "evidenceId": "e9",
+              "quote": "The CRRO assessment process is iterative"
+            },
+            {
+              "evidenceId": "e24",
+              "quote": "Coles risk management process, supported by three lines of accountability"
+            },
+            {
+              "evidenceId": "e25",
+              "quote": "Coles conducts an annual CRRO assessment"
+            }
+          ],
+          "recommendation": "Collect or strengthen evidence for: Risk identification, management and accountability."
+        }
+      ]
+    },
+    "priorityActions": [
+      {
+        "criterionId": "environmental.resources",
+        "action": "Collect or strengthen evidence for: Waste, water or biodiversity impacts and management."
+      },
+      {
+        "criterionId": "social.workforce",
+        "action": "Collect or strengthen evidence for: Workforce wellbeing, diversity or training with outcomes."
+      }
+    ],
+    "methodology": {
+      "version": "esg-readiness-2",
+      "scoreMeaning": "Evidence readiness, not ESG performance or compliance",
+      "statusWeights": {
+        "strong": 1,
+        "partial": 0.5,
+        "missing": 0
+      },
+      "aggregation": "Equal criterion weights within sections; equal ESG section weights.",
+      "limitations": "Secondary broader ESG assessment. Not legal, audit or assurance advice. LLM relevance and sufficiency judgments require human review. Absence of evidence is not a proven capability gap."
+    },
+    "warnings": [
+      "Agent 1 filters for climate relevance; missing ESG evidence may reflect extraction coverage."
+    ]
+  }
+}

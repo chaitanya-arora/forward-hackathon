@@ -1,0 +1,854 @@
+/* ---------------------------------------------------------------------------
+   The journey: landing, upload, processing. Dark, focused, restrained.
+   --------------------------------------------------------------------------- */
+
+.journey {
+  min-height: 100vh;
+  /* Two washes rather than one: a mint bloom at the top and a deeper forest
+     pool low and to the side. The overlap is what gives the surface depth
+     instead of a flat vignette. Held in a custom property (inherited down to
+     the sticky header below) rather than repeated, so the two can never
+     drift out of sync. */
+  --wash:
+    radial-gradient(ellipse 78% 46% at 50% -8%, rgba(110, 231, 176, 0.10), transparent 72%),
+    radial-gradient(ellipse 60% 50% at 88% 18%, rgba(29, 125, 92, 0.12), transparent 70%),
+    radial-gradient(ellipse 90% 40% at 12% 92%, rgba(29, 125, 92, 0.08), transparent 75%);
+  background-color: var(--paper);
+  background-image: var(--wash);
+  /* Ties the gradient's position to the viewport rather than the document,
+     so the header (which also uses `fixed`) resolves the same percentage
+     positions and lines up with the page behind it pixel-for-pixel, at any
+     scroll position -- an actual match, not just the same base colour. */
+  background-attachment: fixed;
+}
+
+/* The sticky header lives inside .journey. Same wash, same fixed attachment,
+   inherited --wash value -- so it is never a distinct bar sitting on top of
+   the page, it IS the page, continuing underneath it. */
+.journey .topbar {
+  background-color: var(--paper);
+  background-image: var(--wash);
+  background-attachment: fixed;
+}
+
+.display {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.08;
+  margin: 0;
+  color: var(--ink);
+}
+
+.display-xl { font-size: clamp(34px, 5.4vw, 58px); }
+
+.title-dim { opacity: 0.72; }
+.display-l  { font-size: clamp(30px, 4.4vw, 40px); }
+
+.lede {
+  font-size: 17.5px;
+  line-height: 1.62;
+  color: var(--ink-muted);
+  max-width: 52ch;
+}
+
+/* --- landing ------------------------------------------------------------- */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 56px;
+  align-items: center;
+  padding: 88px 0 72px;
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 40px; padding-bottom: 48px; }
+}
+
+/* A tall primary action over a shorter secondary row, rather than three
+   buttons abreast. The group fills the width of the text column it sits in —
+   genuinely long, not shrink-wrapped to its own content — and the secondary
+   row's two buttons split that same width evenly between them via flex:1,
+   so their combined span always equals the primary button above them. */
+/* Three equal-width buttons in a row — Generate a report stays the green
+   primary action, About and See an example share the neutral button style,
+   and all three take up the same width via flex:1. */
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 34px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.hero-actions .btn {
+  flex: 1;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 15px 18px;
+  font-size: 15px;
+}
+
+@media (max-width: 560px) {
+  .hero-actions { flex-direction: column; max-width: 100%; }
+}
+
+/* The report fragment shown as proof of what the tool produces. It is a
+   miniature of the real thing, on paper, lifted off the dark canvas. */
+.proof {
+  background: #fbfaf7;
+  color: #1a1a17;
+  border-radius: 10px;
+  padding: 26px 26px 22px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 30px 70px -24px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  transform: perspective(1400px) rotateY(-7deg) rotateX(2deg);
+  transform-origin: left center;
+  transition: transform 0.5s var(--ease);
+}
+
+.proof:hover { transform: perspective(1400px) rotateY(-3deg) rotateX(1deg); }
+
+@media (max-width: 900px) {
+  .proof { transform: none; }
+  .proof:hover { transform: none; }
+}
+
+.proof-kicker {
+  font-family: var(--sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #8a857a;
+  margin: 0 0 8px;
+}
+
+.proof-company {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 2px;
+}
+
+.proof-meta { font-family: var(--sans); font-size: 11px; color: #8a857a; margin: 0 0 18px; }
+
+.proof-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border-top: 1px solid #e2ded4;
+  border-bottom: 1px solid #e2ded4;
+  padding: 14px 0;
+  margin-bottom: 16px;
+}
+
+.proof-score b {
+  font-family: var(--serif);
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.proof-score span { font-family: var(--sans); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #8a857a; margin-left: auto; }
+
+.proof-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 7px 0;
+}
+
+.proof-row + .proof-row { border-top: 1px solid #f0ede5; }
+.proof-row em { font-style: normal; color: #5c584f; }
+.proof-row b { font-family: var(--serif); font-size: 15px; font-weight: 600; }
+
+.proof-bar { grid-column: 1 / -1; height: 2px; background: #e2ded4; overflow: hidden; }
+.proof-bar i { display: block; height: 100%; background: #004a2c; }
+
+.proof-cite {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  color: #8a857a;
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #e2ded4;
+}
+
+.proof-cite code {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  background: #f4f2ed;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* --- feature strip ------------------------------------------------------- */
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 52px;
+  border-top: 1px solid var(--rule);
+  padding-top: 44px;
+}
+
+.strip h2 {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 12px;
+  color: var(--ink);
+  /* No character cap here — the column width itself decides the wrap. The
+     old 22ch limit truncated the line regardless of how wide the column
+     actually was, which is what pushed the middle heading to three lines. */
+  max-width: 100%;
+}
+
+.strip-num {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 14px;
+}
+
+.strip-body {
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* --- panels (upload + processing) ---------------------------------------- */
+
+.panel {
+  background: linear-gradient(160deg, var(--surface-raised), var(--surface));
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 18px 40px -30px rgba(0, 0, 0, 0.9);
+}
+
+.dropzone {
+  border: 1.5px dashed var(--rule-strong);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 46px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.dropzone:hover { border-color: var(--rule-strong); background: var(--surface-raised); }
+
+.dropzone.is-dragging {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 4px var(--glow);
+}
+
+.dropzone-title { margin: 0 0 6px; font-size: 16.5px; color: var(--ink); }
+.dropzone-title b { color: var(--accent); font-weight: 550; }
+
+/* file rows */
+
+.filerow {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 13px 15px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  transition: border-color 0.18s var(--ease);
+}
+
+.filerow:hover { border-color: var(--rule-strong); }
+
+.filerow-icon {
+  width: 26px;
+  height: 30px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+}
+
+.filerow-name {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.input {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 8px 11px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--surface-sunk);
+  color: var(--ink);
+  min-width: 0;
+  width: 100%;
+  transition: border-color 0.18s var(--ease);
+}
+
+.input::placeholder { color: var(--ink-faint); }
+.input:focus { outline: none; border-color: var(--accent); }
+
+.iconbtn {
+  border: 0;
+  background: none;
+  color: var(--ink-faint);
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 5px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.iconbtn:hover { color: var(--missing); background: var(--missing-bg); }
+
+@media (max-width: 620px) {
+  .filerow { grid-template-columns: 26px minmax(0, 1fr) auto; }
+  .filerow .input { grid-column: 2 / -1; }
+}
+
+/* --- guidance list ------------------------------------------------------- */
+
+.guide { display: grid; gap: 14px; }
+
+.guide-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.guide-item::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 8px;
+}
+
+.guide-item b { color: var(--ink); font-weight: 550; }
+
+/* --- processing ---------------------------------------------------------- */
+
+.stages { display: grid; gap: 0; }
+
+.stage {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: opacity 0.4s var(--ease);
+}
+
+.stage-pending { opacity: 0.34; }
+
+.stage-mark {
+  font-size: 13px;
+  color: var(--ink-faint);
+  display: grid;
+  place-items: center;
+  height: 1.2em;
+}
+
+.stage-active .stage-mark {
+  color: var(--accent);
+  border-radius: 50%;
+  animation: pulse-ring 1.9s ease-out infinite;
+}
+
+.stage-done .stage-mark { color: var(--strong); }
+
+.stage-label { font-size: 16px; color: var(--ink); }
+.stage-active .stage-label { font-weight: 600; }
+
+.stage-detail {
+  font-size: 13px;
+  color: var(--ink-faint);
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* live evidence counter */
+
+.tally {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 4px 0 26px;
+}
+
+.tally b {
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.tally span { font-size: 13.5px; color: var(--ink-muted); }
+
+/* --- while you wait ------------------------------------------------------ */
+
+.wyw { margin-top: 40px; border-top: 1px solid var(--rule); padding-top: 26px; }
+
+.wyw-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.wyw-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 11px;
+  padding: 22px 24px;
+  animation: fade 0.5s var(--ease) both;
+}
+
+.wyw-tag {
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+
+.wyw-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+  color: var(--ink);
+}
+
+.wyw-body {
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--ink-muted);
+  margin: 0 0 16px;
+  max-width: 62ch;
+}
+
+.wyw-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+}
+
+.wyw-src { color: var(--ink-faint); }
+.wyw-src a { color: var(--accent); text-decoration: none; }
+.wyw-src a:hover { text-decoration: underline; }
+
+.wyw-dots { display: flex; gap: 6px; }
+
+.wyw-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: var(--rule-strong);
+  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.wyw-dot[aria-current="true"] { background: var(--accent); transform: scale(1.35); }
+
+/* --- error --------------------------------------------------------------- */
+
+.alert {
+  border: 1px solid var(--missing);
+  background: var(--missing-bg);
+  color: var(--missing);
+  border-radius: 9px;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* --- about page ----------------------------------------------------------
+   Deliberately varied: different column counts per grid (always chosen to
+   divide evenly into the item count, so no row is ever left with a lone card
+   stranded in a fraction of the width), icons carrying meaning alongside
+   colour, and one interactive pattern (Disclosure) for the section dense
+   enough to otherwise read as a wall of paragraphs.
+   --------------------------------------------------------------------- */
+
+.about-intro { padding-top: 64px; }
+
+.about-section + .about-section { margin-top: 96px; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.section-head .strip-num {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+
+.section-head h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: clamp(26px, 3.4vw, 34px);
+  margin: 0;
+  color: var(--ink);
+}
+
+.subhead {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 48px 0 18px;
+  color: var(--ink);
+}
+
+/* Generic info card: icon + heading in one row, body below. Colour comes in
+   as a left border and an icon tint, never as a full-card background — that
+   stays reserved for the rating cards, where colour IS the content. */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.info-grid--2 { grid-template-columns: repeat(2, 1fr); }
+
+@media (max-width: 860px) {
+  .info-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .info-grid, .info-grid--2 { grid-template-columns: 1fr; }
+}
+
+.info-card {
+  background: linear-gradient(160deg, var(--surface-raised), var(--surface));
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  border-radius: 12px;
+  padding: 20px 22px;
+  transition: border-color 0.18s var(--ease), transform 0.18s var(--ease);
+}
+
+.info-card:hover { transform: translateY(-2px); }
+
+.info-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.info-card-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.info-card-icon svg { width: 16px; height: 16px; }
+
+.info-card h3 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ink);
+}
+
+.info-card p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* Rating cards: colour is the content here — three completeness ratings,
+   three unambiguous tones, matching the vocabulary the report itself uses.
+   An icon backs up the colour so the meaning doesn't rely on hue alone. */
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 760px) {
+  .rating-grid { grid-template-columns: 1fr; }
+}
+
+.rating-card {
+  border-radius: 14px;
+  padding: 22px 24px 20px;
+  border: 1px solid transparent;
+}
+
+.rating-card--strong  { background: var(--strong-bg);  border-color: color-mix(in srgb, var(--strong) 30%, transparent); }
+.rating-card--partial { background: var(--partial-bg); border-color: color-mix(in srgb, var(--partial) 30%, transparent); }
+.rating-card--missing { background: var(--missing-bg); border-color: color-mix(in srgb, var(--missing) 30%, transparent); }
+
+.rating-card-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.rating-card-head svg { width: 18px; height: 18px; }
+
+.rating-card h3 {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.rating-card--strong  .rating-card-head { color: var(--strong); }
+.rating-card--partial .rating-card-head { color: var(--partial); }
+.rating-card--missing .rating-card-head { color: var(--missing); }
+
+.rating-card p {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Step cards: a small coloured tag names the step order — no oversized
+   numeral competing with the heading, just the same restrained index
+   treatment used everywhere else on this page. Explicit 2 columns so four
+   items always form a clean 2x2, never a stranded lone card. */
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .step-grid { grid-template-columns: 1fr; }
+}
+
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+}
+
+.step-tag {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.step-card h4 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+
+.step-card p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* The one fact that needs to stand apart rather than sit in a grid. */
+.callout {
+  display: flex;
+  gap: 14px;
+  border-radius: 12px;
+  padding: 20px 22px;
+  background: var(--partial-bg);
+  border: 1px solid color-mix(in srgb, var(--partial) 35%, transparent);
+}
+
+.callout-icon { color: var(--partial); flex-shrink: 0; margin-top: 2px; }
+.callout-icon svg { width: 20px; height: 20px; }
+
+.callout-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--partial);
+  margin: 0 0 8px;
+}
+
+.callout p {
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Disclosure: closed by default, a teaser line stands in for the full
+   paragraph until a reader asks for it. This is where the "info dump" of
+   several dense paragraphs becomes something scannable. */
+.disclosure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .disclosure-grid { grid-template-columns: 1fr; }
+}
+
+.disclosure {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease);
+}
+
+.disclosure.is-open { border-color: var(--rule-strong); }
+
+.disclosure-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: none;
+  border: 0;
+  text-align: left;
+  color: inherit;
+}
+
+.disclosure-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.disclosure-icon svg { width: 17px; height: 17px; }
+
+.disclosure-title-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.disclosure-title {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.disclosure-teaser {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.disclosure-chevron {
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  transition: transform 0.2s var(--ease);
+}
+
+.disclosure-chevron svg { width: 16px; height: 16px; }
+
+.disclosure.is-open .disclosure-chevron { transform: rotate(180deg); }
+
+.disclosure-body {
+  padding: 0 18px 18px 62px;
+}
+
+.disclosure-body p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.inline-badge {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.inline-badge-strong  { color: var(--strong);  background: var(--strong-bg); }
+.inline-badge-partial { color: var(--partial); background: var(--partial-bg); }
+.inline-badge-missing { color: var(--missing); background: var(--missing-bg); }

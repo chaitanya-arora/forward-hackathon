@@ -1,0 +1,79 @@
+.report-page { padding-top: 8px; padding-bottom: 64px; }
+
+.report-hero { max-width: none; }
+
+/* The site's `.lede` caps at 52ch for landing/about copy, which is far too
+   narrow for this page's wide container — override it here only. */
+.report-page .lede { max-width: none; }
+
+/* --- controls: report-type toggle + download ------------------------------ */
+
+.report-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 36px 0 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.view-toggle {
+  display: inline-flex;
+  gap: 22px;
+}
+
+.view-toggle button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  padding: 4px 0;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.view-toggle button.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* --- the summary itself ---------------------------------------------------- */
+
+.report-summary-section { margin-top: 40px; }
+
+.summary-text {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  margin: 0;
+}
+
+.summary-list {
+  margin: 0;
+  padding-left: 1.3em;
+  display: grid;
+  gap: 10px;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* Only the overall readiness score uses a readiness colour. */
+.readiness-overview { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 28px; align-items: start; }
+.readiness-score { border: 2px solid currentColor; border-radius: 50%; width: 126px; height: 126px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.readiness-score strong { font-size: 32px; line-height: 1.2; }
+.readiness-score small { font-size: 14px; font-weight: 500; }
+.readiness-score span { font-size: 13px; margin-top: 5px; }
+.readiness-green { color: var(--strong); background: var(--strong-bg); }
+.readiness-amber { color: var(--partial); background: var(--partial-bg); }
+.readiness-red { color: var(--missing); background: var(--missing-bg); }
+.readiness-neutral { color: var(--neutral); background: var(--neutral-bg); }
+.summary-headline { font-size: 20px; margin: 0 0 12px; }
+.score-disclaimer { margin-top: 16px; }
+.summary-list p { margin: 4px 0 10px; }
+@media (max-width: 600px) { .readiness-overview { grid-template-columns: 1fr; gap: 20px; } }

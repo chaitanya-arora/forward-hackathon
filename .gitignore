@@ -14,3 +14,7 @@ __pycache__/
 *.db-shm
 *.db-wal
 *.db-journal
+
+# Frontend build output.
+src/frontend/.next/
+src/frontend/*.tsbuildinfo
